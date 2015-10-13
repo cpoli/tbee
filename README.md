@@ -2,15 +2,15 @@
 
 **TB** is a **Python** module of **Tight-Binding** models. **TB**  builds up and solves finite tight-binding models with complex-valued onsite energies and complex-valued hoppings. 
 
-**TB** is composed of:
+Sphinx documentation of **TB**: http://cpoli.github.io/TBdoc/indexTB.html
 
+**TB** is composed of:
 * latticeTB
 * eigTB
 * plotTB
 * propTB
 
 Main features of **TB**:
-
 * Written in fully vectorized **Numpy**.
 * Easy lattice shape modification.
 * Easy implementation of next neighbors hoppings, next next neighbors hoppings, etc..
