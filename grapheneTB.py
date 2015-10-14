@@ -1,8 +1,10 @@
 '''
-    **grapheneTB** package models graphene flakes submited to triaxial linear strain.
-    Flake geometry can be easily changed/implemented.
+    TO BE MODIFIED
+
+    **grapheneTB** module models graphene flakes.
+    Flakes can be submitted to triaxial linear strain.
     
-    **grapheneTB** is available at https://github.com/cpoli/grapheneTB
+    **grapheneTB** is available at https://github.com/cpoli/TB
 '''
 
 from latticeTB import *
@@ -553,62 +555,3 @@ class eigGraphene(eigTB):
         self.ham = sparse.csr_matrix(h)
         self.sites -= len(self.ind_del)
 
-
-graphene_tb = grapheneTB()
-graphene_tb.get_lattice(flake=tri_zz, n=16)
-plt_graphene = plotGraphene(graphene_tb.coor, graphene_tb.tags)
-plt_graphene.plt_lattice(graphene_tb.coor, ms=8, label=True)
-plt_graphene.plt_lattice(graphene_tb.coor_rec, ms=8, label=True)
-eig_graphene = eigGraphene(graphene_tb.coor, graphene_tb.coor_rec, 
-                                                graphene_tb.tags)
-
-t1, t2, t3 = 1., 1., 1.
-
-#plt_graphene.plt_dispersion(1.)
-
-eig_graphene.get_beta_lims()
-print('BETA')
-print(eig_graphene.beta_lims) #
-
-eig_graphene.get_hops(t1, t2, t3, beta=eig_graphene.beta_lims[1], 
-                                      get_hop_rec=True)
-eig_graphene.get_ham()
-eig_graphene.get_eigh()
-plt_graphene.plt_spec(eig_graphene.en, en_lims=[-2.5, 2.5], pola=eig_graphene.pola, pola_tag=b'a')
-#plt_graphene.plt_lattice(eig_graphene.coor, ms=8, label=True)
-eig_graphene.get_butterfly(t1, t2, t3, N=10)
-
-plt_graphene.plt_butterfly(eig_graphene.butterfly, eig_graphene.betas)
-
-
-
-#eig_graphene.get_ham()
-#h = eig_graphene.ham
-'''
-eig_graphene.del_sites(10)
-plt_graphene.plt_lattice(eig_graphene.coor, ms=8, numero=True)
-eig_graphene.get_eigh()
-plt_graphene.plt_spec(eig_graphene.en, eig_graphene.pola, pola_tag=b'a')
-eig_graphene.get_coor_hop(graphene_tb.nx, graphene_tb.ny,
-           graphene_tb.coor_rec, graphene_tb.ind)
-plt_graphene.plt_lattice(eig_graphene.coor_hop, ms=8)
-print(np.min(eig_graphene.hop['t']))
-print(np.max(eig_graphene.hop['t']))
-'''
-
-"""
-#
-eig_graphene.get_eigh()
-plt_graphene.plt_spec(eig_graphene.en)
-print('VAL')
-print(np.min(eig_graphene.hop['t']))
-
-
-plt_graphene.coor_hop = eig_graphene.coor_hop
-#plt_graphene.plt_lattice(eig_graphene.coor_hop, ms=8)
-
-eig_graphene.get_butterfly(t1, t2, t3, N=10)
-
-plt_graphene.plt_butterfly(eig_graphene.betas, eig_graphene.butterfly)
-"""
-plt.show()
