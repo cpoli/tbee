@@ -25,6 +25,49 @@ class propTB():
         self.dz = dz
         self.prop = np.zeros((self.lat.sites, self.steps), 'c16')
 
+    def get_prop_nonlin(self, ham, psi_init, nu=0, norm=True):
+        '''
+        Get the time evolution.
+
+        :param ham: Tight-Binding Hamilonian.
+        :param psi_init: Initial state.
+        :param norm: Default value True. Normalize the norm to 1 at each step.
+        '''
+        from scipy.integrate import odeint
+        sites = self.lat.sites
+        N = 2 * sites
+        def eq_motion(y, t, H, nu):
+            non_lin = y ** 2
+            non_lin = nu *(non_lin[:sites] + non_lin[sites:])
+            T = np.copy(H)
+            T[range(sites), range(sites, N)] += non_lin
+            T[range(sites, N), range(sites)] -= non_lin
+            dy = np.dot(T, y)
+            return dy
+
+        ham = ham.toarray()
+        H = np.zeros((N, N))
+        H[:sites, :sites] = ham.imag
+        H[:sites, sites:] = ham.real
+        H[sites:, :sites] = -ham.real
+        H[sites:, sites:] = ham.imag
+        y0 = np.zeros(N)
+        y0[:sites] = psi_init.real
+        y0[sites:] = psi_init.imag
+        t = np.arange(0., self.dz*self.steps, self.dz)
+        param= (H, nu)
+        y = odeint(eq_motion, y0, t, args=param)
+        self.prop = y[:, :sites].T +1j*y[:, sites:].T
+       # print(self.prop.shape)
+        #self.prop = y[:, :sites]+1j*y[:, sites:]
+        #fig = plt.figure()
+        #extent = (0, self.steps*self.dz, -self.lat.sites//2+0.5, self.lat.sites-self.lat.sites//2+0.5)
+        #plt.imshow(np.abs(self.prop), extent=extent)
+        #fig = plt.figure()
+        #plt.plot(np.abs(self.prop[-1, :]))
+        #plt.show()
+
+
     def get_prop(self, ham, psi_init, norm=True):
         '''
         Get the time evolution.
@@ -44,7 +87,7 @@ class propTB():
             if norm:
                 self.prop[:, i] /= np.sqrt((np.abs(self.prop[:, i])**2).sum())
 
-    def get_pump(self, hams, psi_init, norm=True):
+    def get_pump(self, hams, psi_init, nu=0, norm=True):
         '''
         Get the time evolution under adiabatic pumpings.
 
@@ -54,7 +97,7 @@ class propTB():
         '''
         ham = np.array([hams])
         psi_init = np.array([psi_init])
-        no, = hams.shape
+        no = len(hams)
         self.prop[:, 0] = psi_init
         diag = 1j*np.ones(self.lat.sites, 'c16')
         delta = self.steps //(no+1)

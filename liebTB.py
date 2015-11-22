@@ -204,7 +204,7 @@ class eigLieb(eigTB):
 		       hop_p['t'][0]*hop_p['t'][3]*hop_p['t'][5]*hop_p['t'][6] / \
 		       (hop_p['t'][1]*hop_p['t'][2]*hop_p['t'][4])
 
-    def set_magnetic_field(self, nx):
+    def set_magnetic_field(self, theta):
         '''
         Add Pierls phases to the hoppings.
 
@@ -215,11 +215,28 @@ class eigLieb(eigTB):
             This disorder preserves the zero mode.
 
         '''
-        for x in range(0, nx, 2):
+        sites_x = len(self.coor['tag'][self.coor['y'] == 0]) 
+        for x in range(sites_x):
             self.hop['t'][((self.hop['tag'] == b'ac') | (self.hop['tag'] == b'ca')) 
                             & (self.coor['x'][self.hop['i']] == x)] *= \
-		          np.exp(1j * pi * flux * x//2)
+		          np.exp(1j * theta * (x // 2))
 
+    def get_butterfly(self, N):
+        ''''
+        Get energies depending on phase.
+
+        :param N: Number of spectra.
+        '''
+        t = 1.
+        self.thetas = np.linspace(0, pi, N)
+        self.butterfly = np.zeros((self.sites, N))
+        for i, theta in enumerate(self.thetas):
+            self.set_hop_alt(t, t, t, t)
+            self.set_magnetic_field(theta=theta)
+            self.get_ham(compl_trans=True)
+            self.butterfly[:, i] = LA.eigvalsh(self.ham.toarray())
+        for b in self.butterfly:
+            plt.plot(self.thetas, b, 'b')
 
 class plotLieb(plotTB):
     '''
@@ -229,6 +246,7 @@ class plotLieb(plotTB):
         plotTB.__init__(self, sys)
         self.coor = sys.coor
         self.hop = sys.hop
+        self.coor_hop = np.array([], {'names': ['x', 'y'], 'formats': ['f8', 'f8']})
 
     def plt_lattice_hop(self, ms=20, lw=1):
         '''
@@ -238,6 +256,7 @@ class plotLieb(plotTB):
         :param ny: Number of sites along :math:`y`. 
         :param ms: Default value 20. Markersize.
         '''
+        self.colors=['#3D4B8A', '#932933', '#932933']
         lx, ly = 2, 2
         sites_x = len(self.coor['tag'][self.coor['y'] == 0]) 
         sites_y = len(self.coor['tag'][self.coor['x'] == 0]) 
@@ -280,16 +299,19 @@ class plotLieb(plotTB):
             coor_hop['y'][ind_r[6]] = coor_hop['y'][ind_r[5]] + tx2*sin(ang_x) 
             coor_hop['x'][ind_r[7]] = coor_hop['x'][ind_r[4]] + ty3*cos(ang_y) 
             coor_hop['y'][ind_r[7]] = coor_hop['y'][ind_r[4]] + ty3*sin(ang_y)
+        self.coor_hop = coor_hop
         # plot bonds
         for i in range(len(self.hop)): 
-            plt.plot([coor_hop['x'][self.hop['i'][i]], coor_hop['x'][self.hop['j'][i]]],
-                        [coor_hop['y'][self.hop['i'][i]], coor_hop['y'][self.hop['j'][i]]],
-                    'k', lw=lw)
+            if (self.hop['tag'][i] == b'ab') or (self.hop['tag'][i] == b'ba') \
+                    or (self.hop['tag'][i] == b'ac') or (self.hop['tag'][i] == b'ca'):
+                plt.plot([coor_hop['x'][self.hop['i'][i]], coor_hop['x'][self.hop['j'][i]]],
+                            [coor_hop['y'][self.hop['i'][i]], coor_hop['y'][self.hop['j'][i]]],
+                            'k', lw=lw)
         # plot sites
         for t, c in zip(self.sys.tags, self.colors):
             plt.plot(coor_hop['x'][coor_hop['tag'] == t],
-        coor_hop['y'][coor_hop['tag'] == t],
-        'o', color=c, ms=ms, markeredgecolor='none')
+                        coor_hop['y'][coor_hop['tag'] == t],
+                        'o', color=c, ms=ms, markeredgecolor='none')
         xlim = [np.min(coor_hop['x'])-.5, np.max(coor_hop['x'])+.5]
         ylim = [np.min(coor_hop['y'])-.5, np.max(coor_hop['y'])+.5]
         ax.set_aspect('equal')

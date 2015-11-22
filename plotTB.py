@@ -17,7 +17,7 @@ class plotTB:
             self.colors = ['b', 'r', 'g', 'y', 'm', 'k']
         else:
             self.colors = colors
-       
+
 
     def plt_lattice(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
         '''
@@ -37,7 +37,7 @@ class plotTB:
         fig, ax = plt.subplots(figsize=figsize)
         # bonds
         if plt_hop:
-            for i in range(len(self.sys.hop)): 
+            for i in range(len(self.sys.hop)):
                 plt.plot([self.sys.coor['x'][self.sys.hop['i'][i]], self.sys.coor['x'][self.sys.hop['j'][i]]],
                             [self.sys.coor['y'][self.sys.hop['i'][i]], self.sys.coor['y'][self.sys.hop['j'][i]]],
                             'k', lw=c*self.sys.hop['t'][i].real)
@@ -75,7 +75,7 @@ class plotTB:
             * **fig** -- Figure.
         '''
         fig, ax1 = plt.subplots()
-        x = np.arange(-self.sys.sites//2, self.sys.sites-self.sys.sites//2) + 1
+        x = np.arange(-self.sys.sites // 2, self.sys.sites-self.sys.sites // 2) + 1
         if en_lims == []:
             en_max = np.max(self.sys.en.real)
             ax1.set_ylim([-en_max-0.2, en_max+0.2])
@@ -92,11 +92,10 @@ class plotTB:
         if pola_tag:
             i_tag = np.argwhere(self.sys.tags == pola_tag)
             ax2 = ax1.twinx()
-            print(x[ind])
-            print(self.sys.pola[ind, i_tag])
             ax2.plot(x[ind], np.ravel(self.sys.pola[ind, i_tag]), 'or', markersize=(4*ms)//5)
             str_tag = pola_tag.decode('ascii')
             ylabel = '$<' + str_tag.upper() + '|' + str_tag.upper() + '>$' 
+            ylabel = '$<B|B>$' 
             ax2.set_ylabel(ylabel, fontsize=fs, color='red')
             ax2.set_ylim([-0.1, 1.1])
             ax2.set_yticks([0, 0.5, 1])
@@ -104,7 +103,7 @@ class plotTB:
                 ax2.set_xlim([x[0]-0.5, x[-1]+0.5])
             for label in ax2.get_yticklabels():
                 label.set_color('r')
-        plt.xlim([x[ind][0]-.1, x[ind][-1]+0.1])
+        plt.xlim([x[0]-.1, x[-1]+0.1])
         xa = ax1.get_xaxis()
         xa.set_major_locator(plt.MaxNLocator(integer=True))
         plt.draw()
