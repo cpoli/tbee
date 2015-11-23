@@ -38,36 +38,36 @@ class plotTB:
         # bonds
         if plt_hop:
             for i in range(len(self.sys.hop)):
-                plt.plot([self.sys.coor['x'][self.sys.hop['i'][i]], self.sys.coor['x'][self.sys.hop['j'][i]]],
-                            [self.sys.coor['y'][self.sys.hop['i'][i]], self.sys.coor['y'][self.sys.hop['j'][i]]],
+                plt.plot([self.sys.lat.coor['x'][self.sys.hop['i'][i]], self.sys.lat.coor['x'][self.sys.hop['j'][i]]],
+                            [self.sys.lat.coor['y'][self.sys.hop['i'][i]], self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
                             'k', lw=c*self.sys.hop['t'][i].real)
         # sites
-        for c, t in zip(self.colors, self.sys.tags):
-            plt.plot(self.sys.coor['x'][self.sys.coor['tag'] == t],
-                    self.sys.coor['y'][self.sys.coor['tag'] == t],
+        for c, t in zip(self.colors, self.sys.lat.tags):
+            plt.plot(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
+                    self.sys.lat.coor['y'][self.sys.lat.coor['tag'] == t],
                     'o', color=c, ms=ms, markeredgecolor='none')
         ax.axis('off')
         ax.set_aspect('equal')
-        ax.set_xlim([np.min(self.sys.coor['x'])-0.5, np.max(self.sys.coor['x'])+0.5])
-        ax.set_ylim([np.min(self.sys.coor['y'])-0.5, np.max(self.sys.coor['y'])+0.5])
+        ax.set_xlim([np.min(self.sys.lat.coor['x'])-0.5, np.max(self.sys.lat.coor['x'])+0.5])
+        ax.set_ylim([np.min(self.sys.lat.coor['y'])-0.5, np.max(self.sys.lat.coor['y'])+0.5])
         # indices
         if plt_index:
-            indices = ['{}'.format(i) for i in range(self.sys.sites)]
-            for l, x, y in zip(indices, self.sys.coor['x'], self.sys.coor['y']):
+            indices = ['{}'.format(i) for i in range(self.sys.lat.sites)]
+            for l, x, y in zip(indices, self.sys.lat.coor['x'], self.sys.lat.coor['y']):
                 plt.annotate(l, xy=(x, y), xytext=(0, 0),
                             textcoords='offset points', ha='right',
                             va='bottom', size=fs)
         plt.draw()
         return fig
 
-    def plt_spec(self, en_lims=[], pola_tag='', ms=10, fs=20):
+    def plt_spec(self, en_lims=[], tag_pola='', ms=10, fs=20):
         '''
         Plot spectrum (eigenenergies real part (blue circles), 
         and sublattice polarization if *pola* not empty (red circles).
 
         :param en: np.array. Eigenenergies.
         :param en_lims: Default value []. Energy limits (size 2).
-        :param pola_tag: Default value []. Byte type. Tag of the sublattice.
+        :param tag_pola: Default value []. Byte type. Tag of the sublattice.
         :param ms: Default value 10. Markersize.
         :param fs: Default value 20. Fontsize.
 
@@ -75,11 +75,11 @@ class plotTB:
             * **fig** -- Figure.
         '''
         fig, ax1 = plt.subplots()
-        x = np.arange(-self.sys.sites // 2, self.sys.sites-self.sys.sites // 2) + 1
+        x = np.arange(-self.sys.lat.sites // 2, self.sys.lat.sites-self.sys.lat.sites // 2) + 1
         if en_lims == []:
             en_max = np.max(self.sys.en.real)
             ax1.set_ylim([-en_max-0.2, en_max+0.2])
-            ind = np.ones(self.sys.sites, bool)
+            ind = np.ones(self.sys.lat.sites, bool)
         else:
             ind = (self.sys.en > en_lims[0]) & (self.sys.en < en_lims[1])
             ax1.set_ylim([en_lims[0]-0.1, en_lims[1]+0.1]) 
@@ -89,13 +89,12 @@ class plotTB:
         ax1.set_ylabel('$E_n$', fontsize=fs, color='blue')
         for label in ax1.get_yticklabels():
             label.set_color('b')
-        if pola_tag:
-            i_tag = np.argwhere(self.sys.tags == pola_tag)
+        if tag_pola:
+            i_tag = np.argwhere(self.sys.lat.tags == tag_pola)
             ax2 = ax1.twinx()
             ax2.plot(x[ind], np.ravel(self.sys.pola[ind, i_tag]), 'or', markersize=(4*ms)//5)
-            str_tag = pola_tag.decode('ascii')
+            str_tag = tag_pola.decode('ascii')
             ylabel = '$<' + str_tag.upper() + '|' + str_tag.upper() + '>$' 
-            ylabel = '$<B|B>$' 
             ax2.set_ylabel(ylabel, fontsize=fs, color='red')
             ax2.set_ylim([-0.1, 1.1])
             ax2.set_yticks([0, 0.5, 1])
@@ -123,11 +122,11 @@ class plotTB:
         ax.set_xlabel('$j$', fontsize=fs)
         ax.set_ylabel('$|\psi^{(j)}|^2$', fontsize=fs)
         ax.set_title(title, fontsize=fs)
-        for t, c in zip(self.sys.tags, self.colors):
-            plt.plot(self.sys.coor['x'][self.sys.coor['tag'] == t],
-                        intensity[self.sys.coor['tag'] == t],
+        for t, c in zip(self.sys.lat.tags, self.colors):
+            plt.plot(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
+                        intensity[self.sys.lat.coor['tag'] == t],
                         '-o', color=c, ms=ms, lw=lw)
-        plt.xlim([-1., self.sys.sites])
+        plt.xlim([-1., self.sys.lat.sites])
         plt.ylim([0., np.max(intensity)+.02])
         plt.draw()
         return fig
@@ -153,13 +152,13 @@ class plotTB:
             y_ticks = ['0', 'max']
         else: 
             y_ticks = lims
-        plt.scatter(self.sys.coor['x'], self.sys.coor['y'], c=intensity, s=s, 
+        plt.scatter(self.sys.lat.coor['x'], self.sys.lat.coor['y'], c=intensity, s=s, 
                          cmap=map_red, vmin=lims[0], vmax=lims[1])
         cbar = plt.colorbar(ticks=lims)
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_xlim(np.min(self.sys.coor['x'])-1., np.max(self.sys.coor['x'])+1.)
-        ax.set_ylim(np.min(self.sys.coor['y'])-1., np.max(self.sys.coor['y'])+1.)
+        ax.set_xlim(np.min(self.sys.lat.coor['x'])-1., np.max(self.sys.lat.coor['x'])+1.)
+        ax.set_ylim(np.min(self.sys.lat.coor['y'])-1., np.max(self.sys.lat.coor['y'])+1.)
         cbar.ax.set_yticklabels([y_ticks[0], y_ticks[1]])
         ax.set_aspect('equal')
         plt.draw()
@@ -186,19 +185,19 @@ class plotTB:
         ax.set_title(title, fontsize=fs)
         if hop != []:
             for i in range(len(hop)): 
-                plt.plot([self.sys.coor['x'][self.sys.hop['i'][i]], self.sys.coor['x'][self.sys.hop['j'][i]]],
-                            [self.sys.coor['y'][self.sys.hop['i'][i]], self.sys.coor['y'][self.sys.hop['j'][i]]],
+                plt.plot([self.sys.lat.coor['x'][self.sys.hop['i'][i]], self.sys.lat.coor['x'][self.sys.hop['j'][i]]],
+                            [self.sys.lat.coor['y'][self.sys.hop['i'][i]], self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
                             self.colors[0], lw=lw, c='k')
 
-        for t, c in zip(self.sys.tags, self.colors):
-            plt.scatter(self.sys.coor['x'][self.sys.coor['tag'] == t],
-                        self.sys.coor['y'][self.sys.coor['tag'] == t],
-                        s=s*intensity[self.sys.coor['tag'] == t],
+        for t, c in zip(self.sys.lat.tags, self.colors):
+            plt.scatter(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
+                        self.sys.lat.coor['y'][self.sys.lat.coor['tag'] == t],
+                        s=s*intensity[self.sys.lat.coor['tag'] == t],
                         c=c, alpha=0.5)
         ax.set_aspect('equal')
         ax.axis('off')
-        ax.set_ylim([np.min(self.sys.coor['y'])-1., np.max(self.sys.coor['y'])+1.])
-        ax.set_xlim([np.min(self.sys.coor['x'])-1., np.max(self.sys.coor['x'])+1.])
+        ax.set_ylim([np.min(self.sys.lat.coor['y'])-1., np.max(self.sys.lat.coor['y'])+1.])
+        ax.set_xlim([np.min(self.sys.lat.coor['x'])-1., np.max(self.sys.lat.coor['x'])+1.])
         plt.draw()
         return fig
 
@@ -222,7 +221,7 @@ class saveFigTB():
 
         :param dir_name: String. First part of the directory name. 
         '''
-        dir_name = self.dir_main + dir_name + '_n{}'.format(self.sys.sites)
+        dir_name = self.dir_main + dir_name + '_n{}'.format(self.sys.lat.sites)
         return dir_name
 
     def check_dir(self):
@@ -242,7 +241,7 @@ class saveFigTB():
             * **file_name** -- File name.
         '''
         file_name = ''
-        for t, o in zip(self.sys.tags, self.sys.on): 
+        for t, o in zip(self.sys.lat.tags, self.sys.on): 
             file_name += '_e' + str(t)[2] + str(complex(o+0)).replace('.', ',')
         for key, val in self.params.items():
             file_name += '_' + key + str(complex(val+0)).replace('.', ',')

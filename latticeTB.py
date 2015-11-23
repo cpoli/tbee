@@ -56,21 +56,25 @@ def test_ang(ang):
 
     :raises TypeError: Parameter ang  must be a number.
     '''
-    if not isinstance(ang, float):
-        raise TypeError('\n\nParameter ang must be a number.\n')
+    if not isinstance(ang, (int, float)):
+        raise TypeError('\n\nParameter ang must be a real number.\n')
 
 def test_remove_sites(index, sites):
     '''
     Check method *remove_sites*.
 
     :raises TypeError: Parameter index must be a list.
-    :raises IndexError: Parameter ind must be a list
+    :raises IndexError: Parameter index must be a list
       of integers between 0 and sites
     '''
     if not isinstance(index, list):
         raise TypeError('\n\nParameter index must be a list.\n')
-    if not all(isinstance(i, int) and (i > 0 & i > sites) for i in index):
-        raise IndexError('\n\nParameter ind must be a list\
+    print(index)
+    if not all(isinstance(i, int) for i in index):
+        raise IndexError('\n\nParameter index must be a list\
+                                 of integers between 0 and sites - 1.\n')
+    if not all(-1 < i < sites for i in index):
+        raise IndexError('\n\nParameter index must be a list\
                                     of integers between 0 and sites - 1.\n')
 
 
@@ -236,7 +240,6 @@ class latticeTB(object):
             * **fig** -- Figure.
         '''
         self.test_coor()
-        print(colors)
         colors, figsize = test_plt_lattice(self.tags, ms, fs, colors, plt_index, figsize)
         fig, ax = plt.subplots(figsize=figsize)
         # plot sites
