@@ -4,26 +4,38 @@ import scipy.linalg as LA
 import numpy.random as rand
 import sys
 import numpy.core.defchararray as npc
-
+from math import sin, cos
 PI = np.pi
 
 
 def test_hop(hop):
+    '''
+    Check if hoppings.
+    '''
     if hop.size == 0:
         raise RuntimeError('\n\nRun method set_hop_uni() or set_hop() first\n')
 
 
 def test_ham(ham):
+    '''
+    Check if Hamiltonian.
+    '''
     if not ham.nnz:
         raise RuntimeError('\n\nRun method get_ham() first.\n')
 
 
 def test_en(en):
+    '''
+    Check if eigenenergies.
+    '''
     if en.size == 0:
         raise RuntimeError('\n\nRun method get_eig() or first\n')
 
 
 def test_vn(vn):
+    '''
+    Check if eigenvectors.
+    '''
     if vn.size == 0:
         raise RuntimeError('\n\nRun method get_eig(eigenvec=True)  first\n')
 
@@ -71,41 +83,67 @@ def test_set_hop_uni(dict_hop, n_max):
         if not isinstance(key, int):
             raise ValueError('\n\n*dict_hop* keys must be integers.\n')
         if not 0 < key <= n_max:
-            raise ValueError('\n\n*dict_hop* keys must be between 1 and\
-                                    nth max distance between sites".\n')
+            raise ValueError('\n\n*dict_hop* keys must be between 1 and nth max".\n')
         if not isinstance(val, (int, float, complex)):
             raise ValueError('\n\*dict_hop* values must be numbers".\n')
 
-def test_set_hop(dict_hop, n_max):
+def test_set_hop(list_hop, n_max):
     '''
     Check method *set_hop*.
 
-    :raises TypeError: Parameter *dict_hop* must be a dictionary.
-    :raises ValueError: *key* must be a natural integer (0 < key <= nth max).
-    :raises ValueError: *value* must be a dictionary.
-    :raises TypeError:  *dict_hop* values (*dic*) must be a dictionary.
-    :raises TypeError: *key* must be a real number.
-    :raises ValueError: *key* must be a positive number.
-    :raises ValueError: *value* must be a number.
+    :raises TypeError: Parameter *list_hop* must be a list.
+    :raises TypeError: Parameter *list_hop* must be a list of dictionary.
+    :raises TypeError: "n" must be a key.
+    :raises TypeError: "hop" must be a key.
+    :raises ValueError: "tag" must be a key.
+    :raises ValueError: "t" must be a key.
+
     '''
-    if not isinstance(dict_hop, dict):
-        raise TypeError('\n\nParameter *dict_hop* must be a dictionary\
-                                  with key "n" and value a dictionary.\n')
-    for key, dic in dict_hop.items():
-        if not isinstance(key, int):
-            raise ValueError('\n\nParameter *dict_hop* keys must be integers.\n')
-        if not 0 < key <= n_max:
-            raise ValueError('\n\n*dict_hop* key must be between 1 and\
-                                    nth max distance between sites".\n')
+    if not isinstance(list_hop, list):
+        raise TypeError('\n\nParameter *list_hop* must be a list.\n')
+    for dic in list_hop:
         if not isinstance(dic, dict):
-            raise TypeError('\n\n*dict_hop* values must be a dictionary.\n')                                 
-        for a, t in dic.items():
-            if not isinstance(a, (int, float)):
-                raise ValueError('\n\nAngles must be real numbers".\n')
-            if a < 0. or a > 180.:
-                raise ValueError('\n\nAngles must be between 0 and 180".\n')
-            if not isinstance(t, (int, float, complex)):
-                raise ValueError('\n\nHoppings must be numbers".\n')
+            raise TypeError('\n\nParameter *list_hop* must be a list of dictionary.\n')
+        if 'n' not in dic:
+                raise ValueError('\n\n"n" must be a key.\n')
+        if 'hop' not in dic:
+                raise ValueError('\n\n"hop" must be a key.\n')
+        if not 0 < dic['n'] <= n_max:
+            raise ValueError('\n\n"n" must be between 1 and\
+                                    nth max".\n')
+        for d in dic['hop']:
+            if 't' not in d:
+                raise ValueError('\n\n"n" must be a key.\n')
+            if 'tag' not in d:
+                raise ValueError('\n\n"t" must be a key.\n')
+
+
+def test_rename_hop_tag(hop, list_hop):
+    """
+    Check method *rename_hop_tag*.
+
+    :raises TypeError: *list_hop* must be a list.
+    :raises TypeError: *list_hop* must be a list of dictionaries.
+    :raises ValueError: "n" must be a key.
+    :raises ValueError: "ang" must be a key.
+    :raises ValueError: "tag" must be a key.
+    :raises ValueError: "new_tag" must be a key.
+    """
+    test_hop(hop)
+    if not isinstance(list_hop, list):
+        raise TypeError('\n\nnParameter *list_hop* must be a list.\n')   
+    for dic in list_hop:
+        if not isinstance(dic, dict):
+            raise TypeError('\n\nnParameter *list_hop* must be a list of dictionaries.\n')
+        if 'n' not in dic:
+            raise ValueError('\n\n"n" must be a key.\n')
+        if 'ang' not in dic:
+            raise ValueError('\n\n"ang" must be a key.\n')
+        if 'tag' not in dic:
+            raise ValueError('\n\n"tag" must be a key.\n')
+        if 'new_tag' not in dic:
+            raise ValueError('\n\n"new_tag" must be a key.\n')
+
 
 def test_set_hop_nearest(dict_hop):
     '''
@@ -234,6 +272,16 @@ def test_set_ons_disorder(on, alpha):
         raise ValueError('\n\nParameter *alpha* must be positive.\n')
 
 
+def test_get_coor_hop(hop):
+    '''
+    Check method *get_ham*.
+
+    :raises RunTimeError: 'Works only for nearest hoppings'.
+    '''
+    test_hop(hop)
+    if len(hop['n'] == 1) == 0:
+        raise RuntimeError('\n\nWorks only for nearest hoppings.\n')
+
 def test_get_ham(hop, complex_transpose):
     '''
     Check method *get_ham*.
@@ -262,7 +310,6 @@ def test_get_state_pola(vn, tag_pola, tags):
 
     :raises TypeError: Parameter *tag_pola* must be a binary string.
     :raises ValueError: Parameter *tag_pola* is not a tag.
-
     '''
     test_vn(vn)
     if not isinstance(tag_pola, bytes):
@@ -303,7 +350,8 @@ class eigTB():
         self.dist_uni = np.unique(self.vec_hop['d'])
         self.ang_uni = np.unique(self.vec_hop['a'])
         self.coor_hop = np.array([], dtype=[ ('x','f8'), ('y','f8'), ('tag','S1')])
-        self.hop = np.array([], dtype=[('i', 'u4'), ('j', 'u4'), ('t', 'c16'), ('ang', 'u2'), ('tag', 'S2')])#  Hoppings
+        self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                    ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')]) #  Hoppings
         self.ons = np.zeros(self.lat.sites, 'c16') #  Onsite energies
         self.ham = sparse.csr_matrix(([],([],[])), shape=(self.lat.sites, self.lat.sites))  # Hamiltonian
         self.en = np.array([], 'c16')  # Eigenenergies
@@ -331,7 +379,7 @@ class eigTB():
         '''
         Print the distances and the angles of all hoppings.
 
-        :param n: Positive integer. Print the first nth hoppings
+        :param n: Positive integer. Print the first nth hopping
           distances and associated positive angles.
         '''
         test_print_hop(n, len(self.dist_uni)-1)
@@ -353,7 +401,7 @@ class eigTB():
         self.on = on
         for o, t in zip(on, self.lat.tags):
             self.ons[self.lat.coor['tag'] == t] = o
-           
+
     def set_hop_uni(self, dict_hop):
         '''
         Set uniform lattice hoppings.
@@ -364,55 +412,64 @@ class eigTB():
         '''
         test_set_hop_uni(dict_hop, len(self.dist_uni)-1)
         for key, t in dict_hop.items(): 
-            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[key]-1e-6) &
-                                       (self.vec_hop['d'] < self.dist_uni[key]+ 1e-6))
-            hop = np.zeros(len(ind), dtype=[('i', 'u4'), ('j', 'u4'), ('t', 'c16'), ('ang', 'u2'), ('tag', 'S2')])
+            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[key]-1e-4) &
+                                       (self.vec_hop['d'] < self.dist_uni[key]+ 1e-4))
+            hop = np.zeros(len(ind), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                           ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
+            hop['n'] = key
             hop['i'] = ind[:, 0]
             hop['j'] = ind[:, 1]
             hop['t'] = t
+            hop['ang'] = self.vec_hop['a'][ind[:, 0], ind[:, 1]]
             hop['tag'] = npc.add(self.lat.coor['tag'][ind[:, 0]], self.lat.coor['tag'][ind[:, 1]])
             self.hop = np.concatenate([self.hop, hop])
 
-    def set_hop(self, dict_hop):
+    def set_hop(self, list_hop):
         '''
         Set non uniform lattice hoppings.
 
-        :param dict_hop: Dictionary with key a tuple:(n, 'ang'} nth hopping,
+        :param list_hop: List of dictionaries, Dictionary with key a tuple:(n, 'ang') nth hopping,
           associated positive angle, and hopping value {val}.
         '''
-        test_set_hop(dict_hop, len(self.dist_uni)-1)
-        
-        for key, dic in dict_hop.items():
-            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[key]-1e-6) &
-                                       (self.vec_hop['d'] < self.dist_uni[key]+1e-6))
-            ind_up = ind[ind[:, 1] > ind[:, 0]]      
-            dist_x = self.lat.coor['x'][ind_up[:, 1]]-self.lat.coor['x'][ind_up[:, 0]]
-            dist_y = self.lat.coor['y'][ind_up[:, 1]]-self.lat.coor['y'][ind_up[:, 0]]
-            ang_up = np.round(180 / PI * np.arctan2(dist_y, dist_x), 3)
-            for a, t in dic.items():
-                ind_tag = ind_up[ang_up == a]
-                hop = np.zeros(len(ind), dtype=[('i', 'u4'), ('j', 'u4'), ('t', 'c16'), ('ang', 'u2'), ('tag', 'S2')])
-                hop['i'] = ind_tag[:, 0]
-                hop['j'] = ind_tag[:, 1]
-                hop['ang'] = a
-                hop['t'] = t
-                hop['tag'] = npc.add(self.lat.coor['tag'][ind_tag[:, 0]], self.lat.coor['tag'][ind_tag[:, 1]])
-                self.hop = np.concatenate([self.hop, hop])
+        test_set_hop(list_hop, len(self.dist_uni) - 1)
+        for dic_n in list_hop:
+            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[dic_n['n']] - 1e-4) &
+                                       (self.vec_hop['d'] < self.dist_uni[dic_n['n']] + 1e-4))
+            ind_up = ind[ind[:, 1] > ind[:, 0]]
+            hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                               ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
+            hop['n'] = dic_n['n']
+            hop['i'] = ind_up[:, 0]
+            hop['j'] = ind_up[:, 1]
+            hop['ang'] = self.vec_hop['a'][ind_up[:, 0], ind_up[:, 1]]
+            hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
+            for dic_hop in  dic_n['hop']:
+                hop['t'][hop['tag'] == dic_hop['tag']] = dic_hop['t']
+            self.hop = np.concatenate([self.hop, hop])
+
+    def rename_hop_tag(self, list_hop):
+        test_rename_hop_tag(self.hop, list_hop)
+        for dic in list_hop:
+            self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == dic['ang']) &
+                                (self.hop['tag'] == dic['tag'])] = dic['new_tag']
 
     def set_hop_nearest(self, dict_hop):
         '''
-        Set non uniform lattice hoppings.
+        Set only nearest hoppings via hopping tags.
 
         :param dict_hop: Dictionary with key a tuple:(n, 'tag'} nth hopping,
           and hopping value {val}.
         '''
         test_set_hop_nearest(dict_hop)
-        ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-6) &
-                                   (self.vec_hop['d'] < self.dist_uni[1]+1e-6))
+        ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-4) &
+                                   (self.vec_hop['d'] < self.dist_uni[1]+1e-4))
         ind_up = ind[ind[:, 1] > ind[:, 0]]  
-        self.hop = np.zeros(len(ind_up), dtype=[('i', 'u4'), ('j', 'u4'), ('t', 'c16'), ('ang', 'u2'), ('tag', 'S2')])
+        self.hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                                  ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
+        self.hop['n'] = 1
         self.hop['i'] = ind_up[:, 0]
         self.hop['j'] = ind_up[:, 1]
+        self.hop['ang'] = self.vec_hop['a'][ind_up[:, 0], ind_up[:, 1]]
         self.hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
         for s, t in dict_hop.items():
             self.hop['t'][self.hop['tag'] == s] = t
@@ -476,33 +533,32 @@ class eigTB():
     def get_coor_hop(self):
         '''
         Get the site coordinates in hopping space 
-          considering just the nearest neighbors hoppings.
+          considering just the nearest  hoppings.
+
+        :param n: Unsigned int. Specific hopping.
         '''
+        test_get_coor_hop(self.hop)
         visited = np.zeros(self.lat.sites, 'u2')
-        self.coor_hop = np.zeros(self.lat.sites, dtype=[ ('x','f8'), ('y','f8'), ('tag','S1')])
-        #self.dist_uni[1]
-        tag_hop = np.unique(self.hop['tag'])
-        dict_hop_vec = {}
-        for tag in tag_hop:
-            hop_find = self.hop[self.hop['tag']==tag][0]
-            x = self.lat.coor['x'][hop_find['j']] - self.lat.coor['x'][hop_find['i']]
-            y = self.lat.coor['y'][hop_find['j']] - self.lat.coor['y'][hop_find['i']]
-            dict_hop_vec[tag] = (x, y)
-        i_visit = 0
+        self.coor_hop = np.zeros(self.lat.sites, dtype=[ ('x','f8'), ('y','f8'), ('tag', 'S1')])
+        self.coor_hop['tag'] = self.lat.coor['tag']
+        hop = self.hop[self.hop['n'] == 1]
+        i_visit = np.min(hop['i'])
         while True:
-            hs = self.hop[self.hop['i'] == i_visit]
+            hs = hop[hop['i'] == i_visit]
             for h in hs:
+                if visited[h['j']] == 2:
+                    continue
                 self.coor_hop['x'][h['j']] = self.coor_hop['x'][i_visit] + \
-                    h['t'].real*dict_hop_vec[h['tag'].item()][0]
+                    h['t'].real*cos(PI / 180 * h['ang'])
                 self.coor_hop['y'][h['j']] = self.coor_hop['y'][i_visit] + \
-                    h['t'].real*dict_hop_vec[h['tag'].item()][1]
+                    h['t'].real*sin(PI / 180 * h['ang'])
                 visited[h['j']] = 1
             visited[i_visit] = 2
             explored = np.argwhere(visited == 1)
             if not explored.any():
                 break
             i_visit = explored[0]
-
+            print(i_visit)
     def get_ham(self, complex_transpose=False):
         '''
         Get the Tight-Binding Hamiltonian.
@@ -578,21 +634,6 @@ class eigTB():
         print('{} states between {} and {}'.format(len(ind), e_min, e_max))
         intensity = np.sum(np.abs(self.vn[:, ind]) ** 2, axis=1)
         return intensity
-
-
-'''
-import matplotlib.pyplot as plt
-from latticeTB import latticeTB
-lat = latticeTB(ri=[[0, 0], [1, 0],  [0, 1]], tags=[b'a', b'b', b'c'], nor=2, ang=np.pi/2)       
-lat.get_lattice(nx=8, ny=8)
-#lat.plt_lattice()
-eig = eigTB(lat)
-eig.set_hop_nearest(dict_hop={b'ab':2, b'ba':1, b'ac':2, b'ca':1})
-eig.set_dimerization_def(dict_hop={b'ab':1, b'ba':2}, x_bottom_left=8, y_bottom_left=0)
-eig.set_dimerization_def(dict_hop={b'ac':1, b'ca':2}, x_bottom_left=0, y_bottom_left=8)
-eig.get_coor_hop()
-print(eig.coor_hop)
-'''
 
 
 

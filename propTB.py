@@ -3,7 +3,10 @@ import scipy.sparse as sparse
 import scipy.linalg as LA
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from JSAnimation import IPython_display
+try:
+    from JSAnimation import IPython_display
+except:
+    pass
 import os
 
 
@@ -58,15 +61,6 @@ class propTB():
         param= (H, nu)
         y = odeint(eq_motion, y0, t, args=param)
         self.prop = y[:, :sites].T +1j*y[:, sites:].T
-       # print(self.prop.shape)
-        #self.prop = y[:, :sites]+1j*y[:, sites:]
-        #fig = plt.figure()
-        #extent = (0, self.steps*self.dz, -self.lat.sites//2+0.5, self.lat.sites-self.lat.sites//2+0.5)
-        #plt.imshow(np.abs(self.prop), extent=extent)
-        #fig = plt.figure()
-        #plt.plot(np.abs(self.prop[-1, :]))
-        #plt.show()
-
 
     def get_prop(self, ham, psi_init, norm=True):
         '''

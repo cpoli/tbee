@@ -37,9 +37,10 @@ class TestEigTB(unittest.TestCase):
         self.assertRaises(ValueError, eig.set_hop_uni, {'a': 1})
         self.assertRaises(ValueError, eig.set_hop_uni, {1: 'a'})
         self.assertRaises(ValueError, eig.set_hop_uni, {100: 1})
-
+    '''
     def test_errors_set_hop(self):
-        # dict_hop not a dictionary with 0 <keys< n_max and values not dictionaries.
+        # dict_hop is a dictionary with 0 <keys< n_max and values {ang, val}
+        # with -180<ang<=180 and val a number.
         eig = init()
         self.assertRaises(TypeError, eig.set_hop, 0)
         self.assertRaises(ValueError, eig.set_hop, {'a': 1})
@@ -55,7 +56,7 @@ class TestEigTB(unittest.TestCase):
         self.assertRaises(TypeError, eig.set_hop_nearest, 0)
         self.assertRaises(ValueError, eig.set_hop_nearest, {'ab': 2, b'ba': 1, b'ac': 2, b'ca': 1})
         self.assertRaises(ValueError, eig.set_hop_nearest, {b'ab': 'a', b'ba': 1, b'ac': 2, b'ca': 1})
-
+    '''
     def test_set_dimerization_def(self):
         lat = latticeTB([[0, 0], [1, 0], [0, 1]], [b'a', b'b', b'c'], 2., np.pi/2)
         lat.get_lattice(nx=4, ny=4)
@@ -75,16 +76,12 @@ class TestEigTB(unittest.TestCase):
         self.assertRaises(TypeError, eig.set_hop_def, 0)
         self.assertRaises(TypeError, eig.set_hop_def,{(1, 0): 'a'})
         self.assertRaises(ValueError, eig.set_hop_def, {(0, 0): 1})
-        #self.assertRaises(ValueError, eig.set_hop_def, {(-1, 0): 1})
-        #self.assertRaises(ValueError, eig.set_hop_def,{(100, 0): 1})
-
 
     def test_errors_set_ons_def(self):
         eig = init()
         self.assertRaises(TypeError, eig.set_ons_def, 0)
         self.assertRaises(ValueError, eig.set_ons_def, {-1: 0})
         self.assertRaises(TypeError, eig.set_ons_def, {0: 'a'})
-
 
     def test_errors_set_hop_disorder(self):
         eig = init()

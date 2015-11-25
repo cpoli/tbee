@@ -168,22 +168,23 @@ class latticeTB(object):
 
         self.coor = np.array([], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
         self.nx, self.ny = nx, ny
-        x = self.nor * np.arange(nx)
-        y = np.sin(self.ang) * self.nor * np.arange(ny)
+        x = self.nor * np.arange(nx, dtype='f16')
+        y = np.sin(self.ang) * self.nor * np.arange(ny, dtype='f16')
         xx, yy = np.meshgrid(x, y)
-        if self.ang and self.ang != PI/2:
+        if self.ang == 0:
             xx += yy
-        elif self.ang:
+        else:
             xx += yy / np.tan(self.ang)
         xx = np.ravel(xx)
         yy = np.ravel(yy)
         coor_tag = np.zeros(len(xx), dtype=[('x', 'f16'), ('y',  'f16') , ('tag', 'S1')])
+        print(coor_tag)
         for i, t in enumerate(self.tags):
             coor_tag['x'] = xx + self.ri[i][0]
             coor_tag['y'] = yy + self.ri[i][1]
             coor_tag['tag'] = t
             self.coor = np.concatenate([self.coor, coor_tag])
-        self.coor = np.sort(self.coor, order=('y', 'x'))        
+        self.coor = np.sort(self.coor, order=('x', 'y'))        
         self.coor['x'] = self.coor['x'].round(6)
         self.coor['y'] = self.coor['y'].round(6)
         self.sites = len(self.coor['tag'])
@@ -225,6 +226,13 @@ class latticeTB(object):
             self.sites -= len(dang)
             if dang == []:
                 break
+
+    def coor_center(self):
+        '''
+            Fix the lattice center of mass at (0, 0).
+        '''
+        self.coor['x'] -= np.mean(self.coor['x'])
+        self.coor['y'] -= np.mean(self.coor['y'])
 
     def plt_lattice(self, ms=30, fs=20, colors=None, plt_index=False, figsize=None):
         '''

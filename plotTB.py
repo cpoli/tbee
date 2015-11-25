@@ -18,7 +18,6 @@ class plotTB:
         else:
             self.colors = colors
 
-
     def plt_lattice(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
         '''
         Plot lattice.
@@ -201,7 +200,13 @@ class plotTB:
         plt.draw()
         return fig
 
- 
+    def show(self):
+        """
+        Emulate Matplotlib method plt.show().
+        """
+        plt.show()
+
+
 class saveFigTB():
     '''
     Create folder and save figures / animations obtained via 
