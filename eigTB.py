@@ -318,21 +318,24 @@ def test_get_state_pola(vn, tag_pola, tags):
         raise ValueError('\n\nParameter *tag_pola* is not a tag.\n')
 
 
-def test_get_states_en(vn, e_min, e_max):
+def test_get_states_en(vn, en_lims):
     '''
     Check method *get_states_en*.
 
-    :raises TypeError: Parameter *e_min* must be a real number.
-    :raises TypeError: Parameter *e_max* must be a real number.
+    :raises TypeError: Parameter en_lims must be a list.
+    :raises TypeError: Parameter *en_lims[0]* must be a real number.
+    :raises TypeError: Parameter *en_lims[1]* must be a real number.
     :raises ValueError: *e_min* must be smaller than *e_max*.
     '''
     test_vn(vn)
-    if not isinstance(e_min, (int, float)):
-        raise TypeError('\n\nParameter *e_min* must be a real number.\n')
-    if not isinstance(e_max, (int, float)):
-        raise TypeError('\n\nParameter *e_max* must be a real number.\n')
-    if not e_min < e_max:
-        raise ValueError('\n\n*e_min* must be smaller than *e_max*.\n')
+    if not isinstance(en_lims, list):
+        raise TypeError('\n\nParameter en_lims must be a list.\n')
+    if not isinstance(en_lims[0], (int, float)):
+        raise TypeError('\n\nParameter *en_lims[0]* must be a real number.\n')
+    if not isinstance(en_lims[1], (int, float)):
+        raise TypeError('\n\nParameter *en_lims[1]* must be a real number.\n')
+    if not en_lims[0] < en_lims[1]:
+        raise ValueError('\n\n*en_lims[0]* must be smaller than *en_lims[1]*.\n')
 
 
 class eigTB():
@@ -349,7 +352,7 @@ class eigTB():
         self.vec_hop = self.get_hop()
         self.dist_uni = np.unique(self.vec_hop['d'])
         self.ang_uni = np.unique(self.vec_hop['a'])
-        self.coor_hop = np.array([], dtype=[ ('x','f8'), ('y','f8'), ('tag','S1')])
+        self.coor_hop = np.array([], dtype=[ ('x','f16'), ('y','f16'), ('tag','S1')])
         self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                     ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')]) #  Hoppings
         self.ons = np.zeros(self.lat.sites, 'c16') #  Onsite energies
@@ -370,7 +373,7 @@ class eigTB():
         dif_y = self.lat.coor['y'] - self.lat.coor['y'].reshape(self.lat.sites, 1)
         dist = np.sqrt(dif_x ** 2 + dif_y ** 2).round(3)
         ang = (180 / PI * np.arctan2(dif_y, dif_x)).round(3)
-        vec_hop = np.zeros(dist.shape, dtype=[('d', 'f8'),  ('a', 'f8')])
+        vec_hop = np.zeros(dist.shape, dtype=[('d', 'f16'),  ('a', 'f16')])
         vec_hop['d'] = dist
         vec_hop['a'] = ang
         return vec_hop
@@ -384,8 +387,17 @@ class eigTB():
         '''
         test_print_hop(n, len(self.dist_uni)-1)
         print('Distances between sites:')
-        for i, d in enumerate(self.dist_uni[1:n]):
-            print(i+1, d)
+        for i, d in enumerate(self.dist_uni[1:n+1]):
+            if i == 0:
+                hop_name = 'st'
+            elif i == 1:
+                hop_name = 'nd'
+            elif i == 2:
+                hop_name = 'rd'
+            else:
+                hop_name = 'th'
+                
+            print('{}{} hopping, length: {:.3f}'.format(i+1, hop_name, d))
             print('\twith positive angles:')
             positve_ang = self.vec_hop['a'][(self.vec_hop['d'] == d) &
                                                         (self.vec_hop['a'] >= 0.)]
@@ -402,24 +414,23 @@ class eigTB():
         for o, t in zip(on, self.lat.tags):
             self.ons[self.lat.coor['tag'] == t] = o
 
-    def set_hop_uni(self, dict_hop):
+    def set_hop_uni(self, list_hop):
         '''
         Set uniform lattice hoppings.
 
-        :param dict_hop: Dictionary with key {n} nth hopping
-        :param dict_hop: Dictionary with key {n} nth hopping
-          and value {val} of the hopping.
+        :param list_hop: Lisi of dictionaries.
+           Dictionary with keys 'n' and 't' nth hopping and hopping value.
         '''
-        test_set_hop_uni(dict_hop, len(self.dist_uni)-1)
-        for key, t in dict_hop.items(): 
-            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[key]-1e-4) &
-                                       (self.vec_hop['d'] < self.dist_uni[key]+ 1e-4))
+        #test_set_hop_uni(dict_hop, len(self.dist_uni)-1)
+        for dic in list_hop: 
+            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[dic['n']]-1e-4) &
+                                       (self.vec_hop['d'] < self.dist_uni[dic['n']]+ 1e-4))
             hop = np.zeros(len(ind), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                            ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
-            hop['n'] = key
+            hop['n'] = dic['n']
             hop['i'] = ind[:, 0]
             hop['j'] = ind[:, 1]
-            hop['t'] = t
+            hop['t'] = dic['t']
             hop['ang'] = self.vec_hop['a'][ind[:, 0], ind[:, 1]]
             hop['tag'] = npc.add(self.lat.coor['tag'][ind[:, 0]], self.lat.coor['tag'][ind[:, 1]])
             self.hop = np.concatenate([self.hop, hop])
@@ -448,10 +459,13 @@ class eigTB():
             self.hop = np.concatenate([self.hop, hop])
 
     def rename_hop_tag(self, list_hop):
-        test_rename_hop_tag(self.hop, list_hop)
         for dic in list_hop:
-            self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == dic['ang']) &
-                                (self.hop['tag'] == dic['tag'])] = dic['new_tag']
+            self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == dic['ang'])] = dic['tag_new']
+            self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == -180 + dic['ang'])] = dic['tag_new']
+
+    def set_hop_with_tag(self, list_hop):
+        for dic in list_hop:
+            self.hop['t'][self.hop['tag'] == dic['tag']] = dic['t']
 
     def set_hop_nearest(self, dict_hop):
         '''
@@ -539,9 +553,15 @@ class eigTB():
         '''
         test_get_coor_hop(self.hop)
         visited = np.zeros(self.lat.sites, 'u2')
-        self.coor_hop = np.zeros(self.lat.sites, dtype=[ ('x','f8'), ('y','f8'), ('tag', 'S1')])
+        self.coor_hop = np.zeros(self.lat.sites, dtype=[ ('x','f16'), ('y','f16'), ('tag', 'S1')])
         self.coor_hop['tag'] = self.lat.coor['tag']
         hop = self.hop[self.hop['n'] == 1]
+        hop_down = np.copy(hop)
+        hop_down['i'] = hop['j']
+        hop_down['j'] = hop['i']
+        hop_down['ang'] = -180 + hop['ang']
+        hop = np.concatenate([hop, hop_down])
+        #print(hop)
         i_visit = np.min(hop['i'])
         while True:
             hs = hop[hop['i'] == i_visit]
@@ -558,7 +578,7 @@ class eigTB():
             if not explored.any():
                 break
             i_visit = explored[0]
-            print(i_visit)
+
     def get_ham(self, complex_transpose=False):
         '''
         Get the Tight-Binding Hamiltonian.
@@ -616,22 +636,20 @@ class eigTB():
         print('State with polarization:', self.pola[ind, i_tag])
         return self.intensity[:, ind]
 
-    def get_states_en(self, e_min, e_max):
+    def get_states_en(self, en_lims):
         '''
         Get, if any, the intensity of the sum of the states 
-        between *e_min* and *e_max*.
+        between *en_lims[0]* and *en_lims[1]*.
 
-        :param e_min: Energy min.
-        :param e_min: Energy min.
-        :param e_max: Energy max.
+        :param en_lims: List, en_lims[0] energy min, en_lims[1] energy max.
 
         :returns:
             * **intensity** -- Sum of the intensities between *e_min* and *e_max*.
         '''
-        test_get_states_en(self.vn, e_min, e_max)
-        ind = np.where((self.en > e_min) & (self.en < e_max))
+        test_get_states_en(self.vn, en_lims)
+        ind = np.where((self.en > en_lims[0]) & (self.en < en_lims[1]))
         ind = np.ravel(ind)
-        print('{} states between {} and {}'.format(len(ind), e_min, e_max))
+        print('{} states between {} and {}'.format(len(ind), en_lims[0], en_lims[1]))
         intensity = np.sum(np.abs(self.vn[:, ind]) ** 2, axis=1)
         return intensity
 

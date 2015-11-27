@@ -18,11 +18,34 @@ class plotTB:
         else:
             self.colors = colors
 
+    def plt_lattice_generic(self, fig, ax, coor, ms, lw, fs, c, plt_hop, plt_index, figsize):
+        '''
+        Private method.
+        '''
+        # sites
+        for c, t in zip(self.colors, self.sys.lat.tags):
+            plt.plot(coor['x'][coor['tag'] == t],
+                       coor['y'][coor['tag'] == t],
+                       'o', color=c, ms=ms, markeredgecolor='none')
+        ax.axis('off')
+        ax.set_aspect('equal')
+        ax.set_xlim([np.min(coor['x'])-0.5, np.max(coor['x'])+0.5])
+        ax.set_ylim([np.min(coor['y'])-0.5, np.max(coor['y'])+0.5])
+        # indices
+        if plt_index:
+            indices = ['{}'.format(i) for i in range(self.sys.lat.sites)]
+            for l, x, y in zip(indices, coor['x'], coor['y']):
+                plt.annotate(l, xy=(x, y), xytext=(0, 0),
+                            textcoords='offset points', ha='right',
+                            va='bottom', size=fs)
+        plt.draw()
+        return fig
+
     def plt_lattice(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
         '''
         Plot lattice.
 
-        :param hop: Default value []. Hoppings given by the class **eigTB**. 
+        :param plt_hop: Default value None. Hoppings given by the class **eigTB**. 
             If not empty, plot the hoppings.
         :param ms: Default value 30. Markersize. 
         :param c: Default value 3. Coefficient. Bond linewidths given by c*hop.
@@ -37,29 +60,36 @@ class plotTB:
         # bonds
         if plt_hop:
             for i in range(len(self.sys.hop)):
-                plt.plot([self.sys.lat.coor['x'][self.sys.hop['i'][i]], self.sys.lat.coor['x'][self.sys.hop['j'][i]]],
-                            [self.sys.lat.coor['y'][self.sys.hop['i'][i]], self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
-                            'k', lw=c*self.sys.hop['t'][i].real)
-        # sites
-        for c, t in zip(self.colors, self.sys.lat.tags):
-            plt.plot(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
-                    self.sys.lat.coor['y'][self.sys.lat.coor['tag'] == t],
-                    'o', color=c, ms=ms, markeredgecolor='none')
-        ax.axis('off')
-        ax.set_aspect('equal')
-        ax.set_xlim([np.min(self.sys.lat.coor['x'])-0.5, np.max(self.sys.lat.coor['x'])+0.5])
-        ax.set_ylim([np.min(self.sys.lat.coor['y'])-0.5, np.max(self.sys.lat.coor['y'])+0.5])
-        # indices
-        if plt_index:
-            indices = ['{}'.format(i) for i in range(self.sys.lat.sites)]
-            for l, x, y in zip(indices, self.sys.lat.coor['x'], self.sys.lat.coor['y']):
-                plt.annotate(l, xy=(x, y), xytext=(0, 0),
-                            textcoords='offset points', ha='right',
-                            va='bottom', size=fs)
-        plt.draw()
-        return fig
+                plt.plot([coor['x'][self.sys.hop['i'][i]], coor['x'][self.sys.hop['j'][i]]],
+                            [coor['y'][self.sys.hop['i'][i]], coor['y'][self.sys.hop['j'][i]]],
+                            'k', lw=c*self.sys.hop['t'][i].real)        
+        return self.plt_lattice_generic(fig, ax, self.sys.lat.coor, ms, lw, fs, c, plt_hop, plt_index, figsize)
 
-    def plt_spec(self, en_lims=[], tag_pola='', ms=10, fs=20):
+    def plt_lattice_hop(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
+        '''
+        Plot lattice.
+
+        :param plt_hop: Default value None. Hoppings given by the class **eigTB**. 
+            If not empty, plot the hoppings.
+        :param ms: Default value 30. Markersize. 
+        :param c: Default value 3. Coefficient. Bond linewidths given by c*hop.
+        :param fs: Default value 20. Fontsize.
+        :param plt_index: Default value False. Plot site labels.
+        :param figsize: Default value None. Figsize. 
+
+        :returns:
+            * **fig** -- Figure.
+        '''
+        fig, ax = plt.subplots(figsize=figsize)
+        # bonds
+        if plt_hop:
+            for i in range(len(self.sys.hop)):
+                plt.plot([self.sys.coor_hop['x'][self.sys.hop['i'][i]], self.sys.coor_hop['x'][self.sys.hop['j'][i]]],
+                           [self.sys.coor_hop['y'][self.sys.hop['i'][i]], self.sys.coor_hop['y'][self.sys.hop['j'][i]]],
+                           'k', lw=lw)
+        return self.plt_lattice_generic(fig, ax, self.sys.coor_hop, ms, lw, fs, c, plt_hop, plt_index, figsize) 
+
+    def plt_spec(self, en_lims=None, tag_pola='', ms=10, fs=20):
         '''
         Plot spectrum (eigenenergies real part (blue circles), 
         and sublattice polarization if *pola* not empty (red circles).
@@ -75,13 +105,13 @@ class plotTB:
         '''
         fig, ax1 = plt.subplots()
         x = np.arange(-self.sys.lat.sites // 2, self.sys.lat.sites-self.sys.lat.sites // 2) + 1
-        if en_lims == []:
+        if en_lims == None:
             en_max = np.max(self.sys.en.real)
             ax1.set_ylim([-en_max-0.2, en_max+0.2])
             ind = np.ones(self.sys.lat.sites, bool)
         else:
             ind = (self.sys.en > en_lims[0]) & (self.sys.en < en_lims[1])
-            ax1.set_ylim([en_lims[0]-0.1, en_lims[1]+0.1]) 
+            ax1.set_ylim([en_lims[0]-0.1, en_lims[1]+0.1])
         ax1.plot(x[ind], self.sys.en.real[ind], 'ob', markersize=ms)
         ax1.set_title('Spectrum', fontsize=fs)
         ax1.set_xlabel('$n$', fontsize=fs)
@@ -101,11 +131,32 @@ class plotTB:
                 ax2.set_xlim([x[0]-0.5, x[-1]+0.5])
             for label in ax2.get_yticklabels():
                 label.set_color('r')
-        plt.xlim([x[0]-.1, x[-1]+0.1])
         xa = ax1.get_xaxis()
+        ax1.set_xlim([x[ind][0]-0.1, x[ind][-1]+0.1]) 
         xa.set_major_locator(plt.MaxNLocator(integer=True))
         plt.draw()
         return fig
+
+
+    def plt_spec_hist(self, nbr_bins=61, en_lims=[-1.5, 1.5]):
+        """
+        Plot the spectrum.
+            
+        :param nbr_bins: Default value 101. Number of bins of the histogram.
+        :param ener_lim:  Default value [-1.5, 1.5]. list of the energy min and max.
+        :param ms: Default value 10. Size of the markers.
+        :param save: Default value False. Save the two figures.
+        """
+        ind_en = np.argwhere((self.sys.en > en_lims[0]) & (self.sys.en < en_lims[1]))
+        ind_en = np.ravel(ind_en)
+        en = self.sys.en[ind_en]
+        fig, ax = plt.subplots()
+        fig.canvas.set_window_title('Spectrum')
+        n, bins, patches = plt.hist(en, bins=nbr_bins, color='#00008B')
+        ax.set_xlabel('$E$', fontsize=20)
+        ax.set_ylabel('number of states', fontsize=20)
+        ax.set_ylim([0, np.max(n)])
+        ax.set_xlim(en_lims)
 
     def plt_intensity1d(self, intensity, ms=20, lw=2, fs=20, title='Intensity'):
         '''
@@ -130,7 +181,7 @@ class plotTB:
         plt.draw()
         return fig
 
-    def plt_intensity(self, intensity, s=200, fs=20, title='$|\psi_{ij}|^2$', lims=[]):
+    def plt_intensity(self, intensity, s=200, fs=20, title='', lims=[]):
         '''
         Plot the intensity. Colormap with identical disk shape.
 
@@ -163,8 +214,7 @@ class plotTB:
         plt.draw()
         return fig
 
-    def plt_intensity_disk(self, intensity, hop=[], s=1000., lw=1, fs=20, 
-                                       title='$|\psi_{ij}|^2$'):
+    def plt_intensity_disk(self, intensity, plt_hop=None, s=1000., lw=1, fs=20, title=''):
         '''
         Plot the intensity. Intensity propotional to disk shape.
 
@@ -182,12 +232,11 @@ class plotTB:
         ax.set_xlabel('$i$', fontsize=fs)
         ax.set_ylabel('$j$', fontsize=fs)
         ax.set_title(title, fontsize=fs)
-        if hop != []:
-            for i in range(len(hop)): 
+        if plt_hop:
+            for i in range(len(self.sys.hop)):
                 plt.plot([self.sys.lat.coor['x'][self.sys.hop['i'][i]], self.sys.lat.coor['x'][self.sys.hop['j'][i]]],
-                            [self.sys.lat.coor['y'][self.sys.hop['i'][i]], self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
-                            self.colors[0], lw=lw, c='k')
-
+                           [self.sys.lat.coor['y'][self.sys.hop['i'][i]], self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
+                            'k', lw=lw)
         for t, c in zip(self.sys.lat.tags, self.colors):
             plt.scatter(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
                         self.sys.lat.coor['y'][self.sys.lat.coor['tag'] == t],
@@ -195,8 +244,36 @@ class plotTB:
                         c=c, alpha=0.5)
         ax.set_aspect('equal')
         ax.axis('off')
-        ax.set_ylim([np.min(self.sys.lat.coor['y'])-1., np.max(self.sys.lat.coor['y'])+1.])
-        ax.set_xlim([np.min(self.sys.lat.coor['x'])-1., np.max(self.sys.lat.coor['x'])+1.])
+        x_lim = [np.min(self.sys.lat.coor['x'])-2., np.max(self.sys.lat.coor['x'])+2.]
+        y_lim = [np.min(self.sys.lat.coor['y'])-2., np.max(self.sys.lat.coor['y'])+2.]
+        ax.set_xlim(x_lim)
+        ax.set_ylim(y_lim)
+        plt.draw()
+        return fig
+
+    def plt_butterfly(self, en_lims=[-2., 2.], fs=20):
+        '''
+        Plot energies depending on strain.
+        '''
+        i_beta_min = np.argmin(np.abs(self.sys.betas))
+        ind_en = np.argwhere((self.sys.butterfly[i_beta_min, :] > en_lims[0]) & 
+                                        (self.sys.butterfly[i_beta_min, :] < en_lims[1]))
+        ind_en = np.ravel(ind_en)
+        fig, ax = plt.subplots()
+        plt.title('Energies depending on strain', fontsize=fs)
+        plt.xlabel(r'$\beta/\beta_{max}$', fontsize=fs)
+        plt.ylabel('$E$', fontsize=fs)
+        plt.yticks(np.arange(en_lims[0], en_lims[1]+1e-2), fontsize=fs)
+        beta_max = max(self.sys.betas)
+        plt.xticks((-beta_max, -0.5*beta_max, 0, 0.5*beta_max, beta_max), 
+                        fontsize=fs)
+        ax.set_xticklabels(('-1', '-1/2', '0', '1/2', '1'))
+        plt.xlim([self.sys.betas[0], self.sys.betas[-1]])
+        plt.ylim(en_lims)
+        no_en = len(ind_en)
+        for i in ind_en:
+            plt.plot(self.sys.betas, self.sys.butterfly[:, i], 'b')
+        fig.set_tight_layout(True)
         plt.draw()
         return fig
 

@@ -69,7 +69,6 @@ def test_remove_sites(index, sites):
     '''
     if not isinstance(index, list):
         raise TypeError('\n\nParameter index must be a list.\n')
-    print(index)
     if not all(isinstance(i, int) for i in index):
         raise IndexError('\n\nParameter index must be a list\
                                  of integers between 0 and sites - 1.\n')
@@ -178,7 +177,6 @@ class latticeTB(object):
         xx = np.ravel(xx)
         yy = np.ravel(yy)
         coor_tag = np.zeros(len(xx), dtype=[('x', 'f16'), ('y',  'f16') , ('tag', 'S1')])
-        print(coor_tag)
         for i, t in enumerate(self.tags):
             coor_tag['x'] = xx + self.ri[i][0]
             coor_tag['y'] = yy + self.ri[i][1]

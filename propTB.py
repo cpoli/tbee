@@ -12,7 +12,7 @@ import os
 
 class propTB():
     '''
-    Get lattice time evolution. Time dependent Schrödinger equation solved by
+    Get lattice time evolution. Time dependent Schrodinger equation solved by
     Crank-Nicolson method.
     '''
     def __init__(self, lat, steps, dz):
@@ -146,7 +146,6 @@ class propTB():
         im = plt.imshow(color, cmap=plt.cm.hot, aspect=aspect,
                                   interpolation=interpolation, extent=extent,
                                   vmin=vmin, vmax=vmax)
-        
         cbar = plt.colorbar(im, ticks=[vmin, vmax])
         cbar.ax.set_yticklabels(['0', 'max'], fontsize=fs)
         ya = ax.get_yaxis()
