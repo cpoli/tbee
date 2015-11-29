@@ -126,8 +126,7 @@ def test_rename_hop_tag(hop, list_hop):
     :raises TypeError: *list_hop* must be a list of dictionaries.
     :raises ValueError: "n" must be a key.
     :raises ValueError: "ang" must be a key.
-    :raises ValueError: "tag" must be a key.
-    :raises ValueError: "new_tag" must be a key.
+    :raises ValueError: "tag_new" must be a key.
     """
     test_hop(hop)
     if not isinstance(list_hop, list):
@@ -139,10 +138,8 @@ def test_rename_hop_tag(hop, list_hop):
             raise ValueError('\n\n"n" must be a key.\n')
         if 'ang' not in dic:
             raise ValueError('\n\n"ang" must be a key.\n')
-        if 'tag' not in dic:
-            raise ValueError('\n\n"tag" must be a key.\n')
-        if 'new_tag' not in dic:
-            raise ValueError('\n\n"new_tag" must be a key.\n')
+        if 'tag_new' not in dic:
+            raise ValueError('\n\n"tag_new" must be a key.\n')
 
 
 def test_set_hop_nearest(dict_hop):
@@ -168,9 +165,9 @@ def test_set_hop_nearest(dict_hop):
         if not isinstance(val, (int, float)):
             raise ValueError('\n\nval must be numbers".\n')
 
-def test_set_dimerization_def(hop, dict_hop, x_bottom_left, y_bottom_left):
+def test_set_defect_dimer(hop, dict_hop, x_bottom_left, y_bottom_left):
     '''
-    Check method *set_dimerization_def*.
+    Check method *set_defect_dimer*.
 
     :raises TypeError: Parameter *alpha* must be a number.
     :raises ValueError: Parameter *alpha* must be a positive number.
@@ -403,16 +400,15 @@ class eigTB():
                                                         (self.vec_hop['a'] >= 0.)]
             print('\t', np.unique(positve_ang))
 
-    def set_ons(self, on):
+    def set_ons(self, list_on):
         '''
         Set onsite energies.
 
         :param on:  Array. Sublattice onsite energies.
         '''
-        test_set_ons(on)
-        self.on = on
-        for o, t in zip(on, self.lat.tags):
-            self.ons[self.lat.coor['tag'] == t] = o
+        #test_set_ons(on)
+        for dic in list_on:
+            self.ons[self.lat.coor['tag'] == dic['tag']] = dic['o']
 
     def set_hop_uni(self, list_hop):
         '''
@@ -442,7 +438,7 @@ class eigTB():
         :param list_hop: List of dictionaries, Dictionary with key a tuple:(n, 'ang') nth hopping,
           associated positive angle, and hopping value {val}.
         '''
-        test_set_hop(list_hop, len(self.dist_uni) - 1)
+        #test_set_hop(list_hop, len(self.dist_uni) - 1)
         for dic_n in list_hop:
             ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[dic_n['n']] - 1e-4) &
                                        (self.vec_hop['d'] < self.dist_uni[dic_n['n']] + 1e-4))
@@ -459,9 +455,9 @@ class eigTB():
             self.hop = np.concatenate([self.hop, hop])
 
     def rename_hop_tag(self, list_hop):
+        test_rename_hop_tag(self.hop, list_hop)
         for dic in list_hop:
             self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == dic['ang'])] = dic['tag_new']
-            self.hop['tag'][(self.hop['n'] == dic['n']) & (self.hop['ang'] == -180 + dic['ang'])] = dic['tag_new']
 
     def set_hop_with_tag(self, list_hop):
         for dic in list_hop:
@@ -488,7 +484,7 @@ class eigTB():
         for s, t in dict_hop.items():
             self.hop['t'][self.hop['tag'] == s] = t
 
-    def set_ons_def(self, dict_ons_def):
+    def set_defect_ons(self, dict_ons_def):
         '''
         Set specific onsite energies.
 
@@ -498,33 +494,33 @@ class eigTB():
         for i, o in dict_ons_def.items():
             self.ons[i] = o
 
-    def set_hop_def(self,dict_hop_def):
+    def set_defect_hop(self,dict_hop_def):
         '''
         Set specific hoppings. 
 
         :param dict_hop_def:  Dictionary. key: hopping indices, val: hopping values. 
         '''
-        test_set_hop_def(self.hop, dict_hop_def, self.lat.sites)
+        #test_set_defect_hop(self.hop, dict_hop_def, self.lat.sites)
         for key, val in dict_hop_def.items():
             cond = (self.hop['i'] == key[0]) & (self.hop['j'] == key[1])
             self.hop['t'][cond] = val
             cond = (self.hop['j'] == key[0]) & (self.hop['i'] == key[1])
             self.hop['t'][cond] = val
 
-    def set_dimerization_def(self, dict_hop, x_bottom_left, y_bottom_left):
+    def set_defect_dimer(self, list_hop, x_bottom_left, y_bottom_left):
         '''
         Set a dimerization defect.
 
         :param dict_hop: Dictionary with key a tuple:(n, 'ang'} nth hopping,
           associated positive angle, and hopping value {val}.
         '''
-        test_set_dimerization_def(self.hop, dict_hop, x_bottom_left, y_bottom_left)
-        for key, val in dict_hop.items():
+        #test_set_defect_dim(self.hop, dict_hop, x_bottom_left, y_bottom_left)
+        for dic in list_hop:
             ind = (self.lat.coor['x'][self.hop['i']] >= x_bottom_left) & \
                     (self.lat.coor['y'][self.hop['i']] >= y_bottom_left)
-            self.hop['t'][ind & (self.hop['tag'] == key)] = val
+            self.hop['t'][ind & (self.hop['tag'] == dic['tag'])] = dic['t']
 
-    def  set_hop_disorder(self, alpha):
+    def  set_disorder_hop(self, alpha):
         '''
         Set a uniform hopping disorder. 
 
@@ -534,7 +530,7 @@ class eigTB():
         self.hop['t'] *= 1. + alpha * rand.uniform(-0.5, 0.5, len(self.hop))
         self.alpha = alpha
 
-    def set_ons_disorder(self, alpha):
+    def set_disorder_ons(self, alpha):
         '''
         Set a uniform onsite disorder. 
 
@@ -553,6 +549,7 @@ class eigTB():
         '''
         test_get_coor_hop(self.hop)
         visited = np.zeros(self.lat.sites, 'u2')
+        self.lat.coor = np.sort(self.lat.coor, order=('x', 'y'))  
         self.coor_hop = np.zeros(self.lat.sites, dtype=[ ('x','f16'), ('y','f16'), ('tag', 'S1')])
         self.coor_hop['tag'] = self.lat.coor['tag']
         hop = self.hop[self.hop['n'] == 1]

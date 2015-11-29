@@ -1,6 +1,3 @@
-"""
-DOUBLE CHECK DANGLING
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -48,6 +45,24 @@ def test_nor(nor):
     '''
     if not isinstance(nor, (int, float)) or nor < 0:
         raise TypeError('\n\nParameter nor is not a positive number.\n')
+
+def test_get_lattice(nx, ny):
+    '''
+    Check method *lattice*.
+
+    :raises TypeError: Parameter nx must be an integer.
+    :raises TypeError: Parameter ny must be an integer.
+    :raises ValueError: Parameter nx must be a positive integer.
+    :raises ValueError: Parameter ny must be a positive integer.
+    '''
+    if not isinstance(nx, int):
+        raise TypeError('\n\nParameter nx must be an integer.\n')
+    if not isinstance(ny, int):
+        raise TypeError('\n\nParameter ny must be an integer.\n')
+    if nx < 1:
+        raise ValueError('\n\nParameter nx must be a positive integer.\n')
+    if ny < 1:
+        raise ValueError('\n\nParameter ny must be a positive integer.\n')
 
 
 def test_ang(ang):
@@ -138,7 +153,7 @@ class latticeTB(object):
         test_nor(nor)
         self.tags = np.array(tags)  # name of the tags
         self.ri = np.array(ri)  # positions of the sites within the unit cell
-        self.nx, self.ny = 0, 0  # no of unit cells along x and y
+        self.nx, self.ny = 0, 0  # number of unit cells along x and y
         self.ri = ri  # initial positions of the sites
         self.nor = nor  # primitive vectors norm
         self.ang = ang  # angle between primitive vectors
@@ -160,20 +175,16 @@ class latticeTB(object):
         :param nx: Number of unit cells along :math:`x`.
         :param ny: Number of unit cells along :math:`y`.
         '''
-        if not isinstance(nx, int) or nx < 0:
-            raise ValueError('\n\nParameter nx is not a positive integer.\n')
-        if not isinstance(ny, int) or ny < 0:
-            raise ValueError('\n\nParameter ny is not a positive integer.\n')
-
+        test_get_lattice(nx, ny)
         self.coor = np.array([], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
         self.nx, self.ny = nx, ny
         x = self.nor * np.arange(nx, dtype='f16')
-        y = np.sin(self.ang) * self.nor * np.arange(ny, dtype='f16')
+        y = np.sin(PI / 180. * self.ang) * self.nor * np.arange(ny, dtype='f16')
         xx, yy = np.meshgrid(x, y)
         if self.ang == 0:
             xx += yy
         else:
-            xx += yy / np.tan(self.ang)
+            xx += yy / np.tan(PI / 180. * self.ang)
         xx = np.ravel(xx)
         yy = np.ravel(yy)
         coor_tag = np.zeros(len(xx), dtype=[('x', 'f16'), ('y',  'f16') , ('tag', 'S1')])
@@ -182,7 +193,7 @@ class latticeTB(object):
             coor_tag['y'] = yy + self.ri[i][1]
             coor_tag['tag'] = t
             self.coor = np.concatenate([self.coor, coor_tag])
-        self.coor = np.sort(self.coor, order=('x', 'y'))        
+        self.coor = np.sort(self.coor, order=('y', 'x'))        
         self.coor['x'] = self.coor['x'].round(6)
         self.coor['y'] = self.coor['y'].round(6)
         self.sites = len(self.coor['tag'])
@@ -215,7 +226,7 @@ class latticeTB(object):
             dif_x = self.coor['x'] - self.coor['x'].reshape(self.sites, 1)
             dif_y = self.coor['y'] - self.coor['y'].reshape(self.sites, 1)
             dis = np.sqrt(dif_x ** 2 + dif_y ** 2)
-            ind = np.argwhere((dis > nor_bond-1e-9) & (dis < nor_bond+1e-9))
+            ind = np.argwhere((dis > nor_bond-1e-4) & (dis < nor_bond+1e-4))
             dang = []
             for i in range(self.sites):
                 if (ind[:, 0] == i).sum() == 1:
@@ -232,7 +243,7 @@ class latticeTB(object):
         self.coor['x'] -= np.mean(self.coor['x'])
         self.coor['y'] -= np.mean(self.coor['y'])
 
-    def plt_lattice(self, ms=30, fs=20, colors=None, plt_index=False, figsize=None):
+    def plt_lattice(self, ms=20, fs=20, colors=None, plt_index=False, figsize=None):
         '''
         Plot lattice.
 

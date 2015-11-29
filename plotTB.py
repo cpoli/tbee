@@ -18,11 +18,12 @@ class plotTB:
         else:
             self.colors = colors
 
-    def plt_lattice_generic(self, fig, ax, coor, ms, lw, fs, c, plt_hop, plt_index, figsize):
+    def lattice_generic(self, fig, ax, coor, ms, lw, fs, c, plt_hop, plt_index, figsize):
         '''
         Private method.
         '''
         # sites
+        self.colors = ['#3D4B8A', '#932933', '#932933']
         for c, t in zip(self.colors, self.sys.lat.tags):
             plt.plot(coor['x'][coor['tag'] == t],
                        coor['y'][coor['tag'] == t],
@@ -41,13 +42,13 @@ class plotTB:
         plt.draw()
         return fig
 
-    def plt_lattice(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
+    def lattice(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
         '''
         Plot lattice.
 
         :param plt_hop: Default value None. Hoppings given by the class **eigTB**. 
             If not empty, plot the hoppings.
-        :param ms: Default value 30. Markersize. 
+        :param ms: Default value 20. Markersize. 
         :param c: Default value 3. Coefficient. Bond linewidths given by c*hop.
         :param fs: Default value 20. Fontsize.
         :param plt_index: Default value False. Plot site labels.
@@ -62,16 +63,16 @@ class plotTB:
             for i in range(len(self.sys.hop)):
                 plt.plot([coor['x'][self.sys.hop['i'][i]], coor['x'][self.sys.hop['j'][i]]],
                             [coor['y'][self.sys.hop['i'][i]], coor['y'][self.sys.hop['j'][i]]],
-                            'k', lw=c*self.sys.hop['t'][i].real)        
-        return self.plt_lattice_generic(fig, ax, self.sys.lat.coor, ms, lw, fs, c, plt_hop, plt_index, figsize)
+                            'k', lw=c*self.sys.hop['t'][i].real) 
+        return self.lattice_generic(fig, ax, self.sys.lat.coor, ms, lw, fs, c, plt_hop, plt_index, figsize)
 
-    def plt_lattice_hop(self, ms=30, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
+    def lattice_hop(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
         '''
         Plot lattice.
 
         :param plt_hop: Default value None. Hoppings given by the class **eigTB**. 
             If not empty, plot the hoppings.
-        :param ms: Default value 30. Markersize. 
+        :param ms: Default value 20. Markersize. 
         :param c: Default value 3. Coefficient. Bond linewidths given by c*hop.
         :param fs: Default value 20. Fontsize.
         :param plt_index: Default value False. Plot site labels.
@@ -87,9 +88,9 @@ class plotTB:
                 plt.plot([self.sys.coor_hop['x'][self.sys.hop['i'][i]], self.sys.coor_hop['x'][self.sys.hop['j'][i]]],
                            [self.sys.coor_hop['y'][self.sys.hop['i'][i]], self.sys.coor_hop['y'][self.sys.hop['j'][i]]],
                            'k', lw=lw)
-        return self.plt_lattice_generic(fig, ax, self.sys.coor_hop, ms, lw, fs, c, plt_hop, plt_index, figsize) 
+        return self.lattice_generic(fig, ax, self.sys.coor_hop, ms, lw, fs, c, plt_hop, plt_index, figsize) 
 
-    def plt_spec(self, en_lims=None, tag_pola='', ms=10, fs=20):
+    def spectrum(self, en_lims=None, tag_pola=b'', ms=10, fs=20):
         '''
         Plot spectrum (eigenenergies real part (blue circles), 
         and sublattice polarization if *pola* not empty (red circles).
@@ -104,6 +105,7 @@ class plotTB:
             * **fig** -- Figure.
         '''
         fig, ax1 = plt.subplots()
+        ax1 = plt.gca()
         x = np.arange(-self.sys.lat.sites // 2, self.sys.lat.sites-self.sys.lat.sites // 2) + 1
         if en_lims == None:
             en_max = np.max(self.sys.en.real)
@@ -120,25 +122,34 @@ class plotTB:
             label.set_color('b')
         if tag_pola:
             i_tag = np.argwhere(self.sys.lat.tags == tag_pola)
-            ax2 = ax1.twinx()
+            ax2 = plt.twinx()
             ax2.plot(x[ind], np.ravel(self.sys.pola[ind, i_tag]), 'or', markersize=(4*ms)//5)
             str_tag = tag_pola.decode('ascii')
             ylabel = '$<' + str_tag.upper() + '|' + str_tag.upper() + '>$' 
+            ylabel = r'$\langle B|B\rangle$' 
             ax2.set_ylabel(ylabel, fontsize=fs, color='red')
             ax2.set_ylim([-0.1, 1.1])
             ax2.set_yticks([0, 0.5, 1])
+            for tick in ax2.xaxis.get_major_ticks():
+                tick.label.set_fontsize(18) 
             if en_lims == []:
                 ax2.set_xlim([x[0]-0.5, x[-1]+0.5])
             for label in ax2.get_yticklabels():
                 label.set_color('r')
+        for label in ax1.xaxis.get_majorticklabels():
+            label.set_fontsize(18) 
+        for label in ax1.yaxis.get_majorticklabels():
+            label.set_fontsize(18)
+        for label in ax2.yaxis.get_majorticklabels():
+            label.set_fontsize(18)
         xa = ax1.get_xaxis()
         ax1.set_xlim([x[ind][0]-0.1, x[ind][-1]+0.1]) 
         xa.set_major_locator(plt.MaxNLocator(integer=True))
+        fig.set_tight_layout(True)
         plt.draw()
         return fig
 
-
-    def plt_spec_hist(self, nbr_bins=61, en_lims=[-1.5, 1.5]):
+    def spectrum_hist(self, nbr_bins=61, en_lims=[-1.5, 1.5]):
         """
         Plot the spectrum.
             
@@ -158,7 +169,7 @@ class plotTB:
         ax.set_ylim([0, np.max(n)])
         ax.set_xlim(en_lims)
 
-    def plt_intensity1d(self, intensity, ms=20, lw=2, fs=20, title='Intensity'):
+    def intensity1d(self, intensity, ms=20, lw=2, fs=20, title='Intensity'):
         '''
         Plot intensity.
 
@@ -178,10 +189,11 @@ class plotTB:
                         '-o', color=c, ms=ms, lw=lw)
         plt.xlim([-1., self.sys.lat.sites])
         plt.ylim([0., np.max(intensity)+.02])
+        fig.set_tight_layout(True)
         plt.draw()
         return fig
 
-    def plt_intensity(self, intensity, s=200, fs=20, title='', lims=[]):
+    def intensity(self, intensity, s=200, fs=20, title=r'$|\psi|^2$', lims=[]):
         '''
         Plot the intensity. Colormap with identical disk shape.
 
@@ -195,7 +207,7 @@ class plotTB:
             * **fig** -- Figure.
         '''
         fig, ax = plt.subplots()
-        plt.title(title, fontsize=fs)
+        plt.title(title, fontsize=fs+5)
         map_red = plt.get_cmap('Reds')
         if lims == []:
             lims = [0., np.max(intensity)]
@@ -210,11 +222,13 @@ class plotTB:
         ax.set_xlim(np.min(self.sys.lat.coor['x'])-1., np.max(self.sys.lat.coor['x'])+1.)
         ax.set_ylim(np.min(self.sys.lat.coor['y'])-1., np.max(self.sys.lat.coor['y'])+1.)
         cbar.ax.set_yticklabels([y_ticks[0], y_ticks[1]])
+        cbar.ax.tick_params(labelsize=fs)
         ax.set_aspect('equal')
+        fig.set_tight_layout(True)
         plt.draw()
         return fig
 
-    def plt_intensity_disk(self, intensity, plt_hop=None, s=1000., lw=1, fs=20, title=''):
+    def intensity_disk(self, intensity, plt_hop=None, s=1000., lw=1, fs=20, title=''):
         '''
         Plot the intensity. Intensity propotional to disk shape.
 
@@ -248,10 +262,11 @@ class plotTB:
         y_lim = [np.min(self.sys.lat.coor['y'])-2., np.max(self.sys.lat.coor['y'])+2.]
         ax.set_xlim(x_lim)
         ax.set_ylim(y_lim)
+        fig.set_tight_layout(True)
         plt.draw()
         return fig
 
-    def plt_butterfly(self, en_lims=[-2., 2.], fs=20):
+    def butterfly(self, en_lims=[-2., 2.], fs=20):
         '''
         Plot energies depending on strain.
         '''
@@ -284,7 +299,7 @@ class plotTB:
         plt.show()
 
 
-class saveFigTB():
+class saveTB():
     '''
     Create folder and save figures / animations obtained via 
     **latticeTB** , **plotTB** or **propagationTB**.
@@ -323,13 +338,13 @@ class saveFigTB():
             * **file_name** -- File name.
         '''
         file_name = ''
-        for t, o in zip(self.sys.lat.tags, self.sys.on): 
+        for t, o in zip(self.sys.lat.tags, self.sys.ons): 
             file_name += '_e' + str(t)[2] + str(complex(o+0)).replace('.', ',')
         for key, val in self.params.items():
             file_name += '_' + key + str(complex(val+0)).replace('.', ',')
         return file_name
 
-    def save_fig(self, fig, name=''):
+    def fig(self, fig, name=''):
         '''
         Save the figure in the directory defined by the method *dir_name()*.
 
@@ -339,7 +354,7 @@ class saveFigTB():
         name_file = self.dir_name + '/' + name + self.file_name() + '.' + self.ext
         fig.savefig(name_file, format=self.ext)
 
-    def save_fig_lat(self, fig, name=''):
+    def fig_lat(self, fig, name=''):
         '''
         Save the figure in the directory defined by the method *dir_name()*.
 
@@ -349,6 +364,6 @@ class saveFigTB():
         name_file = self.dir_name + '/' + name + '.' + self.ext
         fig.savefig(name_file, format=self.ext)
 
-    def save_ani(self, ani, name='', fps=10):
+    def ani(self, ani, name='', fps=10):
         name_file = self.dir_name + '/' + name + '.mp4'
         ani.save(name_file, fps=fps, extra_args=['-vcodec', 'libx264'])

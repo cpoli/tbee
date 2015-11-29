@@ -16,12 +16,14 @@ from math import sqrt, pi, sin, cos
 PI = pi
 
 
-__all__ = ['latticeTB', 'eigTB', 'plotTB', 'propTB', 'grapheneTB']
+__all__ = ['latticeTB', 'eigTB', 'plotTB', 'propTB', 'grapheneTB', 'liebTB']
 from latticeTB import latticeTB
 from eigTB import eigTB
 from plotTB import plotTB
 from propTB import propTB
 from grapheneTB import grapheneTB
+from liebTB import liebTB
+
 #    exec('from . import {}'.format(module))
 
 #execfile(test_latticeTB.py)

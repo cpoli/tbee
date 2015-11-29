@@ -7,6 +7,10 @@ PI = np.pi
 DX = 0.5 * np.sqrt(3)
 DY = 0.5
 
+"""
+TEST SORT GRAPHENE EIG
+
+"""
 
 def check_n(n):
     '''
@@ -55,7 +59,7 @@ class grapheneTB(latticeTB):
         ri = [[0, 0], [DX, DY]]
         tags = [b'a', b'b']
         nor = 2 * DX
-        ang = PI / 3
+        ang = 60
         latticeTB.__init__(self, ri=ri, tags=tags, nor=nor, ang=ang)
         self.butterfly = np.array([])
         self.betas = np.array([])
