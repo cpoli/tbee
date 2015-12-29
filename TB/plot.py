@@ -2,25 +2,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.legend_handler import HandlerLine2D
+from lattice import test_coor_empty, test_lat
+from system import test_sys, test_en, test_vn
+from lattice import test_coor_empty
 import os
 
-def test_plot_lattice(tags, ms, fs, colors, plt_index, figsize):
-    '''
-    Check method *remove_sites*.
 
-    :raises TypeError: Parameter *ms* must be a positive integer.
-    :raises TypeError: Parameter *fs* must be a positive integer.
+def test_init(lat, sys):
+    if lat is not None:
+        test_lat(lat)
+    if sys is not None:
+        test_sys(sys)
+    if lat is None and sys is None:
+        raise TypeError('\n\nlat or sys must be passed as a parameter.\n') 
+
+
+def test_lattice(lw, ms, fs, plt_hop, plt_index, tics, figsize):
+    '''
+    Check method *lattice*.
+
+    :raises TypeError: Parameter *lw* must be a positive number.
+    :raises TypeError: Parameter *ms* must be a positive number.
+    :raises TypeError: Parameter *fs* must be a positive number.
+    :raises TypeError: Parameter *plt_hop* must be a bool.
     :raises TypeError: Parameter *plt_index* must be a bool.
+    :raises TypeError: Parameter *tics* must be a bool.
     :raises TypeError: Parameter *figsize* must be list/tuple.
     :raises ValueError: Parameter *figsize* must contain positive numbers.
-    :raises ValueError: Parameter *colors* must contain 
-      RGB or matplotlib colors.
     '''
-    if not isinstance(ms, int) or ms < 1:
-        raise TypeError('\n\nParameter ms must be a positive integer.\n')
-    if not isinstance(fs, int) or fs < 1:
+    if not isinstance(lw, (int, float)):
+        raise TypeError('\n\nParameter lw must be a positive number.\n')
+    if lw <= 0:
+        raise ValueError('\n\nParameter lw must be a positive number.\n')
+    if not isinstance(ms, (int, float)) :
+        raise TypeError('\n\nParameter ms must be a positive number.\n')
+    if ms <= 0:
+        raise ValueError('\n\nParameter ms must be a positive number.\n')
+    if not isinstance(fs, int):
         raise TypeError('\n\nParameter fs must be a positive integer.\n')
+    if fs <= 0:
+        raise ValueError('\n\nParameter ms must be a positive number.\n')
+    if not isinstance(plt_hop, bool):
+        raise TypeError('\n\nParameter plt_index must be a bool.\n')
     if not isinstance(plt_index, bool):
+        raise TypeError('\n\nParameter plt_index must be a bool.\n')
+    if not isinstance(tics, bool):
         raise TypeError('\n\nParameter plt_index must be a bool.\n')
     if figsize is not None:
         if not isinstance(figsize, (list, tuple)):
@@ -28,72 +54,97 @@ def test_plot_lattice(tags, ms, fs, colors, plt_index, figsize):
         if len(figsize) != 2:
             raise ValueError('\n\nParameter figsize must be list/tuple of length 2\n')
         if isinstance(figsize, (list, tuple)):
-            if any([val < 0 for val in figsize]):
+            if any([val <= 0 for val in figsize]):
                 raise ValueError('\n\nParameter figsize must contain\
                                         positive numbers.\n')
 
 
-    return colors, figsize
-
-def test_colors(colors, unit_cell):
-    ''' 
-    Test *colors* parameter.
+def test_spectrum(en_lims, tag_pola, ms, fs):
     '''
+    Check method *spectrum*.
 
-    """
-    if colors is None:
-        pass
-    else:
-        if len(colors) != len(self.sys.lat.unit_cell):
-            raise ValueError('\n\nlength of colors must be a least equal to\
-                                        length of tags.\n')
-        plt_colors = ['b', 'r', 'g', 'y', 'm', 'k', 'c']
-      
-        for c in colors:
-            if not (c[0] == '#' and len(c) == 7) and c not in plt_colors:
-                raise ValueError('\n\nParameter colors must be a list/tuple of\
-                                          of hexagonal colors or matplotlib colors:\
-                                          ["b", "g", "r", "c", "m", "y", "k"]\n')
-    """                                   
-class plotTB:
-    '''
-    Plot the results of class **eigTB**.
+    :raises TypeError: Parameter *en_lims* must be a list.
+    :raises ValueError: Parameter *en_lims* must be a list of length 2.
+    :raises ValueError: en_lims en_lims[0] < en_lims[1].
 
-    :param sys: class instance **eigTB**.
-    :param colors: Default value []. Color plot.
+    :raises TypeError: Parameter *ms* must be a positive number.
+    :raises TypeError: Parameter *fs* must be a positive number.
+    :raises TypeError: Parameter *plt_hop* must be a bool.
+    :raises TypeError: Parameter *plt_index* must be a bool.
+    :raises TypeError: Parameter *tics* must be a bool.
+    :raises TypeError: Parameter *figsize* must be list/tuple.
+    :raises ValueError: Parameter *figsize* must contain positive numbers.
     '''
-    def __init__(self, sys, colors=None):
+    if not isinstance(lw, (int, float)):
+        raise TypeError('\n\nParameter lw must be a positive number.\n')
+
+
+
+class plot:
+    '''
+    Plot the results of the classes **lattice** or **system**.
+
+    :param lat: class instance **lattice**.
+    :param sys: class instance **system**.
+    :param colors: Default value None. Color plot.
+    '''
+    def __init__(self, lat=None, sys=None, colors=None):
+
+        test_init(lat, sys) 
+        self.lat = lat
         self.sys = sys
         if colors is None:
             self.colors = ['b', 'r', 'g', 'y', 'm', 'k']
         else:
             self.colors = colors
-        test_colors(self.colors, self.sys.lat.unit_cell)
 
-    def lattice_generic(self, fig, ax, coor, ms, lw, fs, c, plt_hop, plt_index, figsize):
+    def get_sites(self):
+        if self.sys is None:
+            return self.lat.sites
+        else:
+            return self.sys.lat.sites
+
+    def get_tags(self):
+        if self.sys is None:
+            return self.lat.tags
+        else:
+            return self.sys.lat.tags
+
+    def get_coor(self):
+        if self.sys is None:
+            test_coor_empty(self.lat.coor)
+            return self.lat.coor
+        else:
+            test_coor_empty(self.sys.lat.coor)
+            return self.sys.lat.coor
+
+    def lattice_generic(self, fig, ax, coor, ms, lw, fs, c, plt_hop, plt_index, 
+                                    tics, figsize):
         '''
         Private method.
         '''
         # plot sites
-        for color, dic in zip(self.colors, self.sys.lat.unit_cell):
-            plt.plot(coor['x'][coor['tag'] == dic['tag']],
-                       coor['y'][coor['tag'] == dic['tag']],
+        for color, tag in zip(self.colors, self.tags):
+            plt.plot(coor['x'][coor['tag'] == tag],
+                       coor['y'][coor['tag'] == tag],
                        'o', color=color, ms=ms, markeredgecolor='none')
-        ax.axis('off')
         ax.set_aspect('equal')
-        ax.set_xlim([np.min(coor['x'])-0.5, np.max(coor['x'])+0.5])
-        ax.set_ylim([np.min(coor['y'])-0.5, np.max(coor['y'])+0.5])
+        ax.set_xlim([np.min(coor['x'])-1., np.max(coor['x'])+1.])
+        ax.set_ylim([np.min(coor['y'])-1., np.max(coor['y'])+1.])
+        if not tics:
+            ax.axis('off')
         # plot indices
         if plt_index:
-            indices = ['{}'.format(i) for i in range(self.sys.lat.sites)]
+            indices = ['{}'.format(i) for i in range(self.sites)]
             for l, x, y in zip(indices, coor['x'], coor['y']):
                 plt.annotate(l, xy=(x, y), xytext=(0, 0),
-                            textcoords='offset points', ha='right',
-                            va='bottom', size=fs)
+                                    textcoords='offset points',
+                                    ha='right', va='bottom', size=fs)
         plt.draw()
         return fig
 
-    def lattice(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
+    def lattice(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=False, 
+                    tics=False, figsize=None):
         '''
         Plot lattice.
 
@@ -108,64 +159,70 @@ class plotTB:
         :returns:
             * **fig** -- Figure.
         '''
+        test_lattice(lw, ms, fs, plt_hop, plt_index, tics, figsize)
+        self.sites = self.get_sites()
+        self.tags = self.get_tags()
         fig, ax = plt.subplots(figsize=figsize)
-        # plot bonds
-        if plt_hop:
-            for i in range(len(self.sys.hop)):
-                plt.plot([self.sys.lat.coor['x'][self.sys.hop['i'][i]], 
-                             self.sys.lat.coor['x'][self.sys.hop['j'][i]]],
-                            [self.sys.lat.coor['y'][self.sys.hop['i'][i]], 
-                             self.sys.lat.coor['y'][self.sys.hop['j'][i]]],
-                            'k', lw=c*self.sys.hop['t'][i].real) 
-        return self.lattice_generic(fig, ax, self.sys.lat.coor, ms, lw, fs, c, plt_hop, plt_index, figsize)
+        if self.lat:
+            return self.lattice_generic(fig, ax, self.lat.coor, ms, lw, fs, c, 
+                                                     plt_hop, plt_index, tics, figsize)
+        else:
+            return self.lattice_generic(fig, ax, self.sys.lat.coor, ms, lw, fs, c, 
+                                                     plt_hop, plt_index, tics, figsize)
 
-    def lattice_hop(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=None, figsize=None):
+    def lattice_hop(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=False, figsize=None):
         '''
         Plot lattice.
 
-        :param plt_hop: Default value None. Hoppings given by the class **eigTB**. 
-            If not empty, plot the hoppings.
         :param ms: Default value 20. Markersize. 
-        :param c: Default value 3. Coefficient. Bond linewidths given by c*hop.
+        :param lw: Default value 5. Linewidth. 
         :param fs: Default value 20. Fontsize.
+        :param c: Default value 3. Coefficient. Hopping linewidths given by c*hop.
+        :param plt_hop: Default value False. Plot the hoppings given by the class **eigTB**. 
         :param plt_index: Default value False. Plot site labels.
         :param figsize: Default value None. Figsize. 
 
         :returns:
             * **fig** -- Figure.
         '''
+        self.sites = self.get_sites()
         fig, ax = plt.subplots(figsize=figsize)
-        # bonds
+        # hoppings
         if plt_hop:
             for i in range(len(self.sys.hop)):
-                plt.plot([self.sys.coor_hop['x'][self.sys.hop['i'][i]], self.sys.coor_hop['x'][self.sys.hop['j'][i]]],
-                           [self.sys.coor_hop['y'][self.sys.hop['i'][i]], self.sys.coor_hop['y'][self.sys.hop['j'][i]]],
+                plt.plot([self.sys.coor_hop['x'][self.sys.hop['i'][i]], 
+                             self.sys.coor_hop['x'][self.sys.hop['j'][i]]],
+                           [self.sys.coor_hop['y'][self.sys.hop['i'][i]], 
+                            self.sys.coor_hop['y'][self.sys.hop['j'][i]]],
                            'k', lw=lw)
         return self.lattice_generic(fig, ax, self.sys.coor_hop, ms, lw, fs, c, plt_hop, plt_index, figsize) 
 
-    def spectrum(self, en_lims=None, tag_pola=b'', ms=10, fs=20):
+    def spectrum(self, ms=10, fs=20, en_lims=None, tag_pola=None):
         '''
         Plot spectrum (eigenenergies real part (blue circles), 
         and sublattice polarization if *pola* not empty (red circles).
 
         :param en: np.array. Eigenenergies.
-        :param en_lims: Default value []. Energy limits (size 2).
-        :param tag_pola: Default value []. Byte type. Tag of the sublattice.
+        :param en_lims: Default value None. Energy limits (size 2).
+        :param tag_pola: Default value None. Byte type. Tag of the sublattice.
         :param ms: Default value 10. Markersize.
         :param fs: Default value 20. Fontsize.
 
         :returns:
             * **fig** -- Figure.
         '''
+        test_en(self.sys.en)
+        test_spectrum(en_lims, tag_pola, ms, fs)
+        self.sites = self.get_sites()
         fig, ax1 = plt.subplots()
         ax1 = plt.gca()
-        x_min = - np.floor(self.sys.lat.sites / 2.)
-        x_max = np.ceil(self.sys.lat.sites / 2.)
+        x_min = - np.floor(self.sites / 2.)
+        x_max = np.ceil(self.sites / 2.)
         x = np.arange(x_min, x_max) 
-        if en_lims == None:
+        if en_lims is None:
             en_max = np.max(self.sys.en.real)
             ax1.set_ylim([-en_max-0.2, en_max+0.2])
-            ind = np.ones(self.sys.lat.sites, bool)
+            ind = np.ones(self.sites, bool)
         else:
             ind = (self.sys.en > en_lims[0]) & (self.sys.en < en_lims[1])
             ax1.set_ylim([en_lims[0]-0.1, en_lims[1]+0.1])
@@ -186,15 +243,15 @@ class plotTB:
             ax2.set_ylim([-0.1, 1.1])
             ax2.set_yticks([0, 0.5, 1])
             for tick in ax2.xaxis.get_major_ticks():
-                tick.label.set_fontsize(18) 
+                tick.label.set_fontsize(fs) 
             if en_lims == []:
                 ax2.set_xlim([x[0]-0.5, x[-1]+0.5])
             for label in ax2.get_yticklabels():
                 label.set_color('r')
         for label in ax1.xaxis.get_majorticklabels():
-            label.set_fontsize(18) 
+            label.set_fontsize(fs) 
         for label in ax1.yaxis.get_majorticklabels():
-            label.set_fontsize(18)
+            label.set_fontsize(fs)
         xa = ax1.get_xaxis()
         ax1.set_xlim([x[ind][0]-0.1, x[ind][-1]+0.1]) 
         xa.set_major_locator(plt.MaxNLocator(integer=True))
@@ -211,6 +268,8 @@ class plotTB:
         :param ms: Default value 10. Size of the markers.
         :param save: Default value False. Save the two figures.
         """
+        test_en(self.sys.vn)
+        test_en_lims(en_lims)
         ind_en = np.argwhere((self.sys.en > en_lims[0]) & (self.sys.en < en_lims[1]))
         ind_en = np.ravel(ind_en)
         en = self.sys.en[ind_en]
@@ -232,6 +291,7 @@ class plotTB:
         :param fs: Default value 20. Font size.
         :param title: Default value 'Intensity'. Figure title.
         '''
+        test_en(self.sys.vn)
         fig, ax = plt.subplots()
         ax.set_xlabel('$j$', fontsize=fs)
         ax.set_ylabel('$|\psi^{(j)}|^2$', fontsize=fs)
@@ -240,13 +300,13 @@ class plotTB:
             plt.plot(self.sys.lat.coor['x'][self.sys.lat.coor['tag'] == t],
                         intensity[self.sys.lat.coor['tag'] == t],
                         '-o', color=c, ms=ms, lw=lw)
-        plt.xlim([-1., self.sys.lat.sites])
+        plt.xlim([-1., self.sites])
         plt.ylim([0., np.max(intensity)+.02])
         fig.set_tight_layout(True)
         plt.draw()
         return fig
 
-    def intensity_disk(self, intensity, s=200, fs=20, title=r'$|\psi|^2$', lims=[]):
+    def intensity_disk(self, intensity, s=200, fs=20, title=r'$|\psi|^2$', lims=None):
         '''
         Plot the intensity. Colormap with identical disk shape.
 
@@ -259,10 +319,11 @@ class plotTB:
         :returns:
             * **fig** -- Figure.
         '''
+        test_en(self.sys.vn)
         fig, ax = plt.subplots()
         plt.title(title, fontsize=fs+5)
         map_red = plt.get_cmap('Reds')
-        if lims == []:
+        if lims is None:
             lims = [0., np.max(intensity)]
             y_ticks = ['0', 'max']
         else: 
@@ -281,7 +342,7 @@ class plotTB:
         plt.draw()
         return fig
 
-    def intensity_area(self, intensity, plt_hop=None, s=1000., lw=1, fs=20, title=''):
+    def intensity_area(self, intensity, s=1000., lw=1, fs=20, plt_hop=None, title=''):
         '''
         Plot the intensity. Intensity propotional to disk shape.
 
@@ -353,14 +414,21 @@ class plotTB:
         plt.show()
 
 
-class saveTB():
+class save():
     '''
-    Create folder and save figures / animations obtained via 
-    **latticeTB** , **plotTB** or **propagationTB**.
+    Create folder and save figures / animationsite obtained via 
+    **lattice** , **plot** or **propagation**.
     '''
-    def __init__(self, sys, dir_name, params={}, ext='png'):
+    def __init__(self, dir_name, lat=None, sys=None, params={}, ext='png'):
+        self.params = params  # dictionary parameters
+        self.lat = lat
         self.sys = sys
-        self.params = params  # parameters dictionary
+        if lat:
+            self.sites = self.lat.sites
+            self.tags = self.lat.tags
+        else:
+            self.sites = self.sys.lat.sites
+            self.tags = self.sys.lat.tags
         self.ext = ext  # file extension
         self.dir_main = '../TBfig/'  # main directory name
         self.dir_name = self.dir_name(dir_name)  # directory name
@@ -372,7 +440,8 @@ class saveTB():
 
         :param dir_name: String. First part of the directory name. 
         '''
-        dir_name = self.dir_main + dir_name + '_n{}'.format(self.sys.lat.sites)
+
+        dir_name = self.dir_main + dir_name + '_n{}'.format(self.sites)
         return dir_name
 
     def check_dir(self):
@@ -392,11 +461,11 @@ class saveTB():
             * **file_name** -- File name.
         '''
         file_name = ''
-        tags = [dic['tag'] for dic in self.sys.lat.unit_cell]
-        for t, o in zip(tags, self.sys.ons): 
-            file_name += '_e' + str(t)[2] + str(complex(o+0)).replace('.', ',')
-        for key, val in self.params.items():
-            file_name += '_' + key + str(complex(val+0)).replace('.', ',')
+        if sys:
+            for t, o in zip(self.tags, self.sys.ons): 
+                file_name += '_e' + str(t)[2] + str(complex(o+0)).replace('.', ',')
+            for key, val in self.params.items():
+                file_name += '_' + key + str(complex(val+0)).replace('.', ',')
         return file_name
 
     def fig(self, fig, name=''):

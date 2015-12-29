@@ -1,4 +1,4 @@
-from latticeTB import *
+from ..TB.latticeTB import *
 from plotTB import *
 from eigTB import *
 from math import sqrt
@@ -9,11 +9,12 @@ unit_cell = [{'tag': b'a', 'r0': [0, 0]},
                  {'tag': b'b', 'r0': [1, 0]}]
 prim_vec = {'norm': 2, 'angle': 90}
 lat = latticeTB(unit_cell=unit_cell, prim_vec=prim_vec)
+n1, n2 = 6, 6
+lat.get_lattice(n1=n1, n2=n2)
 sys = eigTB(lat=lat)
 plot = plotTB(sys=sys)
 
-n1 = 10
-lat.get_lattice(n1=n1)
+
 lat.get_lattice(n1=n1)
 fig_lat = plot.lattice(ms=15, figsize=(10, 2))
 save = saveTB(sys=sys, dir_name='chain')
@@ -126,10 +127,10 @@ save.fig_lat(fig_lat, 'lattice')
 
 # Line centered hexagon lattice
 unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-             {'tag': b'a', 'r0': [0.5*sqrt(3), 0.5]}, 
-             {'tag': b'c', 'r0': [0.25*sqrt(3), 0.25]},
-             {'tag': b'c', 'r0': [0.75*sqrt(3), 0.25]},
-             {'tag': b'c', 'r0': [0.5*sqrt(3), 1.]}]
+                  {'tag': b'a', 'r0': [0.5*sqrt(3), 0.5]}, 
+                  {'tag': b'c', 'r0': [0.25*sqrt(3), 0.25]},
+                  {'tag': b'c', 'r0': [0.75*sqrt(3), 0.25]},
+                  {'tag': b'c', 'r0': [0.5*sqrt(3), 1.]}]
 prim_vec = {'norm': sqrt(3), 'angle': 60}
 lat = latticeTB(unit_cell=unit_cell, prim_vec=prim_vec)
 sys = eigTB(lat=lat)

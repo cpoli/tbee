@@ -1,6 +1,6 @@
-from latticeTB import *
-from plotTB import *
-from eigTB import *
+from lattice import *
+from plot import *
+from system import *
 import numpy as np
 from math import sqrt, pi
 
@@ -51,12 +51,12 @@ def test_get_butterfly(t, N):
 
 
         
-class grapheneTB(latticeTB):
+class graphene(lattice):
     def __init__(self):
         unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
                           {'tag': b'b', 'r0': [DX, DY]}]
         prim_vec = {'norm': 2 * DX, 'angle': 60}
-        latticeTB.__init__(self, unit_cell=unit_cell, prim_vec=prim_vec)
+        lattice.__init__(self, unit_cell=unit_cell, prim_vec=prim_vec)
         self.butterfly = np.array([])
         self.betas = np.array([])
 
@@ -122,7 +122,7 @@ class grapheneTB(latticeTB):
         :param: n. Int. Number of plackets along x. 
         '''
         check_n(n)
-        n2 = int(1 + (2 * n* DX - 2)/2.5)
+        n2 = int(1 + (2 * n * DX - 2) / 2.5)
         self.get_lattice(n1=n, n2=n2)
         self.sites = len(self.coor)
         ind = np.argwhere((self.coor['x'] > DX * (n-1)-0.1) & (self.coor['x'] < DX * 2*n-0.1))
@@ -150,11 +150,11 @@ class grapheneTB(latticeTB):
         self.coor = np.sort(self.coor, order=('x', 'y'))   
         self.sites = len(self.coor)
         
-class grapheneEig(eigTB):
+class grapheneEig(system):
     def __init__(self, lat):
-        eigTB.__init__(self, lat)
-        self.lat.coor['x'] -= self.lat.coor['x'].mean()
-        self.lat.coor['y'] -= self.lat.coor['y'].mean()
+        system.__init__(self, lat)
+        self.lat.coor['x'] -= np.round(self.lat.coor['x'].mean(), 2)
+        self.lat.coor['y'] -= np.round(self.lat.coor['y'].mean(), 2)
         self.lat.coor = np.sort(self.lat.coor, order=('x', 'y'))
 
     def set_hop_linear_strain(self, t, beta):
@@ -250,3 +250,11 @@ class grapheneEig(eigTB):
             ind = ((self.hop['ang'] == 90) & (self.lat.coor['y'][self.hop['i']] > -2.) & 
                 (self.lat.coor['x'][self.hop['i']] <0) & (self.lat.coor['y'][self.hop['i']] < 0))
             self.hop['t'][ind] *= -1 
+
+
+
+lat = graphene()
+lat.hexagon_armchair(n=5)
+lat.plot()
+plt.show()
+

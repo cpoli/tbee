@@ -10,16 +10,16 @@ except:
 import os
 
 
-class propTB():
+class propagation():
     '''
     Get lattice time evolution. Time dependent Schrodinger equation solved by
     Crank-Nicolson method.
     '''
     def __init__(self, lat, steps, dz):
         '''
-        Plot the coordinates of  the Lieb lattice sites in hoppings space.
+        Initialize **propagation**.
 
-        :param lat: **latticeTB** class instance.
+        :param lat: **lattice** class instance.
         :param steps: Number of steps.
         :param dz: Step.
         '''
