@@ -2,56 +2,14 @@ from lattice import *
 from plot import *
 from system import *
 import numpy as np
-from math import sqrt, pi
+from math import sqrt
 
 PI = np.pi
-DX = 0.5 * np.sqrt(3)
+DX = 0.5 * sqrt(3)
 DY = 0.5
 
-
-def check_n(n):
-    '''
-    Test if the number *n* of plackets is a positive integer.
-
-    :raises TypeError: Parameter *n* must be an integer.
-    :raises ValueError: Parameter *n* must be a positive integer.
-    '''
-    if not isinstance(n, int):
-        raise TypeError('\n\nParamer *n* must be an integer.')
-    if n < 1:
-        raise ValueError('\n\nParamer *n* must be a positive integer.')
-
-
-def test_hop_linear_strain(t, beta):
-    '''
-    Test method *hop_linear_strain*.
-
-    :raises TypeError: Parameter *t* must be an integer.
-    :raises TypeError: Parameter *beta* must be a real number.
-    '''
-    if not isinstance(t, (int, float, complex)):
-        raise TypeError('\n\nParamer *n* must be a number.')
-    if not isinstance(beta, (int, float)):
-        raise TypeError('\n\nParamer *n* must be a real number.')
-
-def test_get_butterfly(t, N):
-    '''
-    Test method *hop_linear_strain*.
-
-    :raises TypeError: Parameter *t* must be a real number.
-    :raises TypeError: Parameter *N* must be an integer.
-    :raises ValueError: Parameter *N* must be a positive integer.
-    '''
-    if not isinstance(t, (int, float)):
-        raise TypeError('\n\nParamer *t* must be a number.')
-    if not isinstance(N, int):
-        raise TypeError('\n\nParamer *N* must be a real number.')
-    if N < 1:
-        raise ValueError('\n\nParamer *N* must be a positive integer.')
-
-
         
-class latticeGraphene(lattice):
+class grapheneLat(lattice):
     def __init__(self):
         unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
                           {'tag': b'b', 'r0': [DX, DY]}]
@@ -64,9 +22,9 @@ class latticeGraphene(lattice):
         '''
         Triangular flake with zigzag terminations.
 
-        :param: n. Int. Number of plackets along each edge. 
+        :param: n. Int. Number of plackets along the edges. 
         '''
-        check_n(n)
+        error_handling.positive_int(n, 'n')
         self.get_lattice(n1=n+2, n2=n+2)
         self.boundary_line(cx=-sqrt(3), cy=-1, co=-3*(n+1))
 
@@ -74,24 +32,24 @@ class latticeGraphene(lattice):
         '''
         Hexagonal flake with zigzag terminations.
 
-        :param: n. Int. Number of plackets along each edge. 
+        :param: n. Int. Number of plackets along the edges. 
         '''
-        check_n(n)
+        error_handling.positive_int(n, 'n')
         self.get_lattice(n1=2*n, n2=2*n)
         self.boundary_line(cx=sqrt(3), cy=1, co=3*(n-1))
-        self.boundary_line(cx=-sqrt(3), cy=-1, co=-9*n+1)
+        self.boundary_line(cx=-sqrt(3), cy=-1, co=-9*n+3)
 
     def triangle_armchair(self, n):
         '''
         Triangular flake with armchair terminations.
 
-        :param: n. Int. Number of plackets along each edge. 
+        :param: n. Int. Number of plackets along the edges. 
         '''
-        check_n(n)
+        error_handling.positive_int(n, 'n')
         self.get_lattice(n1=2*n, n2=2*n)
-        lat1.boundary_line(cx=1, cy=0, co=sqrt(3)/2*(2*n-1)-0.1)
-        lat1.boundary_line(cx=-1/sqrt(3), cy=1, co=-n-0.1)
-        lat1.boundary_line(cx=-1/sqrt(3), cy=-1, co=-4*n+0.1)
+        self.boundary_line(cx=1, cy=0, co=sqrt(3)/2*(2*n-1)-0.1)
+        self.boundary_line(cx=-1/sqrt(3), cy=1, co=-n-0.1)
+        self.boundary_line(cx=-1/sqrt(3), cy=-1, co=-4*n+0.1)
 
     def hexagon_armchair(self, n):
         '''
@@ -99,21 +57,16 @@ class latticeGraphene(lattice):
 
         :param: n. Int. Number of plackets along each edge. 
         '''
-        check_n(n)
+        error_handling.positive_int(n, 'n')
         nn = 3 * n - 2
         self.get_lattice(n1=2*nn, n2=2*nn)
         self.boundary_line(cx=1, cy=0, co=sqrt(3)/2* (2*nn-1)-.1)
         self.boundary_line(cx=-1/sqrt(3), cy=1, co=-nn -.1)
         self.boundary_line(cx=-1/sqrt(3), cy=-1, co=-4*nn +1-.1)
         self.coor['x'] -= self.coor['x'].min()
-        self.boundary_line(cx=1, cy=0, co=sqrt(3)/2* (2*nn-1)-.1)
-        self.boundary_line(cx=-1/sqrt(3), cy=1, co=-nn -.1)
-        self.boundary_line(cx=-1/sqrt(3), cy=-1, co=-4*nn +1-.1)
-        #########
-        ind = np.argwhere((self.coor['x'] < DX * 2*nn+0.1) & 
-                                   (self.coor['y'] <  0.5 / DX  * self.coor['x']  +6*n - 4) &
-                                   (self.coor['y'] >  -0.5 / DX  * self.coor['x']  +3*n-3))
-        self.get_shape(ind)
+        self.boundary_line(cx=-1, cy=0, co=-DX * 2*nn-0.1)
+        self.boundary_line(cx=1/sqrt(3), cy=1, co=3*n -3.)
+        self.boundary_line(cx=1/sqrt(3), cy=-1, co=-6*n+4)
 
     def square(self, n):
         '''
@@ -121,41 +74,30 @@ class latticeGraphene(lattice):
 
         :param: n. Int. Number of plackets along x. 
         '''
-        check_n(n)
-        n2 = int(1 + (2 * n * DX - 2) / 2.5)
-        self.get_lattice(n1=n, n2=n2)
-        self.sites = len(self.coor)
-        ind = np.argwhere((self.coor['x'] > DX * (n-1)-0.1) & (self.coor['x'] < DX * 2*n-0.1))
-        self.get_shape(ind)
+        error_handling.positive_int(n, 'n')
+        n2 = int(1.5*DX*n)
+        self.get_lattice(n1=2*n, n2=n2)
+        self.boundary_line(cx=1, cy=0, co=DX*(2*n-2)+0.1)
+        self.boundary_line(cx=-1, cy=0, co=-DX*(4*n)+0.5)
 
     def circle(self, n):
         '''
         Circular flake.
 
-        :param: n. Int. Number of plackets along x. 
+        :param: n. Int. Number of plackets along the diameter. 
         '''
-        self.get_lattice(n1=n, n2=n)
+        error_handling.positive_int(n, 'n')
+        self.get_lattice(n1=2*n, n2=2*n)
         self.sites = len(self.coor)
-        self.coor_center()
-        ind = np.argwhere(self.coor['x'] ** 2 +  self.coor['y'] ** 2 < (0.75 * n) ** 2)
-        self.get_shape(ind)
+        self.center()
+        if n % 2 == 0:
+            self.shift_x(shift=-DX)
+        self.ellipse_in(a=DX*(n+1), b=DX*(n+1))
+        self.remove_dangling()
         
-    def get_shape(self, ind):
-        """
-        Private method. Get the shape of the flake.
-        """
-        mask = np.zeros(self.sites, bool)
-        mask[ind] = True
-        self.coor = self.coor[mask]
-        self.coor = np.sort(self.coor, order=('x', 'y'))   
-        self.sites = len(self.coor)
-        
-class grapheneEig(system):
+class grapheneSys(system):
     def __init__(self, lat):
         system.__init__(self, lat)
-        self.lat.coor['x'] -= np.round(self.lat.coor['x'].mean(), 2)
-        self.lat.coor['y'] -= np.round(self.lat.coor['y'].mean(), 2)
-        self.lat.coor = np.sort(self.lat.coor, order=('x', 'y'))
 
     def set_hop_linear_strain(self, t, beta):
         '''
@@ -164,9 +106,11 @@ class grapheneEig(system):
         :param t: Hopping value without strain.
         :param beta: Strength of the strain.
         '''
-        test_hop_linear_strain(t, beta)
-        ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-4) &
-                                   (self.vec_hop['d'] < self.dist_uni[1]+1e-4))
+        error_handling.number(t, 't')
+        error_handling.real_number(beta, 'beta')
+        self.get_hopping()
+        ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-3) &
+                                   (self.vec_hop['d'] < self.dist_uni[1]+1e-3))
         ind_up = ind[ind[:, 1] > ind[:, 0]]  
         self.hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                                 ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
@@ -174,38 +118,19 @@ class grapheneEig(system):
         self.hop['i'] = ind_up[:, 0]
         self.hop['j'] = ind_up[:, 1]
         self.hop['ang'] = self.vec_hop['a'][ind_up[:, 0], ind_up[:, 1]]
-        self.hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
+        #self.hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
         # change angle (to get the correct strain)
+        #self.hop['ang'][self.hop['ang'] == 30] = -150
         self.hop['ang'][self.hop['ang'] == 30] = -150
+        self.hop['ang'][self.hop['ang'] == 150] = -30
         x_center = .5 * (self.lat.coor['x'][ind_up[:, 0]] + self.lat.coor['x'][ind_up[:, 1]])
         y_center = .5 * (self.lat.coor['y'][ind_up[:, 0]] + self.lat.coor['y'][ind_up[:, 1]])
         self.hop['t'] = t * (1. + 0.25 * beta * (np.cos(PI / 180 * self.hop['ang']) * x_center +
-                                                              np.sin(PI / 180 * self.hop['ang']) * y_center))
-        # back to the former angle
-        self.hop['ang'][self.hop['ang'] == -150] = 30
+                                                               np.sin(PI / 180 * self.hop['ang']) * y_center))
 
-    def set_hop_nearest_hop(self, t, beta):
-        '''
-        Set flake hoppings according to the linear trixial strain. 
-        
-        :param t: Hopping value without strain.
-        :param beta: Strength of the strain.
-        '''
-        test_hop_linear_strain(t, beta)
-        ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-4) &
-                                   (self.vec_hop['d'] < self.dist_uni[1]+1e-4))
-        ind_up = ind[ind[:, 1] > ind[:, 0]]  
-        self.hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                                ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
-        self.hop['n'] = 1
-        self.hop['i'] = ind_up[:, 0]
-        self.hop['j'] = ind_up[:, 1]
-        self.hop['ang'] = self.vec_hop['a'][ind_up[:, 0], ind_up[:, 1]]
-        self.hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
-        # change angle (to get the correct strain)
-        
         # back to the former angle
         self.hop['ang'][self.hop['ang'] == -150] = 30
+        self.hop['ang'][self.hop['ang'] == -30] = 150
 
     def get_butterfly(self, t, N):
         ''''
@@ -214,7 +139,8 @@ class grapheneEig(system):
         :param t: Hopping value.
         :param N: number of strain values between the max strains.
         '''
-        test_hop_linear_strain(t, N)
+        error_handling.number(t, 't')
+        error_handling.positive_int(N, 'N')
         beta_lims = self.get_beta_lims()
         self.betas = np.linspace(beta_lims[0], beta_lims[1], N)
         self.butterfly = np.zeros((N, self.lat.sites))
@@ -230,12 +156,13 @@ class grapheneEig(system):
         beta_lims = np.zeros(2)
         yb_min_val = self.lat.coor['y'][self.lat.coor['tag'] == b'b'].min()
         yb_min = self.lat.coor['y'][self.lat.coor['y'] == yb_min_val][0]
-        ym = 0.5*(2 * yb_min + 1)
-        beta_lims[1] = -4./ym + 1e-6
+        ym = 0.5 * (2 * yb_min + 1)
+        beta_lims[1] = -4. / ym + 1e-6
         yb_max_val = self.lat.coor['y'][self.lat.coor['tag'] == b'a'].max()
         yb_max = self.lat.coor['y'][self.lat.coor['y'] == yb_max_val][0]
-        ym = 0.5*(2 * yb_max - 1)
-        beta_lims[0] = -4./ym + 1e-6
+        ym = 0.5 * (2 * yb_max - 1)
+        beta_lims[0] = -4. / ym + 1e-6
+        print(ym)
         print('Strain limits: {}'.format(beta_lims))
         return beta_lims
 
@@ -250,11 +177,3 @@ class grapheneEig(system):
             ind = ((self.hop['ang'] == 90) & (self.lat.coor['y'][self.hop['i']] > -2.) & 
                 (self.lat.coor['x'][self.hop['i']] <0) & (self.lat.coor['y'][self.hop['i']] < 0))
             self.hop['t'][ind] *= -1 
-
-
-
-lat = latticeGraphene()
-lat.triangle_zigzag(n=5)
-lat.plot()
-plt.show()
-

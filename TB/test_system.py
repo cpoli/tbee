@@ -18,10 +18,6 @@ class TestSystem(unittest.TestCase):
     '''
     def test_init(self):
         self.assertRaises(TypeError, system, lat=0)
-        unit_cell = [{'tag': b'a', 'r0': [0, 0]}]
-        prim_vec = {'norm': 1, 'angle': 0}
-        lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-        self.assertRaises(RuntimeError, system, lat=lat)
 
     def test_print_hopping(self):
         sys = init()
@@ -64,16 +60,27 @@ class TestSystem(unittest.TestCase):
         sys.get_ham()
         self.assertRaises(TypeError, sys.get_eig, eigenvec='a')
 
-    def test_get_intensity_pola(self):
+    def test_get_intensity_pola_max(self):
         sys = init()
         sys.set_hopping([{'n': 1, 't': 1.}])
         sys.get_ham()
-        self.assertRaises(RuntimeError, sys.get_intensity_pola, tag_pola=b'a')
+        self.assertRaises(RuntimeError, sys.get_intensity_pola_max, tag_pola=b'a')
         sys.get_eig()
-        self.assertRaises(RuntimeError, sys.get_intensity_pola, tag_pola=b'a')
+        self.assertRaises(RuntimeError, sys.get_intensity_pola_max, tag_pola=b'a')
         sys.get_eig(eigenvec=True)
-        self.assertRaises(TypeError, sys.get_intensity_pola, tag_pola=0)
-        self.assertRaises(ValueError, sys.get_intensity_pola, tag_pola=b'z')
+        self.assertRaises(TypeError, sys.get_intensity_pola_max, tag_pola=0)
+        self.assertRaises(ValueError, sys.get_intensity_pola_max, tag_pola=b'z')
+
+    def test_get_intensity_pola_min(self):
+        sys = init()
+        sys.set_hopping([{'n': 1, 't': 1.}])
+        sys.get_ham()
+        self.assertRaises(RuntimeError, sys.get_intensity_pola_max, tag_pola=b'b')
+        sys.get_eig()
+        self.assertRaises(RuntimeError, sys.get_intensity_pola_max, tag_pola=b'b')
+        sys.get_eig(eigenvec=True)
+        self.assertRaises(TypeError, sys.get_intensity_pola_max, tag_pola=0)
+        self.assertRaises(ValueError, sys.get_intensity_pola_max, tag_pola=b'b')
 
     def test_set_hopping_def(self):
         sys = init()
@@ -85,12 +92,16 @@ class TestSystem(unittest.TestCase):
 
     def test_set_onsite_def(self):
         sys = init()
+        self.assertRaises(RuntimeError, sys.set_onsite_dis, 0.1)
+        sys.set_onsite({b'a': 0.})
         self.assertRaises(TypeError, sys.set_onsite_def, 0)
         self.assertRaises(TypeError, sys.set_onsite_def, {0: 'a'})
 
     def test_set_onsite_dis(self):
         sys = init()
         # alpha must be a positive number.
+        self.assertRaises(RuntimeError, sys.set_onsite_dis, 0.1)
+        sys.set_onsite({b'a': 0.})
         self.assertRaises(TypeError, sys.set_onsite_dis, 'a')
 
     def test_set_hopping_dis(self):
@@ -111,11 +122,11 @@ class TestSystem(unittest.TestCase):
         sys = init()
         sys.set_hopping([{'n': 1, 't': 1.}])
         sys.get_ham()
-        self.assertRaises(RuntimeError, sys.get_intensity_en, en_lims=[1., 2.])
+        self.assertRaises(RuntimeError, sys.get_intensity_en, lims=[1., 2.])
         sys.get_eig(eigenvec=True)
-        self.assertRaises(TypeError, sys.get_intensity_en, en_lims=['a', 2.])
-        self.assertRaises(TypeError, sys.get_intensity_en, en_lims=[1., 'a'])
-        self.assertRaises(ValueError, sys.get_intensity_en, en_lims=[2., 1.])
+        self.assertRaises(TypeError, sys.get_intensity_en, lims=['a', 2.])
+        self.assertRaises(TypeError, sys.get_intensity_en, lims=[1., 'a'])
+        self.assertRaises(ValueError, sys.get_intensity_en, lims=[2., 1.])
 
     def test_dimer_chain(self):
         unit_cell = [{'tag': b'a', 'r0': [0, 0]}, {'tag': b'b', 'r0': [1, 0]}]
@@ -189,9 +200,9 @@ class TestSystem(unittest.TestCase):
         self.assertTrue(np.allclose(sys.hop['t'], hop['t']) == True)
         self.assertTrue(np.array_equal(sys.hop['tag'], hop['tag']) == True)
         self.assertTrue(np.allclose(sys.en, en) == True)
-        self.assertTrue(np.allclose(sys.get_intensity_pola(tag_pola=b'a'), 
+        self.assertTrue(np.allclose(sys.get_intensity_pola_max(tag_pola=b'a'), 
                                                    zero_mode) == True)
-        self.assertTrue(np.allclose(sys.get_intensity_en(en_lims=[-3, 1e-3]), 
+        self.assertTrue(np.allclose(sys.get_intensity_en(lims=[-3, 1e-3]), 
                                                    modes_neg) == True)
 
 if __name__ == '__main__':

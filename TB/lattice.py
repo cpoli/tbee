@@ -1,185 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import error_handling
 
 PI = np.pi
 
 
-
-def test_lat(lat):
-    '''
-    Check if other is an instance of the *lattice*.
-    :raises TypeError: Parameter other must be a instance of the class lattice.
-    '''
-    if not lat.__class__.__name__ == 'lattice':
-        raise TypeError('\n\nParameter other must be a instance of the class lattice.\n')
-
-
-def test_unit_cell(unit_cell):
-    '''
-    Check parameter *unit_cell*.
-
-    :raises TypeError: Parameter unit_cell must be a list.
-    :raises KeyError: Dictionaries must contain the key "tag".
-    :raises KeyError: Dictionaries must contain the key "r0".
-    :raises TypeError: Key "tags" must contain a binary char.
-    :raises ValueError: Key "tags" must contain a binary char.
-    :raises ValueError: Key "r0" must contain be a list.
-    :raises TypeError: Key "r0" must contain be a list.
-    :raises ValueError: Key "r0" must contain a list of length two.
-    :raises ValueError: Key "r0" must contain a list of two real numbers.
-    '''
-    if not isinstance(unit_cell, list):
-        raise TypeError('\n\nParameter unit_cell must be a list.\n')
-    for dic in unit_cell:
-        if 'tag' not in dic:
-            raise KeyError('\n\nDictionaries must contain the key "tag".\n')
-        if 'r0' not in dic:
-            raise KeyError('\n\nDictionaries must contain the key "r0".\n')
-        if not isinstance(dic['tag'], bytes):
-            raise TypeError('\n\Key "tags" must contain a binary char.\n')    
-        if not len(dic['tag']) == 1:
-            raise ValueError('\n\Key "tags" must be a binary char.\n')    
-        if not isinstance(dic['r0'], list):
-            raise TypeError('\n\Key "r0" must be a list.\n')
-        if not len(dic['r0']) == 2:
-            raise ValueError('\n\Key "r0" must contain a list of length two.\n')    
-        if not isinstance(dic['r0'][0], (int, float)) or not isinstance(dic['r0'][1], (int, float)):
-            raise ValueError('\n\Key "r0" must contain a list of two real numbers.\n')
-
-    
-def test_prim_vec(prim_vec):
-    '''
-    Check parameter *prim_vec*.
-
-    :raises TypeError: Parameter prim_vec must be a dictionary.
-    :raises KeyError: Parameter prim_vec must contain the key "norm".
-    :raises KeyError: Parameter prim_vec must contain the key "angle".
-    :raises TypeError: Parameter  prim_vec["angle"] must be a real number.
-    :raises TypeError: Parameter prim_vec["norm"] must be a real number.
-    :raises ValueError: Parameter prim_vec["norm"] must be a positive number.
-    '''
-    if not isinstance(prim_vec, dict):
-        raise TypeError('\n\nParameter prim_vec must be a dictionary.\n')
-    if 'norm' not in prim_vec:
-        raise KeyError('\n\nParameter prim_vec must contain the key "norm".\n')
-    if 'angle' not in prim_vec:
-        raise KeyError('\n\nParameter prim_vec must contain the key "angle".\n')
-    if not isinstance(prim_vec['angle'], (int, float)):
-        raise TypeError('\n\nParameter  prim_vec["angle"] must be a real number.\n')
-    if not isinstance(prim_vec['norm'], (int, float)):
-        raise TypeError('\n\nParameter prim_vec["norm"] must be a real number.\n')
-    if prim_vec['norm'] <= 0:
-        raise ValueError('\n\nParameter prim_vec["norm"] must be a positive number.\n')
-    if prim_vec['norm'] <= 0.2:
-        raise ValueError('\n\nParameter prim_vec["norm"] must be a larger than 0.2.\n')
-
-
-def test_get_lattice(n1, n2):
-    '''
-    Check method *get_lattice*.
-
-    :raises TypeError: Parameter n1 must be an integer.
-    :raises TypeError: Parameter n2 must be an integer.
-    :raises ValueError: Parameter n1 must be a positive integer.
-    :raises ValueError: Parameter n2 must be a positive integer.
-    '''
-    if not isinstance(n1, int):
-        raise TypeError('\n\nParameter n1 must be an integer.\n')
-    if not isinstance(n2, int):
-        raise TypeError('\n\nParameter n2 must be an integer.\n')
-    if n1 < 1:
-        raise ValueError('\n\nParameter n1 must be a positive integer.\n')
-    if n2 < 1:
-        raise ValueError('\n\nParameter n2 must be a positive integer.\n')
-
-
-def test_coor(coor):
-    '''
-    Check if *coor* is a structured array with 
-    dtype=[('x', '<f16'), ('y', '<f16'), ('tag', 'S1')].
-    '''
-    if coor.dtype != [('x', '<f16'), ('y', '<f16'), ('tag', 'S1')]:
-        raise TypeError('\n\nParameter coor dtype must be\n\
-                                  dtype=[("x", "f16"), ("y", "f16"), ("tag", "S1")].\n')
-
-
-def test_coor_empty(coor):
-    '''
-    Check if *get_lattice* has been called (*coor* not empty).
-    :raises RuntimeError: Run method get_lattice first.
-    '''
-    if coor.size == 0:
-        raise RuntimeError('\n\nRun method get_lattice first.\n')
-
-
-def test_remove_sites(index, sites):
-    '''
-    Check method *remove_sites*.
-
-    :raises TypeError: Parameter index must be a list.
-    :raises ValueError: Parameter index must be a list of integers.
-    :raises ValueError: Indices must be between 0 and sites -1.
-      of integers between 0 and sites
-    '''
-    if not isinstance(index, list):
-        raise TypeError('\n\nParameter index must be a list.\n')
-    if not all(isinstance(i, int) for i in index):
-        raise ValueError('\n\nParameter index must be a list of integers.\n')
-    if not all(-1 < i < sites for i in index):
-        raise ValueError('\n\nElements of index must be between 0 and sites - 1.\n')
-
-def test_shift(shift):
-    '''
-    Check *shift_x* and *shift_y*.
-    :raises TypeError: Parameter delta must be a real number.
-    '''
-    if not isinstance(shift, (int, float)):
-        raise TypeError('\n\nParameter shift must be a real number.\n')
-
-
-def test_boundary_line(cx, cy, co):
-    '''
-    Check *boundary_line*.
-    :raises TypeError: Parameter cx must be a real number.
-    :raises TypeError: Parameter cy must be a real number.
-    :raises TypeError: Parameter co must be a real number.
-    '''
-    if not isinstance(cx, (int, float)):
-        raise TypeError('\n\nParameter cx must be a real number.\n')
-    if not isinstance(cy, (int, float)):
-        raise TypeError('\n\nParameter cy must be a real number.\n')
-    if not isinstance(co, (int, float)):
-        raise TypeError('\n\nParameter co must be a real number.\n')
-
-
-def test_ellipse(a, b):
-    '''
-    Check *ellipse_in* and *ellipse_out*.
-    :raises TypeError: Parameter a must be a real number.
-    :raises TypeError: Parameter b must be a real number.
-    '''
-    if not isinstance(a, (int, float)):
-        raise TypeError('\n\nParameter a must be a positive real number.\n')
-    if not isinstance(b, (int, float)):
-        raise TypeError('\n\nParameter b must be a positive real number.\n')
-    if a <= 0:
-        raise ValueError('\n\nParameter a must be a positive real number.\n')
-    if b <= 0:
-        raise ValueError('\n\nParameter b must be a positive real number.\n')
-
-
 class lattice():
-    '''
-    Build up 1D or 2D lattice.
-    In 2D, a lattice can be expressed by: 
-    :math:`\mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2`
-    where :math:`\mathbf{a}_1` and `\mathbf{a}_2` are the two primitive vectors.
-    '''
     def __init__(self, unit_cell, prim_vec):
         '''
+        Build up 1D or 2D lattice.
+        Lattice is expressed by: 
+        :math:`\mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2`
+        where :math:`\mathbf{a}_1` and `\mathbf{a}_2` are the two primitive vectors.
+        where :math:`n_1` and `n_2` are the number of unit cells along
+          `\mathbf{a}_1` and `\mathbf{a}_2`.
         :param unit_cell: List of dictionaries. One dictionary per site within the unit cell.
-          Each dictionary with two keys: 
+          Each dictionary has two keys: 
             * 'tag', label of the site.
             * 'r0', position. 
         :param prim_vec: Dictionary. Define the two primitive vectors.
@@ -189,8 +25,8 @@ class lattice():
                 * :math:`\mathbf{a}_1| = norm (1, 0)` .
                 * :math:`|\mathbf{a}_1|= norm (\cos angle, \sin \angle )`.
         '''
-        test_unit_cell(unit_cell)
-        test_prim_vec(prim_vec)
+        error_handling.unit_cell(unit_cell)
+        error_handling.prim_vec(prim_vec)
         self.unit_cell = unit_cell
         self.prim_vec = prim_vec
         self.tags = np.unique(np.array([dic['tag'] for dic in self.unit_cell]))
@@ -202,10 +38,13 @@ class lattice():
         '''
         Get the lattice positions
 
-        :param n1: Number of unit cells along :math:`\mathbf{a}_1`.
-        :param n2: Default value 1. Number of unit cells along :math:`\mathbf{a}_2`.
+        :param n1: Positive Integer. 
+            Number of unit cells along :math:`\mathbf{a}_1`.
+        :param n2: Positive Integer. Default value 1. 
+            Number of unit cells along :math:`\mathbf{a}_2`.
         '''
-        test_get_lattice(n1, n2)
+        self.coor = np.array([], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
+        error_handling.get_lattice(n1, n2)
         self.n1, self.n2 = n1, n2
         x = self.prim_vec['norm'] * np.arange(n1, dtype='f16')
         y = np.sin(PI / 180. * self.prim_vec['angle']) \
@@ -232,7 +71,7 @@ class lattice():
 
         :param coor: Structured array with keys: {'x', 'y', 'tag'}.
         '''
-        test_coor(coor)
+        error_handling.coor(coor)
         self.coor = np.concatenate([self.coor, coor])
         self.sites += len(self.coor)
 
@@ -244,8 +83,8 @@ class lattice():
 
         :param index: List of site indices to be removed.
         '''
-        test_coor_empty(self.coor)
-        test_remove_sites(index, self.sites)
+        error_handling.empty_coor(self.coor)
+        error_handling.remove_sites(index, self.sites)
         mask = np.ones(self.sites, bool)
         mask[index] = False
         self.coor = self.coor[mask]
@@ -256,7 +95,7 @@ class lattice():
         Remove dangling sites
         (sites connected with just another site).
         '''
-        test_coor_empty(self.coor)
+        error_handling.empty_coor(self.coor)
         while True:
             dif_x = self.coor['x'] - self.coor['x'].reshape(self.sites, 1)
             dif_y = self.coor['y'] - self.coor['y'].reshape(self.sites, 1)
@@ -277,46 +116,48 @@ class lattice():
         '''
         Shift the x coordinates.
 
-        :param shift: Shift value.
+        :param shift: Real number. Shift value.
         '''
-        test_coor_empty(self.coor)
-        test_shift(shift)
+        error_handling.empty_coor(self.coor)
+        error_handling.real_number(shift, 'shift')
         self.coor['x'] += shift
 
     def shift_y(self, shift):
         '''
         Shift by *delta_x* the x coordinates.
 
-        :param shift: Shift value.
+        :param shift: Real number. Shift value.
         '''
-        test_coor_empty(self.coor)
-        test_shift(shift)
+        error_handling.empty_coor(self.coor)
+        error_handling.real_number(shift, 'shift')
         self.coor['y'] += shift
 
     def change_sign_x(self):
         '''
         Change x coordinates sign.
         '''
-        test_coor_empty(self.coor)
+        error_handling.empty_coor(self.coor)
         self.coor['x'] *= -1
 
     def change_sign_y(self):
         '''
         Change y coordinates sign.
         '''
-        test_coor_empty(self.coor)
+        error_handling.empty_coor(self.coor)
         self.coor['y'] *= -1
 
     def boundary_line(self, cx, cy, co):
         '''
         Select sites according to :math:`c_yy+c_xx > c_0`.
 
-        :param cx: cx value.
-        :param cy: cy value.
-        :param co: co value.
+        :param cx: Real number. cx value.
+        :param cy: Real number. cy value.
+        :param co: Real number. co value.
         '''
-        test_coor_empty(self.coor)
-        test_boundary_line(cx, cy, co)
+        error_handling.empty_coor(self.coor)
+        error_handling.real_number(cx, 'cx')
+        error_handling.real_number(cy, 'cy')
+        error_handling.real_number(co, 'co')
         self.coor = self.coor[cy * self.coor['y'] + cx * self.coor['x'] > co]
         self.sites = len(self.coor)
 
@@ -324,11 +165,12 @@ class lattice():
         '''
         Select sites according to :math:`x^2/a^2+y^2/b^2 < 1`.
 
-        :param a: a value.
-        :param b: b value.
+        :param a: Real number. a value.
+        :param b: Real number. b value.
         '''
-        test_coor_empty(self.coor)
-        test_ellipse(a, b)
+        error_handling.empty_coor(self.coor)
+        error_handling.positive_real(a, 'a')
+        error_handling.positive_real(b, 'b')
         self.coor = self.coor[(self.coor['x'] / a) ** 2 +  (self.coor['y'] / b) ** 2 < 1.]
         self.sites = len(self.coor)
 
@@ -336,19 +178,20 @@ class lattice():
         '''
         Select sites according to :math:`x^2/a^2+y^2/b^2 > 1`.
 
-        :param a: a value.
-        :param b: b value.
+        :param a: Real number. a value.
+        :param b: Real number. b value.
         '''
-        test_coor_empty(self.coor)
-        test_ellipse(a, b)
-        self.coor = self.coor[(self.coor['x'] / a) ** 2 +  (self.coor['y'] / b) ** 2 > 1.]
+        error_handling.empty_coor(self.coor)
+        error_handling.positive_real(a, 'a')
+        error_handling.positive_real(b, 'b')
+        self.coor = self.coor[(self.coor['x'] / a) ** 2 +  (self.coor['y'] / b) ** 2 >= 1.]
         self.sites = len(self.coor)
 
     def center(self):
         '''
         Fix the center of mass of the lattice at (0, 0).
         '''
-        test_coor_empty(self.coor)
+        error_handling.empty_coor(self.coor)
         self.coor['x'] -= np.mean(self.coor['x'])
         self.coor['y'] -= np.mean(self.coor['y'])
 
@@ -356,9 +199,9 @@ class lattice():
         '''
         Overloading operator +.
         '''
-        test_lat(other)
-        test_coor_empty(self.coor)
-        test_coor_empty(other.coor)
+        error_handling.lat(other)
+        error_handling.empty_coor(self.coor)
+        error_handling.empty_coor(other.coor)
         sites = self.sites + other.sites
         tags = np.unique([self.tags, other.tags])
         coor = np.concatenate([self.coor, other.coor])
@@ -372,9 +215,9 @@ class lattice():
         '''
         Overloading operator +=.
         '''
-        test_lat(other)
-        test_coor_empty(self.coor)
-        test_coor_empty(other.coor)
+        error_handling.lat(other)
+        error_handling.empty_coor(self.coor)
+        error_handling.empty_coor(other.coor)
         self.coor = np.concatenate([self.coor, other.coor])
         self.sites += other.sites
         self.tags = np.unique([self.tags, other.tags])
@@ -384,9 +227,9 @@ class lattice():
         '''
         Overloading operator -.
         '''
-        test_lat(other)
-        test_coor_empty(self.coor)
-        test_coor_empty(other.coor)
+        error_handling.lat(other)
+        error_handling.empty_coor(self.coor)
+        error_handling.empty_coor(other.coor)
         tags = np.unique([self.tags, other.tags])
         boo = np.zeros(self.sites, bool)
         for i, c in enumerate(other.coor):
@@ -402,9 +245,9 @@ class lattice():
         '''
         Overloading operator -=.
         '''
-        test_lat(other)
-        test_coor_empty(self.coor)
-        test_coor_empty(other.coor)
+        error_handling.lat(other)
+        error_handling.empty_coor(self.coor)
+        error_handling.empty_coor(other.coor)
         ind_remove = []
         boo = np.zeros(self.sites, bool)
         for i, c in enumerate(other.coor):
