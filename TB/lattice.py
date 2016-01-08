@@ -9,7 +9,7 @@ class lattice():
     def __init__(self, unit_cell, prim_vec):
         '''
         Build up 1D or 2D lattice.
-        Lattice is expressed by: 
+        Lattice is defined by: 
         :math:`\mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2`
         where :math:`\mathbf{a}_1` and `\mathbf{a}_2` are the two primitive vectors.
         where :math:`n_1` and `n_2` are the number of unit cells along
@@ -21,9 +21,9 @@ class lattice():
         :param prim_vec: Dictionary. Define the two primitive vectors.
            Dictionary with two keys: 
             * 'norm', norm of both primitive vectors: `|\mathbf{a}_1|=|\mathbf{a}_2| = norm` 
-            * 'angle', angle between the two primitive:
+            * 'angle', angle between the two primitive vectors:
                 * :math:`\mathbf{a}_1| = norm (1, 0)` .
-                * :math:`|\mathbf{a}_1|= norm (\cos angle, \sin \angle )`.
+                * :math:`|\mathbf{a}_1|= norm (\cos angle, \sin angle )`.
         '''
         error_handling.unit_cell(unit_cell)
         error_handling.prim_vec(prim_vec)
@@ -195,6 +195,32 @@ class lattice():
         self.coor['x'] -= np.mean(self.coor['x'])
         self.coor['y'] -= np.mean(self.coor['y'])
 
+    def rotation(self, theta):
+        '''
+        Rotate the lattice structure by the angle :math:`theta`.
+
+        :param theta: Rotation angle in degrees. 
+        '''
+        error_handling.empty_coor(self.coor)
+        error_handling.real_number(theta, 'theta')
+        theta *= np.pi / 180
+        for dic in self.unit_cell:
+            x  = self.coor['x'] - dic['r0'][0]
+            y  = self.coor['y'] - dic['r0'][1]
+            self.coor['x'] = x * np.cos(theta) - y * np.sin(theta)# + dic['r0'][0]
+            self.coor['y'] = y * np.cos(theta) + x* np.sin(theta)# + dic['r0'][1]
+
+    def check_coor(self):
+        '''
+        Keep only sites with different coordinates.
+        '''
+        error_handling.empty_coor(self.coor)
+        coor = self.coor[['x', 'y']].copy()
+        coor['x'], coor['y'] = self.coor['x'].round(4), self.coor['y'].round(4)
+        _, idx = np.unique(coor, return_index=True)
+        self.coor = self.coor[idx]
+        self.sites = len(self.coor)
+
     def __add__(self, other):
         '''
         Overloading operator +.
@@ -202,13 +228,12 @@ class lattice():
         error_handling.lat(other)
         error_handling.empty_coor(self.coor)
         error_handling.empty_coor(other.coor)
-        sites = self.sites + other.sites
-        tags = np.unique([self.tags, other.tags])
         coor = np.concatenate([self.coor, other.coor])
+        tags = np.concatenate([self.tags, other.tags])
         lat = lattice(unit_cell=self.unit_cell, prim_vec=self.prim_vec)
         lat.add_sites(coor)
-        lat.sites = self.sites
-        lat.tags = self.tags
+        lat.sites = self.sites + other.sites
+        lat.tags = np.unique(tags)
         return lat
 
     def __iadd__(self, other):
@@ -226,6 +251,10 @@ class lattice():
     def __sub__(self, other):
         '''
         Overloading operator -.
+
+        .. note::
+
+            The tags are not consider in the lattice subtraction.  
         '''
         error_handling.lat(other)
         error_handling.empty_coor(self.coor)
@@ -244,6 +273,10 @@ class lattice():
     def __isub__(self, other):
         '''
         Overloading operator -=.
+
+        .. note::
+
+            The tags are not consider in the lattice subtraction.  
         '''
         error_handling.lat(other)
         error_handling.empty_coor(self.coor)
@@ -255,241 +288,3 @@ class lattice():
         self.coor = self.coor[np.logical_not(boo)]
         self.sites = sum(np.logical_not(boo))
         return self
-
-
-"""
-
-    def plot(self, ms=20, lw=5, fs=20, plt_index=None, figsize=None):
-        '''
-        Plot lattice
-        '''
-        # plot sites
-        colors = ['b', 'r', 'g', 'y', 'm', 'k']
-        fig, ax = plt.subplots(figsize=figsize)
-        for color, dic in zip(colors, self.unit_cell):
-            plt.plot(self.coor['x'][self.coor['tag'] == dic['tag']],
-                        self.coor['y'][self.coor['tag'] == dic['tag']],
-                       'o', color=color, ms=ms, markeredgecolor='none')
-        ax.set_aspect('equal')
-        ax.set_xlim([np.min(self.coor['x'])-0.5, np.max(self.coor['x'])+0.5])
-        ax.set_ylim([np.min(self.coor['y'])-0.5, np.max(self.coor['y'])+0.5])
-        # plot indices
-        if plt_index:
-            indices = ['{}'.format(i) for i in range(self.sys.lat.sites)]
-            for l, x, y in zip(indices, coor['x'], coor['y']):
-                plt.annotate(l, xy=(x, y), xytext=(0, 0),
-                            textcoords='offset points', ha='right',
-                            va='bottom', size=fs)
-        #xa = ax.get_xaxis()
-        #xa.set_major_locator(plt.MaxNLocator(integer=True))
-        #ya = ax.get_yaxis()
-        #ya.set_major_locator(plt.MaxNLocator(integer=True))
-        plt.draw()
-        return fig
-
-from math import sin, sqrt, pi
-
-'''
-from math import sqrt
-
-from eigTB import *
-from plotTB import *
-
-
-# ADD
-n1, n2 = 5, 4
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}]
-prim_vec = {'norm': 1, 'angle': 0}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-
-lat1.get_lattice(n1=n1, n2=1)
-print(lat1.coor)
-unit_cell = [{'tag': b'a', 'r0': [2, -4]}]
-prim_vec = {'norm': 1, 'angle': 90}
-lat2 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-lat2.get_lattice(n1=1, n2=n2)
-print(lat2.coor)
-lat1 += lat2
-lat1.plot()
-
-'''
-'''
-# REMOVE
-n1, n2 = 5, 2
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}]
-prim_vec = {'norm': 1, 'angle': 0}
-lat3 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-
-lat3.get_lattice(n1=n1, n2=1)
-unit_cell = [{'tag': b'a', 'r0': [2, 0]}]
-prim_vec = {'norm': 1, 'angle': 0}
-lat4 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-lat4.get_lattice(n1=1, n2=n2)
-lat3 -= lat4
-print(lat3.coor)
-lat3.plot()
-'''
-'''
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-n1, n2 = 7, 7
-lat1.get_lattice(n1=n1, n2=n2)
-fig_lat = lat1.plot(ms=20)
-
-
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat2 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-n1, n2 = 3, 3
-lat2.get_lattice(n1=n1, n2=n2)
-
-#lat2.coor['x'] += sqrt(3)
-#lat2.coor['x'] = np.round(lat2.coor['x'], 3)
-lat2.coor['y'] += 3
-fig_lat = lat2.plot(ms=20)
-
-lat1 -= lat2
-lat1.plot()
-
-
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-'''
-'''
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-n1, n2 = 2, 2
-lat1.get_lattice(n1=n1, n2=n2)
-#lat1.remove_dangling()
-fig_lat = lat1.plot(ms=20)
-
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                  {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-coor = np.array([(0, 0, 'a'), (1, 1, 'a'), (2, 2, 'a')], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
-
-lat1.add_sites(coor)
-print(lat1.coor)
-#lat1.remove_dangling()
-fig_lat = lat1.plot(ms=20)
-'''
-
-
-from system import *
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-
-n1, n2 = 10, 10
-#sys1 = system(lat=lat1)
-
-#sys1.set_hopping([{'n': 1, 't': 1}])
-#lat1.remove_dangling()
-#n = 21
-
-# triangle zz
-#lat1.get_lattice(n1=n+2, n2=n+2)
-#lat1.boundary_line(cx=-sqrt(3), cy=-1, co=-3*(n+1))
-#fig_lat = lat1.plot(ms=20)
-
-# hexa zz
-#lat1.get_lattice(n1=2*n, n2=2*n)
-#lat1.boundary_line(cx=sqrt(3), cy=1, co=3*(n-1))
-#lat1.boundary_line(cx=-sqrt(3), cy=-1, co=-9*n+1)
-
-#tri ac
-
-
-# hexa ac
-
-#n2 = int(1 + (2*n * sqrt(3) - 2) / 2.5)
-#lat1.get_lattice(n1=n, n2=10)
-
-
-
-#square
-#n2 = int(1 + (2*n * sqrt(3) - 2) / 2.5)
-#lat1.get_lattice(n1=n, n2=10)
-#(self.coor['x'] > DX * (n-1)-0.1) & (self.coor['x'] < DX * 2*n-0.1)
-#lat1.boundary_line(cx=-1, cy=0, co=-2*sqrt(3)*n)
-#lat1.boundary_line(cx=1, cy=0, co=sqrt(3)/2*(2*n-1)+.1)
-
-#lat1.boundary_line(cx=-sqrt(3), cy=0, co=-9*n+1)
-#self.sites = len(self.coor)
-#ind = np.argwhere((self.coor['x'] > DX * (n-1)-0.1) & (self.coor['x'] < DX * 2*n-0.1))
-#lat1.boundary_line(cx=-0.5, cy=+1, co=1)
-#lat1.boundary_line(cx=1, cy=0, co=-10)
-#lat1.boundary_line(cx=-1, cy=0, co=10)
-#lat1.boundary_line(cx=0, cy=1, co=-5)
-#lat1.boundary_line(cx=0, cy=-1, co=5)
-
-#lat1.remove_dangling()
-
-#circle
-n = 3
-#lat1.get_lattice(n1=2*n, n2=2*n)
-#(self.coor['x'] > DX * (n-1)-0.1) & (self.coor['x'] < DX * 2*n-0.1)
-#lat1.coor_center()
-#lat1.ellipse_in(a=n*sqrt(3)/2, b=n*sqrt(3)/2)
-#lat1.boundary_line(cx=1, cy=0, co=sqrt(3)/2*(2*n-1)+.1)
-nn = 3 * n - 2
-lat1.get_lattice(n1=2*nn, n2=2*nn)
-'''
-ind = np.argwhere((self.coor['x'] > DX * (2*nn-1)-.1) & 
-                            (self.coor['y'] >  0.5 / DX  * self.coor['x']  - nn - .1) &
-                            (self.coor['y'] < -0.5 / DX  * self.coor['x'] + 4 * nn - 1 + .1))
-'''
-lat1.boundary_line(cx=1, cy=0, co=sqrt(3)/2* (2*nn-1)-.1)
-lat1.boundary_line(cx=-1/sqrt(3), cy=1, co=-nn -.1)
-lat1.boundary_line(cx=-1/sqrt(3), cy=-1, co=-4*nn +1-.1)
-
-fig_lat = lat1.plot(ms=20)
-#lat1.line_lower(a=-0.5, b=4)
-#fig_lat = lat1.plot(ms=20)
-
-'''
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat1 = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-n1, n2 = 30, 10
-lat1.get_lattice(n1=n1, n2=n2)
-lat1.coor_center()
-fig_lat = lat1.plot(ms=20)
-lat1.ellipse_in(a=12*sqrt(3)-0.5, b=11+0.5)
-fig_lat = lat1.plot(ms=10)
-
-lat1.remove_dangling()
-'''
-from math import sqrt
-from plot import *
-unit_cell = [{'tag': b'a', 'r0': [0, 0]}, 
-                 {'tag': b'b', 'r0': [0.5*sqrt(3), 0.5]}]
-prim_vec = {'norm': sqrt(3), 'angle': 60}
-lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-plt = plot(lat=lat)
-
-n = 1 # no of plackets along one edge.
-lat.get_lattice(n1=n+2, n2=n+2)
-
-'''
-"""
-'''
-class a:
-    def __init__(self):
-        pass
-
-aa = a()
-bb = a()
-print(isinstance(aa, a))
-print(isinstance(bb, a))
-'''
