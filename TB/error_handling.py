@@ -10,7 +10,7 @@ import numpy as np
 
 def boolean(var, var_name):
     '''
-    Check method *get_eig*.
+    Check if *var* is a boolean.
 
     :raises TypeError: Parameter *var* must be a bool.
     '''
@@ -33,7 +33,7 @@ def positive_int(var, var_name):
 
 def positive_int_lim(var, var_name, nmax):
     '''
-    Check if *var* is a positive integer.
+    Check if *var* is a positive integer smaller than nmax.
 
     :raises TypeError: Parameter *var* must be an integer.
     :raises ValueError: Parameter *var* must be a positive integer.
@@ -51,7 +51,7 @@ def positive_int_lim(var, var_name, nmax):
 
 def real_number(var, var_name):
     '''
-    Check parameter *var*.
+    Check if parameter *var* is a real number.
 
     :raises TypeError: Parameter *var* must be a real number.
     '''         
@@ -60,7 +60,7 @@ def real_number(var, var_name):
 
 def positive_real(var, var_name):
     '''
-    Check parameter *var*.
+    Check if parameter *var* is a positive number.
 
     :raises TypeError: Parameter *var* must be a real number.
     '''         
@@ -71,7 +71,7 @@ def positive_real(var, var_name):
 
 def number(var, var_name):
     '''
-    Check parameter *var*.
+    Check if parameter *var* is a number.
 
     :raises TypeError: Parameter *var* must be a real number.
     '''         
@@ -79,25 +79,25 @@ def number(var, var_name):
         raise TypeError('\n\nParameter {} must be a real number.\n'.format(var_name))
 
 
-def larger(var1, var_name1, val):
+def larger(var1, var_name1, var2, var_name2):
     '''
     Check if *var1* larger than *val*.
 
-    :raises ValueError: Parameter *var* larger than *val*.
+    :raises ValueError: Parameter *var1* larger than *var2*.
     '''         
     if var1 >= var2:
-        raise ValueError('\n\nParameter {} must be larger than {}.\n'
-                                    .format(var_name1, val))
+        raise ValueError('\n\n{} must be larger than {}.\n'
+                                    .format(var_name1, var_name2))
 
 
-def compare(var1, var_name1, var2, var_name2):
+def smaller(var1, var_name1, var2, var_name2):
     '''
     Check if *var1* smaller than *var2*.
 
     :raises ValueError: Parameter *var1* must be smaller than *var2*.
     '''         
     if var1 >= var2:
-        raise ValueError('\n\nParameter {} must be smaller than Parameter {}.\n'
+        raise ValueError('\n\n{} must be smaller than {}.\n'
                                     .format(var_name1, var_name2))
 
 def string(var, var_name):
@@ -119,8 +119,6 @@ def ndarray(var, var_name, length):
     :raises TypeError: Parameter *var* must be a numpy ndarray.
     :raises ValueError: length array must be equal to length.
     '''
-    if var is None:
-        return
     if not isinstance(var, np.ndarray):
         raise TypeError('\n\nParameter {} must be a numpy ndarray.\n'.format(var_name))
     if len(var) != length:
@@ -159,12 +157,12 @@ def list_tuple_2elem(var, var_name):
 
 def lat(lat):
     '''
-    Check if parameter is instance of the *lattice*.
-    :raises TypeError: Parameter must be a instance of the class lattice.
+    Check if parameter is an instance of the *lattice*.
+    :raises TypeError: Parameter must be an instance of the class lattice.
     '''
     mother_class_name = str(lat.__class__.__bases__[0])[8:-2]
     if not lat.__class__.__name__ == 'lattice' and not mother_class_name == 'lattice.lattice':
-        raise TypeError('\n\nParameter must be a instance of the class lattice.\n')
+        raise TypeError('\n\nParameter must be an instance of the class lattice.\n')
 
 
 def unit_cell(unit_cell):
@@ -177,9 +175,9 @@ def unit_cell(unit_cell):
     :raises TypeError: Key "tags" must contain a binary char.
     :raises ValueError: Key "tags" must contain a binary char.
     :raises ValueError: Key "r0" must contain be a list.
-    :raises TypeError: Key "r0" must contain be a list.
-    :raises ValueError: Key "r0" must contain a list of length two.
-    :raises ValueError: Key "r0" must contain a list of two real numbers.
+    :raises TypeError: Key "r0" must contain be a tuple.
+    :raises ValueError: Key "r0" must contain a tuple of length two.
+    :raises ValueError: Key "r0" must contain a tuple of two real numbers.
     '''
     if not isinstance(unit_cell, list):
         raise TypeError('\n\nParameter unit_cell must be a list.\n')
@@ -192,12 +190,12 @@ def unit_cell(unit_cell):
             raise TypeError('\n\Key "tags" must contain a binary char.\n')    
         if not len(dic['tag']) == 1:
             raise ValueError('\n\Key "tags" must be a binary char.\n')    
-        if not isinstance(dic['r0'], list):
-            raise TypeError('\n\Key "r0" must be a list.\n')
+        if not isinstance(dic['r0'], tuple):
+            raise TypeError('\n\Key "r0" must be a tuple.\n')
         if not len(dic['r0']) == 2:
-            raise ValueError('\n\Key "r0" must contain a list of length two.\n')    
+            raise ValueError('\n\Key "r0" must contain a tuple of length two.\n')    
         if not isinstance(dic['r0'][0], (int, float)) or not isinstance(dic['r0'][1], (int, float)):
-            raise ValueError('\n\Key "r0" must contain a list of two real numbers.\n')
+            raise ValueError('\n\Key "r0" must contain a tuple of two real numbers.\n')
 
     
 def prim_vec(prim_vec):
@@ -205,27 +203,41 @@ def prim_vec(prim_vec):
     Check parameter *prim_vec*.
 
     :raises TypeError: Parameter prim_vec must be a dictionary.
-    :raises KeyError: Parameter prim_vec must contain the key "norm".
-    :raises KeyError: Parameter prim_vec must contain the key "angle".
-    :raises TypeError: Parameter  prim_vec["angle"] must be a real number.
-    :raises TypeError: Parameter prim_vec["norm"] must be a real number.
-    :raises ValueError: Parameter prim_vec["norm"] must be a positive number.
+    :raises ValueError: Parameter prim_vec must be a dictionary.
+      of length 1 for 1D lattices or length 2 fro 2D lattices.
+    :raises KeyError: Parameter prim_vec must contain the key "a1".
+    :raises KeyError: Parameter prim_vec must contain the key "a2".
+    :raises TypeError: "a1" value must be a tuple.
+    :raises TypeError: "a2" value must be a tuple.
+    :raises ValueError: "a1" value must be a tuple of length 2.
+    :raises ValueError: "a2" value must be a tuple of length 2.
+    :raises ValueError: "a1" value must contain real numbers.
+    :raises ValueError: "a2" value must contain real numbers.
     '''
     if not isinstance(prim_vec, dict):
         raise TypeError('\n\nParameter prim_vec must be a dictionary.\n')
-    if 'norm' not in prim_vec:
-        raise KeyError('\n\nParameter prim_vec must contain the key "norm".\n')
-    if 'angle' not in prim_vec:
-        raise KeyError('\n\nParameter prim_vec must contain the key "angle".\n')
-    if not isinstance(prim_vec['angle'], (int, float)):
-        raise TypeError('\n\nParameter  prim_vec["angle"] must be a real number.\n')
-    if not isinstance(prim_vec['norm'], (int, float)):
-        raise TypeError('\n\nParameter prim_vec["norm"] must be a real number.\n')
-    if prim_vec['norm'] <= 0:
-        raise ValueError('\n\nParameter prim_vec["norm"] must be a positive number.\n')
-    if prim_vec['norm'] <= 0.2:
-        raise ValueError('\n\nParameter prim_vec["norm"] must be a larger than 0.2.\n')
-
+    if not len(prim_vec) == 1 and not len(prim_vec) == 2:
+        raise ValueError('\n\nParameter prim_vec must be a dictionary.\n'
+                                  'of length 1 for 1D lattices or length 2 fro 2D lattices.\n')        
+    if 'a1' not in prim_vec:
+        raise KeyError('\n\nParameter prim_vec must contain the key "a1".\n')
+    if not isinstance(prim_vec['a1'], tuple):
+        raise TypeError('\n\n"a1" value must be a tuple.\n')
+    if not len(prim_vec['a1']) == 2:
+        raise ValueError('\n\n"a1" value must be a tuple of length 2.\n')
+    if (not isinstance(prim_vec['a1'][0], (int, float))) or \
+       (not isinstance(prim_vec['a1'][1], (int, float))):
+        raise ValueError('\n\n"a1" value must contain real numbers.\n')
+    if len(prim_vec) == 2: 
+        if 'a2' not in prim_vec:
+            raise KeyError('\n\nParameter prim_vec must contain the key "a2".\n')
+        if not isinstance(prim_vec['a1'], tuple):
+            raise TypeError('\n\n"a2" Value must be a tuple.\n')
+        if not len(prim_vec['a2']) == 2:
+            raise ValueError('\n\n"a2" value must be a tuple of length 2.\n')
+        if (not isinstance(prim_vec['a2'][0], (int, float))) or \
+           (not isinstance(prim_vec['a2'][1], (int, float))):
+            raise ValueError('\n\n"a2" value must contain real numbers.\n')
 
 def get_lattice(n1, n2):
     '''
@@ -348,11 +360,11 @@ def sites(sites):
 def sys(sys):
     '''
     Check if parameter is an instance of the *system*.
-    :raises TypeError: Parameter must be a instance of the class system.
+    :raises TypeError: Parameter must be an instance of the class system.
     '''
     mother_class_name = str(sys.__class__.__bases__[0])[8: -2]
     if not sys.__class__.__name__ == 'system' and not mother_class_name == 'system.system':
-        raise TypeError('\n\nParameter must be a instance of the class system.\n')
+        raise TypeError('\n\nParameter must be an instance of the class system.\n')
 
 
 def print_hopping(n, nmax):
@@ -429,9 +441,9 @@ def set_hopping(list_hop, n_max):
         if 'ang' in dic:
             if not isinstance(dic['ang'], (int, float)):
                 raise TypeError('\n\n"ang" value must be a real number.\n')
-            if dic['ang'] < 0 or dic['ang'] >= 180:
-                raise ValueError('\n\n"ang" value must be a real number'
-                                          'between [0, 180].\n')
+            #if dic['ang'] < 0 or dic['ang'] >= 180:
+            #    raise ValueError('\n\n"ang" value must be a real number'
+            #                              'between [0, 180].\n')
 
 
 
@@ -513,6 +525,15 @@ def empty_hop(hop):
     '''
     if hop.size == 0:
         raise RuntimeError('\n\nRun method set_hopping first\n')
+
+def empty_hop(hop_low):
+    '''
+    Check if *hop_low* not empty.
+
+    :raises RuntimeError: Run method set_hopping_low first.
+    '''
+    if hop_low.size == 0:
+        raise RuntimeError('\n\nRun method set_hopping_low first\n')
 
 
 def hop_sites(hop, sites):
@@ -623,7 +644,7 @@ def lims(lims):
         list_tuple_2elem(lims, 'lims')
         real_number(lims[0], 'lims[0]')
         real_number(lims[1], 'lims[1]')
-        compare(lims[0], 'lims[0]', lims[1], 'lims[1]')
+        smaller(lims[0], 'lims[0]', lims[1], 'lims[1]')
 
 
 def lims_positive(lims):
@@ -644,7 +665,7 @@ def lims_positive(lims):
         list_tuple_2elem(lims, 'lims')
         positive_real(lims[0], 'lims[0]')
         positive_real(lims[1], 'lims[1]')
-        compare(lims[0], 'lims[0]', lims[1], 'lims[1]')
+        smaller(lims[0], 'lims[0]', lims[1], 'lims[1]')
 
 #################################
 # CLASS PLOT EXCEPTION HANDLING
@@ -655,20 +676,20 @@ def fig(fig):
     '''
     Check if fig is an instance of *Figure*.
 
-    :raises TypeError: fig must be a instance of *Figure*.
+    :raises TypeError: fig must be an instance of *Figure*.
     '''
     if not fig.__class__.__name__ == 'Figure':
-        raise TypeError('\n\nfig must be a instance of *Figure*.\n')
+        raise TypeError('\n\nfig must be an instance of *Figure*.\n')
 
 
 def ani(ani):
     '''
     Check if ani is an instance of *FuncAnimation*.
 
-    :raises TypeError: ani must be a instance of *FuncAnimation*.
+    :raises TypeError: ani must be an instance of *FuncAnimation*.
     '''
     if not fig.__class__.__name__ == 'FuncAnimation':
-        raise TypeError('\n\nani must be a instance of *FuncAnimation*.\n')
+        raise TypeError('\n\nani must be an instance of *FuncAnimation*.\n')
 
 
 def file_format(file_format):

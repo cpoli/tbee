@@ -52,7 +52,7 @@ class propagation():
         H = np.zeros((N, N))
         H[:sites, :sites] = ham.imag
         H[:sites, sites:] = ham.real
-        H[sites:, :sites] = -ham.real
+        H[sites:, :sites] = - ham.real
         H[sites:, sites:] = ham.imag
         y0 = np.zeros(N)
         y0[:sites] = psi_init.real
@@ -60,7 +60,7 @@ class propagation():
         t = np.arange(0., self.dz*self.steps, self.dz)
         param= (H, nu)
         y = odeint(eq_motion, y0, t, args=param)
-        self.prop = y[:, :sites].T +1j*y[:, sites:].T
+        self.prop = y[:, :sites].T +1j * y[:, sites:].T
 
     def get_prop(self, ham, psi_init, norm=True):
         '''
@@ -93,8 +93,8 @@ class propagation():
         psi_init = np.array([psi_init])
         no = len(hams)
         self.prop[:, 0] = psi_init
-        diag = 1j*np.ones(self.lat.sites, 'c16')
-        delta = self.steps //(no+1)
+        diag = 1j * np.ones(self.lat.sites, 'c16')
+        delta = self.steps // (1 + no)
         A = (sparse.diags(diag, 0) - 0.5 * self.dz * hams[0]).toarray()
         B = (sparse.diags(diag, 0) + 0.5 * self.dz * hams[0]).toarray()
         mat = (np.dot(LA.inv(A), B))
@@ -138,7 +138,6 @@ class propagation():
         plt.ylabel('n', fontsize=fs)
         plt.xlabel('z', fontsize=fs)
         vmin, vmax = 0., np.max(color[:, 0: self.lat.sites])
-        
         extent = (0, self.steps*self.dz, 
                        -self.lat.sites//2+0.5, self.lat.sites-self.lat.sites//2+0.5)
         aspect = 'auto'

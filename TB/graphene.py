@@ -146,7 +146,7 @@ class grapheneSys(system):
         self.butterfly = np.zeros((N, self.lat.sites))
         for i, beta in enumerate(self.betas):
             self.set_hop_linear_strain(t=1, beta=beta)
-            self.get_ham(complex_transpose=True)
+            self.get_ham()
             self.butterfly[i] = LA.eigvalsh(self.ham.toarray())
 
     def get_beta_lims(self):
@@ -162,7 +162,6 @@ class grapheneSys(system):
         yb_max = self.lat.coor['y'][self.lat.coor['y'] == yb_max_val][0]
         ym = 0.5 * (2 * yb_max - 1)
         beta_lims[0] = -4. / ym + 1e-6
-        print(ym)
         print('Strain limits: {}'.format(beta_lims))
         return beta_lims
 

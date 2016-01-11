@@ -5,57 +5,6 @@ from matplotlib.legend_handler import HandlerLine2D
 import error_handling
 import os
 
-#################################
-# CLASS PLOT EXCEPTION HANDLING 
-#################################
-
-"""
-def test_init(lat, sys):
-    if lat is not None:
-        error_handling.lat(lat)
-    if sys is not None:
-        error_handling.sys(sys)
-    if lat is None and sys is None:
-        raise TypeError('\n\nlat or sys must be passed as a parameter.\n') 
-
-
-
-def test_figsize(figsize):
-    '''
-    Check parameter *figsize*.
-
-    :raises TypeError: Parameter *figsize* must be a list/tuple.
-    :raises ValueError: Parameter *figsize* must contain positive numbers.
-    '''
-    if figsize is None:
-        return
-    if not isinstance(figsize, (list, tuple)):
-        raise TypeError('\n\nParameter figsize must be a list/tuple\n')
-    if len(figsize) != 2:
-        raise ValueError('\n\nParameter figsize must be a list/tuple of length 2\n')
-    if isinstance(figsize, (list, tuple)):
-        if any([val <= 0 for val in figsize]):
-            raise ValueError('\n\nParameter figsize must contain\n'
-                                       'positive numbers.\n')
-
-def test_intensity(intensity, sites):
-    '''
-    Check parameter *intensity*.
-
-    :raises TypeError: Parameter *intensity* must be a numpy.ndarray.
-    :raises ValueError: intensity length must be equal to sites.
-    '''
-    if intensity is None:
-        return
-    if not isinstance(intensity, np.ndarray):
-        raise TypeError('\n\nParameter intensity must be a numpy.ndarray.\n')
-    if len(intensity) != sites:
-        raise ValueError('\n\nintensity length must be equal to sites.\n')
-
-def test_1d(coor):
-    if not np.allclose(coor['y'][0], coor['y']):
-        raise ValueError('\n\nlattice is not 1D (y=cst).\n')
-"""
 
 #################################
 # CLASS PLOT
@@ -77,8 +26,16 @@ class plot:
         else:
             self.colors = colors
 
-    def lattice_generic(self, coor, ms, lw, fs, c, plt_hop, plt_index, 
-                                    tics, figsize):
+    def plt_hopping(self, coor, hop, c):
+        for i in range(len(hop)):
+            plt.plot([coor['x'][hop['i'][i]], 
+                        coor['x'][hop['j'][i]]],
+                        [coor['y'][hop['i'][i]], 
+                         coor['y'][hop['j'][i]]],
+                        'k', lw=c*hop['t'][i].real)        
+
+    def lattice_generic(self, coor, ms, lw, fs, c, plt_hop, plt_hop_low, 
+                                    plt_index, axis, figsize):
         '''
         Private method.
         '''
@@ -87,8 +44,9 @@ class plot:
         error_handling.positive_int(fs, 'fs')
         error_handling.positive_real(c, 'c')
         error_handling.boolean(plt_hop, 'plt_hop')
+        error_handling.boolean(plt_hop_low, 'plt_hop_low')
         error_handling.boolean(plt_index, 'plt_index')
-        error_handling.boolean(tics, 'tics')
+        error_handling.boolean(axis, 'axis')
         if figsize is None:
             figsize = (5, 4)
         error_handling.list_tuple_2elem(figsize, 'figsize')
@@ -96,13 +54,11 @@ class plot:
         error_handling.positive_int(figsize[1], 'figsize[1]')
         fig, ax = plt.subplots(figsize=figsize)
         # hoppings
-        if plt_hop and self.sys is not None:
-            for i in range(len(self.sys.hop)):
-                plt.plot([coor['x'][self.sys.hop['i'][i]], 
-                             coor['x'][self.sys.hop['j'][i]]],
-                            [coor['y'][self.sys.hop['i'][i]], 
-                             coor['y'][self.sys.hop['j'][i]]],
-                            'k', lw=c*self.sys.hop['t'][i].real)
+        if plt_hop:
+            self.plt_hopping(coor, self.sys.hop, c)
+        if plt_hop_low:
+            self.plt_hopping(coor, self.sys.hop_low, c)
+
         # plot sites
         for color, tag in zip(self.colors, self.sys.lat.tags):
             plt.plot(coor['x'][coor['tag'] == tag],
@@ -111,7 +67,7 @@ class plot:
         ax.set_aspect('equal')
         ax.set_xlim([np.min(coor['x'])-1., np.max(coor['x'])+1.])
         ax.set_ylim([np.min(coor['y'])-1., np.max(coor['y'])+1.])
-        if not tics:
+        if not axis:
             ax.axis('off')
         # plot indices
         if plt_index:
@@ -123,8 +79,8 @@ class plot:
         plt.draw()
         return fig
 
-    def lattice(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=False, 
-                    tics=False, figsize=None):
+    def lattice(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_hop_low=False,
+                    plt_index=False, axis=False, figsize=None):
         '''
         Plot lattice.
 
@@ -132,20 +88,21 @@ class plot:
         :param c: Default value 3. Coefficient. Hopping linewidths given by c*hop['t'].
         :param fs: Default value 20. Fontsize.
         :param plt_hop: Default value False. Plot hoppings.
+        :param plt_hop_low: Default value False. Plot hoppings diagonal low.
         :param plt_index: Default value False. Plot site labels.
-        :param tics: Default value False. Plot tics.
+        :param axis: Default value False. Plot axis.
         :param figsize: Default value None. Figsize. 
 
         :returns:
             * **fig** -- Figure.
         '''
         error_handling.empty_coor(self.sys.lat.coor)
-        return self.lattice_generic(self.sys.lat.coor, ms, lw, fs, c, 
-                                                 plt_hop, plt_index, tics, figsize)
+        return self.lattice_generic(self.sys.lat.coor, ms, lw, fs, c, plt_hop,
+                                                 plt_hop_low, plt_index, axis, figsize)
 
 
-    def lattice_hop(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_index=False, 
-                            tics=False, figsize=None):
+    def lattice_hop(self, ms=20, lw=5, fs=20, c=3., plt_hop=False, plt_hop_low=False,
+                            plt_index=False, axis=False, figsize=None):
         '''
         Plot lattice in hopping space.
 
@@ -154,15 +111,15 @@ class plot:
         :param fs: Default value 20. Fontsize.
         :param plt_hop: Default value False. Plot hoppings.
         :param plt_index: Default value False. Plot site labels.
-        :param tics: Default value False. Plot tics.
+        :param axis: Default value False. Plot axis.
         :param figsize: Default value None. Figsize. 
 
         :returns:
             * **fig** -- Figure.
         '''
         error_handling.empty_coor_hop(self.sys.coor_hop)
-        return self.lattice_generic(self.sys.coor_hop, ms, lw, fs, c,
-                                                 plt_hop, plt_index, tics, figsize) 
+        return self.lattice_generic(self.sys.coor_hop, ms, lw, fs, c, plt_hop, 
+                                                 plt_hop_low, plt_index, axis, figsize) 
 
     def spectrum(self, ms=10, fs=20, lims=None, tag_pola=None, ipr=None):
         '''
@@ -300,6 +257,48 @@ class plot:
         ax.set_ylim([0, np.max(n)])
         ax.set_xlim(lims)
 
+    def spectrum_complex(self, ms=10, fs=20, lims=None):
+        '''
+        Plot spectrum (eigenenergies real part (blue circles), 
+        eigenenergies imaginary part (red circles).
+
+        :param ms: Default value 10. Markersize.
+        :param fs: Default value 20. Fontsize.
+        :param lims: List, lims[0] energy min, lims[1] energy max.  
+
+        :returns:
+            * **fig** -- Figure.
+        '''
+        error_handling.empty_en(self.sys.en)
+        error_handling.positive_int(ms, 'ms')
+        error_handling.positive_int(fs, 'fs')
+        error_handling.lims(lims)
+        fig, ax1 = plt.subplots()
+        ax1 = plt.gca()
+        x = np.arange(self.sys.lat.sites) 
+        if lims is None:
+            en_max = np.max(self.sys.en.real)
+            ax1.set_ylim([-en_max-0.2, en_max+0.2])
+            ind = np.ones(self.sys.lat.sites, bool)
+        else:
+            ind = (self.sys.en > lims[0]) & (self.sys.en < lims[1])
+            ax1.set_ylim([lims[0]-0.1, lims[1]+0.1])
+        ax1.plot(x[ind], self.sys.en.real[ind], 'ob', markersize=ms)
+        ax1.plot(x[ind], self.sys.en.imag[ind], 'or', markersize=ms)
+        ax1.set_title('Spectrum', fontsize=fs)
+        ax1.set_xlabel('$n$', fontsize=fs)
+        ax1.set_ylabel('$E_n$', fontsize=fs, color='blue')
+        for label in ax1.xaxis.get_majorticklabels():
+            label.set_fontsize(fs) 
+        for label in ax1.yaxis.get_majorticklabels():
+            label.set_fontsize(fs)
+        xa = ax1.get_xaxis()
+        ax1.set_xlim([x[ind][0]-0.1, x[ind][-1]+0.1]) 
+        xa.set_major_locator(plt.MaxNLocator(integer=True))
+        fig.set_tight_layout(True)
+        plt.draw()
+        return fig
+
     def intensity_1d(self, intensity, ms=20, lw=2, fs=20, title=r'$|\psi^{(j)}|^2$'):
         '''
         Plot intensity.
@@ -424,8 +423,8 @@ class plot:
         '''
         Plot energies depending on a parameter.
         '''
-        if not hasattr(self.sys, butterfly):
-            raise NameError('butterfly is not defined')
+        #if 'x' in locals() or 'x' in globals():
+        #    raise NameError('butterfly is not defined')
         error_handling.positive_int(lw, 'lw')
         error_handling.positive_int(fs, 'fs')
         error_handling.string(title, 'title')

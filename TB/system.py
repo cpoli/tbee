@@ -10,6 +10,9 @@ import error_handling
 
 
 def empty_array(arr):
+    '''
+    Empty numpy array.
+    '''
     length = len(arr)
     if length:
         return np.delete(arr, range(length))
@@ -27,12 +30,14 @@ class system():
         '''
         error_handling.lat(lat)
         self.lat = lat
-        self.coor_hop = np.array([], dtype=[ ('x','f16'), ('y','f16'), ('tag','S1')])
-        self.vec_hop = np.array([], dtype=[('d', 'f16'),  ('a', 'f16')]) # Hopping lengths and distances
+        self.coor_hop = np.array([], dtype=[ ('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
+        self.vec_hop = np.array([], dtype=[('dis', 'f16'),  ('ang', 'f16')]) # Hopping lengths and distances
         self.dist_uni = np.array([], 'f8')  # Different hopping lengths
         self.ang_uni = np.array([], 'f8')  # Different hopping angles
         self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                       ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')]) #  Hoppings
+                                                       ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')]) #  Hoppings diagonal up
+        self.hop_low = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                       ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')]) #  Hoppings diagonal low
         self.onsite = np.array([], 'c16') #  Onsite energies
         self.ham = sparse.csr_matrix(([],([],[])), shape=(self.lat.sites, self.lat.sites))  # Hamiltonian
         self.en = np.array([], 'c16')  # Eigenenergies
@@ -44,13 +49,14 @@ class system():
         self.alpha_onsite = 0.  # onsite disorder strength
         self.params = {}
 
-    def clean_hopping(self):
+    def clear_hopping(self):
         '''
-        Clean structured array *hop*
+        Clear structured array *hop* and *hop_low*.
         '''
         self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                       ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
-
+                                                       ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')])
+        self.hop_low = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                               ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')])
     def get_hopping(self):
         '''
         Get lengths and angles of the hoppings.
@@ -60,11 +66,11 @@ class system():
         dif_y = self.lat.coor['y'] - self.lat.coor['y'].reshape(self.lat.sites, 1)
         dist = np.sqrt(dif_x ** 2 + dif_y ** 2).round(3)
         ang = (180 / PI * np.arctan2(dif_y, dif_x)).round(3)
-        self.vec_hop = np.zeros(dist.shape, dtype=[('d', 'f16'),  ('a', 'f16')])
-        self.vec_hop['d'] = dist
-        self.vec_hop['a'] = ang
-        self.dist_uni = np.unique(self.vec_hop['d'])
-        self.ang_uni = np.unique(self.vec_hop['a'])
+        self.vec_hop = np.zeros(dist.shape, dtype=[('dis', 'f16'),  ('ang', 'f16')])
+        self.vec_hop['dis'] = dist
+        self.vec_hop['ang'] = ang
+        self.dist_uni = np.unique(self.vec_hop['dis'])
+        self.ang_uni = np.unique(self.vec_hop['ang'])
 
     def print_hopping(self, n=5):
         '''
@@ -79,7 +85,7 @@ class system():
         error_handling.positive_int_lim(n, 'n', nmax)
         print('\n{} different distances between sites:'.format(nmax))
         print('\nDistances between sites:')
-        for i, d in enumerate(self.dist_uni[1:n+1]):
+        for i, d in enumerate(self.dist_uni[1: n+1]):
             if i == 0:
                 hop_name = 'st'
             elif i == 1:
@@ -90,9 +96,9 @@ class system():
                 hop_name = 'th'
             print('{}{} hopping, length: {:.3f}'.format(i+1, hop_name, d))
             print('\twith positive angles:')
-            positive_ang = self.vec_hop['a'][(self.vec_hop['d'] == d) &
-                                                               (self.vec_hop['a'] >= 0.) &
-                                                               (self.vec_hop['a'] < 180.)]
+            positive_ang = self.vec_hop['ang'][(self.vec_hop['dis'] == d) &
+                                                                   (self.vec_hop['ang'] >= 0.) &
+                                                                   (self.vec_hop['ang'] < 180.)]
             print('\t', np.unique(positive_ang))
 
     def set_onsite(self, dict_onsite):
@@ -109,7 +115,7 @@ class system():
 
     def set_hopping(self, list_hop):
         '''
-        Set lattice hoppings.
+        Set lattice hoppings diagonal up.
 
         :param list_hop: List of dictionaries, Dictionary with key a tuple:(n, 'ang') nth hopping,
           associated positive angle, and hopping value {val}.
@@ -121,16 +127,16 @@ class system():
         for n in list_n:
             self.hop = np.delete(self.hop, np.where(self.hop['n'] == n))
         for n in list_n:
-            ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[n] - 1e-3) &
-                                       (self.vec_hop['d'] < self.dist_uni[n] + 1e-3))
+            ind = np.argwhere(np.isclose(self.dist_uni[n], self.vec_hop['dis']))
             ind_up = ind[ind[:, 1] > ind[:, 0]]
             hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                               ('t', 'c16'), ('ang', 'i2'), ('tag', 'S2')])
+                                                                     ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')])
             hop['n'] = n
             hop['i'] = ind_up[:, 0]
             hop['j'] = ind_up[:, 1]
-            hop['ang'] = self.vec_hop['a'][ind_up[:, 0], ind_up[:, 1]]
-            hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], self.lat.coor['tag'][ind_up[:, 1]])
+            hop['ang'] = self.vec_hop['ang'][ind_up[:, 0], ind_up[:, 1]]
+            hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], 
+                                            self.lat.coor['tag'][ind_up[:, 1]])
             for dic in list_hop:
                 if dic['n'] != n:
                     continue
@@ -143,6 +149,43 @@ class system():
                 else:
                     hop['t'][(hop['tag'] == dic['tag']) & (hop['ang'] == dic['ang'])] = dic['t']
             self.hop = np.concatenate([self.hop, hop])
+
+    def set_hopping_low(self, list_hop):
+        '''
+        Set lattice hoppings diagonal low.
+
+        :param list_hop: List of dictionaries, Dictionary with key a tuple:(n, 'ang') nth hopping,
+          associated positive angle, and hopping value {val}.
+        '''        
+        error_handling.sites(self.lat.sites)
+        self.get_hopping()
+        error_handling.set_hopping(list_hop, len(self.dist_uni) - 1)
+        list_n = np.unique([dic['n'] for dic in list_hop])
+        for n in list_n:
+            self.hop_low = np.delete(self.hop_low, np.where(self.hop['n'] == n))
+        for n in list_n:
+            ind = np.argwhere(np.isclose(self.dist_uni[n], self.vec_hop['dis']))
+            ind_low = ind[ind[:, 1] < ind[:, 0]]
+            hop = np.zeros(len(ind_low), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                                     ('t', 'c16'), ('ang', 'f16'), ('tag', 'S2')])
+            hop['n'] = n
+            hop['i'] = ind_low[:, 0]
+            hop['j'] = ind_low[:, 1]
+            hop['ang'] = self.vec_hop['ang'][ind_low[:, 0], ind_low[:, 1]]
+            hop['tag'] = npc.add(self.lat.coor['tag'][ind_low[:, 0]], 
+                                            self.lat.coor['tag'][ind_low[:, 1]])
+            for dic in list_hop:
+                if dic['n'] != n:
+                    continue
+                if len(dic) == 2:
+                    hop['t'] = dic['t']
+                elif len(dic) == 3 and 'ang' in dic:
+                    hop['t'][hop['ang'] == dic['ang']] = dic['t']
+                elif len(dic) == 3 and 'tag' in dic:
+                    hop['t'][hop['tag'] == dic['tag']] = dic['t']
+                else:
+                    hop['t'][(hop['tag'] == dic['tag']) & (hop['ang'] == dic['ang'])] = dic['t']
+            self.hop_low = np.concatenate([self.hop_low, hop])
 
     def  set_hopping_dis(self, alpha):
         '''
@@ -190,8 +233,9 @@ class system():
         for key, val in hopping_def.items():
             cond = (self.hop['i'] == key[0]) & (self.hop['j'] == key[1])
             self.hop['t'][cond] = val
-            cond = (self.hop['j'] == key[0]) & (self.hop['i'] == key[1])
-            self.hop['t'][cond] = val
+            self.hop['ang'] = self.vec_hop['ang'][key[0], key[1]]
+            self.hop['tag'] = npc.add(self.lat.coor['tag'][key[0]], 
+                                            self.lat.coor['tag'][key[1]])
 
     def change_hopping(self, list_hop, x_bottom_left=0, y_bottom_left=0):
         '''
@@ -222,6 +266,35 @@ class system():
 
                     self.hop['t'][ind & (self.hop['tag'] == dic['tag'])
                                             & (self.hop['ang'] == dic['ang'])] = dic['t']
+
+    def change_hopping_low(self, list_hop, x_bottom_left=0, y_bottom_left=0):
+        '''
+        Change hopping values.
+
+        :param dict_hop: Dictionary. key a tuple:(n, 'ang'} nth hopping,
+          associated positive angle, and hopping value {val}.
+        :param x_bottom_left: Real number. lower bound along:math:`x` 
+        :param y_bottom_left: Real number. lower bound along:math:`y` 
+        '''
+        error_handling.empty_hop(self.hop_low)
+        error_handling.set_hopping(list_hop, len(self.dist_uni) - 1)
+        error_handling.real_number(x_bottom_left, 'x_bottom_left')
+        error_handling.real_number(y_bottom_left, 'y_bottom_left')
+        ind = (self.lat.coor['x'][self.hop_low['i']] >= x_bottom_left) & \
+                 (self.lat.coor['y'][self.hop_low['i']] >= y_bottom_left) & \
+                 (self.lat.coor['x'][self.hop_low['j']] >= x_bottom_left) & \
+                 (self.lat.coor['y'][self.hop_low['j']] >= y_bottom_left)
+        for dic in list_hop:
+            for dic in list_hop:
+                if len(dic) == 2:
+                    self.hop_low['t'][ind] = dic['t']
+                elif len(dic) == 3 and 'ang' in dic:
+                    self.hop_low['t'][ind & (self.hop_low['ang'] == dic['ang'])] = dic['t']
+                elif len(dic) == 3 and 'tag' in dic:
+                    self.hop_low['t'][ind & (self.hop_low['tag'] == dic['tag'])] = dic['t']
+                else:
+                    self.hop_hop['t'][ind & (self.hop_low['tag'] == dic['tag'])
+                                                    & (self.hop_low['ang'] == dic['ang'])] = dic['t']
 
     def get_coor_hop(self):
         '''
@@ -258,13 +331,28 @@ class system():
 
     def get_ham(self):
         '''
-        Get the Tight-Binding Hamiltonian.
+        Get the Tight-Binding Hamiltonian using sys.hop.
         '''
         error_handling.empty_hop(self.hop)
         error_handling.hop_sites(self.hop, self.lat.sites)
         self.ham = sparse.csr_matrix((self.hop['t'], (self.hop['i'], self.hop['j'])), 
                                                         shape=(self.lat.sites, self.lat.sites)) \
                        + sparse.csr_matrix((self.hop['t'].conj(), (self.hop['j'], self.hop['i'])), 
+                                                        shape=(self.lat.sites, self.lat.sites))
+        if self.onsite.size == self.lat.sites:
+            self.ham += sparse.diags(self.onsite, 0)
+
+    def get_ham_full(self):
+        '''
+        Get the Tight-Binding Hamiltonian using sys.hop and sys.hop_low.
+        '''
+        error_handling.empty_hop(self.hop)
+        error_handling.hop_sites(self.hop, self.lat.sites)
+        error_handling.empty_hop(self.hop_low)
+        error_handling.hop_sites(self.hop_low, self.lat.sites)
+        self.ham = sparse.csr_matrix((self.hop['t'], (self.hop['i'], self.hop['j'])), 
+                                                        shape=(self.lat.sites, self.lat.sites)) \
+                       + sparse.csr_matrix((self.hop_low['t'], (self.hop_low['i'], self.hop_low['j'])), 
                                                         shape=(self.lat.sites, self.lat.sites))
         if self.onsite.size == self.lat.sites:
             self.ham += sparse.diags(self.onsite, 0)

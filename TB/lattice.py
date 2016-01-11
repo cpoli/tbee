@@ -5,6 +5,11 @@ import error_handling
 PI = np.pi
 
 
+#################################
+# CLASS LATTICE
+#################################
+
+
 class lattice():
     def __init__(self, unit_cell, prim_vec):
         '''
@@ -19,14 +24,12 @@ class lattice():
             * 'tag', label of the site.
             * 'r0', position. 
         :param prim_vec: Dictionary. Define the two primitive vectors.
-           Dictionary with two keys: 
-            * 'norm', norm of both primitive vectors: `|\mathbf{a}_1|=|\mathbf{a}_2| = norm` 
-            * 'angle', angle between the two primitive vectors:
-                * :math:`\mathbf{a}_1| = norm (1, 0)` .
-                * :math:`|\mathbf{a}_1|= norm (\cos angle, \sin angle )`.
+           List of one/two tuples for 1D/2D respectively: 
+            * tuple, cartesian coordinate of the first primitive vector.
+            * tuple cartesian coordinate of the second primitive vector.
         '''
         error_handling.unit_cell(unit_cell)
-        error_handling.prim_vec(prim_vec)
+        #error_handling.prim_vec(prim_vec)
         self.unit_cell = unit_cell
         self.prim_vec = prim_vec
         self.tags = np.unique(np.array([dic['tag'] for dic in self.unit_cell]))
@@ -43,27 +46,26 @@ class lattice():
         :param n2: Positive Integer. Default value 1. 
             Number of unit cells along :math:`\mathbf{a}_2`.
         '''
-        self.coor = np.array([], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
+        sites_uc = len(self.unit_cell)
+        sites_tag = n1*n2
+        self.sites = sites_uc * sites_tag
+        self.coor = np.empty(sites_tag*sites_uc, dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
         error_handling.get_lattice(n1, n2)
         self.n1, self.n2 = n1, n2
-        x = self.prim_vec['norm'] * np.arange(n1, dtype='f16')
-        y = np.sin(PI / 180. * self.prim_vec['angle']) \
-            * self.prim_vec['norm'] * np.arange(n2, dtype='f16')
-        xx, yy = np.meshgrid(x, y)
-        if self.prim_vec['angle'] == 0:
-            xx += yy
-        else:
-            xx += yy / np.tan(PI / 180. * self.prim_vec['angle'])
-        xx = np.ravel(xx)
-        yy = np.ravel(yy)
-        coor_tag = np.zeros(len(xx), dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
-        for dic in self.unit_cell:
-            coor_tag['x'] = xx + dic['r0'][0]
-            coor_tag['y'] = yy + dic['r0'][1]
-            coor_tag['tag'] = dic['tag']
-            self.coor = np.concatenate([self.coor, coor_tag])
+        x = self.prim_vec[0][0] * np.arange(n1, dtype='f16')
+        y = self.prim_vec[0][1] * np.arange(n1, dtype='f16')
+        xx = np.empty(n1*n2)
+        yy = np.empty(n1*n2)
+        xx[:n1] = x
+        yy[:n1] = y
+        for i in range(1, n2):
+            xx[i*n1: (i+1)*n1] = x + i * self.prim_vec[1][0]
+            yy[i*n1: (i+1)*n1] = y + i * self.prim_vec[1][1]
+        for i, dic in enumerate(self.unit_cell):
+            self.coor['x'][i*sites_tag: (i+1)*sites_tag] = xx + dic['r0'][0]
+            self.coor['y'][i*sites_tag: (i+1)*sites_tag] = yy + dic['r0'][1]
+            self.coor['tag'][i*sites_tag: (i+1)*sites_tag] = dic['tag']
         self.coor = np.sort(self.coor, order=('y', 'x'))        
-        self.sites = len(self.coor['tag'])
 
     def add_sites(self, coor):
         '''
@@ -203,16 +205,16 @@ class lattice():
         '''
         error_handling.empty_coor(self.coor)
         error_handling.real_number(theta, 'theta')
-        theta *= np.pi / 180
+        theta *= PI / 360
         for dic in self.unit_cell:
             x  = self.coor['x'] - dic['r0'][0]
             y  = self.coor['y'] - dic['r0'][1]
-            self.coor['x'] = x * np.cos(theta) - y * np.sin(theta)# + dic['r0'][0]
-            self.coor['y'] = y * np.cos(theta) + x* np.sin(theta)# + dic['r0'][1]
+            self.coor['x'] = x * np.cos(theta) - y * np.sin(theta) + dic['r0'][0]
+            self.coor['y'] = y * np.cos(theta) + x* np.sin(theta) + dic['r0'][1]
 
-    def check_coor(self):
+    def clean_coor(self):
         '''
-        Keep only sites with different coordinates.
+        Keep only the sites with different coordinates.
         '''
         error_handling.empty_coor(self.coor)
         coor = self.coor[['x', 'y']].copy()
@@ -288,3 +290,61 @@ class lattice():
         self.coor = self.coor[np.logical_not(boo)]
         self.sites = sum(np.logical_not(boo))
         return self
+
+    def plot(self, ms=20, lw=5, fs=20, c=3., plt_index=False, 
+                            axis=False, figsize=None):
+        '''
+        Plot lattice in hopping space.
+
+        :param ms: Default value 20. Markersize. 
+        :param c: Default value 3. Coefficient. Hopping linewidths given by c*hop['t'].
+        :param fs: Default value 20. Fontsize.
+        :param plt_index: Default value False. Plot site labels.
+        :param axis: Default value False. Plot axis.
+        :param figsize: Default value None. Figsize. 
+
+        :returns:
+            * **fig** -- Figure.
+        '''
+        error_handling.positive_int(ms, 'ms')
+        error_handling.positive_real(lw, 'lw')
+        error_handling.positive_int(fs, 'fs')
+        error_handling.positive_real(c, 'c')
+        error_handling.boolean(plt_index, 'plt_index')
+        error_handling.boolean(axis, 'axis')
+        if figsize is None:
+            figsize = (5, 4)
+        error_handling.list_tuple_2elem(figsize, 'figsize')
+        error_handling.positive_int(figsize[0], 'figsize[0]')
+        error_handling.positive_int(figsize[1], 'figsize[1]')
+        fig, ax = plt.subplots(figsize=figsize)
+        # plot sites
+        colors = ['b', 'r', 'g', 'y', 'm', 'k']
+        for color, tag in zip(colors, self.tags):
+            plt.plot(self.coor['x'][self.coor['tag'] == tag],
+                        self.coor['y'][self.coor['tag'] == tag],
+                       'o', color=color, ms=ms, markeredgecolor='none')
+        ax.set_aspect('equal')
+        ax.set_xlim([np.min(self.coor['x'])-1., np.max(self.coor['x'])+1.])
+        ax.set_ylim([np.min(self.coor['y'])-1., np.max(self.coor['y'])+1.])
+        if not axis:
+            ax.axis('off')
+        # plot indices
+        if plt_index:
+            indices = ['{}'.format(i) for i in range(self.sites)]
+            for l, x, y in zip(indices, self.coor['x'], self.coor['y']):
+                plt.annotate(l, xy=(x, y), xytext=(0, 0),
+                                    textcoords='offset points',
+                                    ha='right', va='bottom', size=fs)
+        plt.draw()
+        return fig
+
+"""
+unit_cell = [{'tag': b'a', 'r0': (0, 0)}, {'tag': b'b', 'r0': (0.5, .2)}, {'tag': b'c', 'r0': (0.2, 0.5)}]
+prim_vec = {'a1': (-0.5, .7), 'a2': (0.8, 0.5)}
+lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+
+lat.get_lattice(4, 4)
+lat.plot(plt_index=True, ms=10)
+plt.show()
+"""

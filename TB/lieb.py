@@ -1,11 +1,12 @@
 #!/usr/bin/env python -W ignore::DeprecationWarning
 
-from latticeTB import *
-from plotTB import *
-from eigTB import *
-from propTB import *
+from lattice import *
+from system import *
+from plot import *
+#from propTB import *
+import error_handling
 from scipy.optimize import fsolve
-
+"""
 def test_set_hop(t1, t2, t3, t4):
     '''
     Check method *set_nearest_neighbor_hop*.
@@ -49,9 +50,9 @@ def test_set_disorder(alpha):
         raise TypeError('\n\nParameter alpha must be a real number.\n')
     if alpha < 0:
         raise ValueError('\n\nParameter alpha must be a positive number.\n')
+"""
 
-
-class liebTB(latticeTB):
+class liebLat(lattice):
     '''
     Child of the class **latticeTB**. Dedicated to the Lieb lattice. 
     '''
@@ -60,82 +61,90 @@ class liebTB(latticeTB):
                           {'tag': b'b', 'r0': [1, 0]},
                           {'tag': b'c', 'r0': [0, 1]}]
         prim_vec = {'norm': 2, 'angle': 90}
-        latticeTB.__init__(self, unit_cell=unit_cell, prim_vec=prim_vec)
+        lattice.__init__(self, unit_cell=unit_cell, prim_vec=prim_vec)
 
 
-class liebEig(eigTB):
+class liebSys(system):
     def __init__(self, lat):
-        eigTB.__init__(self, lat=lat)
+        system.__init__(self, lat=lat)
         # nearest neighbor hopping
-        self.t_ab, self.t_ba, self.t_ac, self.t_ca = None, None, None, None
+        self.t_ab, self.t_ba, self.t_ac, self.t_ca = 0, 0, 0, 0
         # next nearest neighbor hopping
-        self.t_pp, self.t_pm, self.t_mp, self.t_mm = None, None, None, None
+        self.t_pp, self.t_pm, self.t_mp, self.t_mm = 0, 0, 0, 0
         self.nnn = False
         # dimerization defect bool
         self.defect_dimer_x, self.defect_dimer_y = None, None
-        self.coor_hop = np.array([], dtype=[('x', 'f16'), ('y', 'f16'), ('tag', 'S1')])
 
-    def set_nearest_neighbor_hop(self, t_ab, t_ba, t_ac, t_ca):
-        test_set_hop(t_ab, t_ba, t_ac, t_ca)
-        print('nearest neighbor hoppings')
-        print('ab', t_ab, 'ba', t_ba, 'ac', t_ac, 'ca', t_ca)
+    def set_nearest_neighbor_hopping(self, t_ab, t_ba, t_ac, t_ca):
+        error_handling.number(t_ab, 't_ab')
+        error_handling.number(t_ba, 't_ba')
+        error_handling.number(t_ac, 't_ac')
+        error_handling.number(t_ca, 't_ca')
         self.set_hopping([{'n': 1, 'tag': b'ab', 't': t_ab}, 
                                     {'n': 1, 'tag': b'ba', 't': t_ba}, 
                                     {'n': 1, 'tag': b'ac', 't': t_ac},
                                     {'n': 1, 'tag': b'ca', 't': t_ca}])
         self.t_ab, self.t_ba, self.t_ac, self.t_ca = t_ab, t_ba, t_ac, t_ca
 
-    def set_next_nearest_neighbor_hop(self, t_pp, t_pm, t_mp, t_mm):
+    def set_next_nearest_neighbor_hopping(self, t_pp, t_pm, t_mp, t_mm):
+        error_handling.number(t_pp, 't_pp')
+        error_handling.number(t_pm, 't_pm')
+        error_handling.number(t_mp, 't_mp')
+        error_handling.number(t_mm, 't_mm')
         self.nnn = True
-        print('next_nearest hoppings')
-        print('t++', t_pp, 't--', t_mm, 't+-', t_pm, 't-+', t_mp)
         self.set_hopping([{'n': 2, 'ang': 45, 'tag': b'bc', 't': t_pp}, 
                                     {'n': 2, 'ang': 135, 'tag': b'bc', 't': t_mp}, 
                                     {'n': 2, 'ang': 135, 'tag': b'cb', 't': t_pm},
                                     {'n': 2, 'ang': 45, 'tag': b'cb', 't': t_mm}])
-        self.rename_hop_tag([{'tag_new': b'++', 'n': 2, 'ang': 45, 'tag': b'bc'},
-                                            {'tag_new': b'-+', 'n': 2, 'ang': 135, 'tag': b'bc'}, 
-                                            {'tag_new': b'+-', 'n': 2, 'ang': 45, 'tag': b'cb'}, 
-                                            {'tag_new': b'--', 'n': 2, 'ang': 135, 'tag': b'cb'}])
         self.t_pp, self.t_pm, self.t_mp, self.t_mm = t_pp, t_pm, t_mp, t_mm
 
     def set_defect_dimer_x(self, x):
-        test_set_defect_dimer(x)
+        error_handling.real_number(x, 'x')
         if self.nnn:
-            list_hop=[{'tag': b'ab', 't': self.t_ba}, {'tag': b'ba', 't': self.t_ab},
-                          {'tag': b'++', 't': self.t_mp}, {'tag': b'-+', 't': self.t_pp},
-                          {'tag': b'--', 't': self.t_pm}, {'tag': b'+-', 't': self.t_mm}]
+            list_hop = [{'n': 1, 'tag': b'ab', 't': self.t_ba},
+                            {'n': 1, 'tag': b'ba', 't': self.t_ab},
+                            {'n': 2, 'ang': 45, 'tag': b'bc', 't': self.t_mp},
+                            {'n': 2, 'ang': 135, 'tag': b'bc', 't': self.t_pp},
+                            {'n': 2, 'ang': 135, 'tag': b'cb', 't': self.t_mm},
+                            {'n': 2, 'ang': 45, 'tag': b'cb', 't': self.t_pm}]
         else:
-            list_hop=[{'tag': b'ab', 't': self.t_ba}, {'tag': b'ba', 't': self.t_ab}]
-        self.set_defect_dimer(list_hop=list_hop, x_bottom_left=x, y_bottom_left=0)
+            list_hop = [{'n': 1, 'tag': b'ab', 't': self.t_ba},
+                            {'n': 1, 'tag': b'ba', 't': self.t_ab}]
+        self.change_hopping(list_hop=list_hop, x_bottom_left=x, y_bottom_left=0)
         if self.defect_dimer_x:
             raise RuntimeError('\n\n*set_defect_dimer_x* already called')
         self.defect_dimer_x = x
         if isinstance(self.defect_dimer_y, int) and self.c:
             list_hop = [{'tag': b'++', 't': self.t_mm}, {'tag': b'-+', 't': self.t_pm},
                             {'tag': b'--', 't': self.t_pp}, {'tag': b'+-', 't': self.t_mp}]
-            self.set_defect_dimer(list_hop=list_hop,
-                                                   x_bottom_left=self.defect_dimer_x,
-                                                   y_bottom_left=self.defect_dimer_y)
+            self.change_hopping(list_hop=list_hop,
+                                               x_bottom_left=self.defect_dimer_x,
+                                               y_bottom_left=self.defect_dimer_y)
 
     def set_defect_dimer_y(self, y):
-        test_set_defect_dimer(y)
+        error_handling.real_number(y, 'y')
         if self.nnn:
-            list_hop=[{'tag': b'ac', 't': self.t_ca}, {'tag': b'ca', 't': self.t_ac},
-                          {'tag': b'++', 't': self.t_pm}, {'tag': b'-+', 't': self.t_mm},
-                          {'tag': b'--', 't': self.t_mp}, {'tag': b'+-', 't': self.t_pp}]
+            list_hop = [{'n': 1, 'tag': b'ac', 't': self.t_ca},
+                            {'n': 1, 'tag': b'ca', 't': self.t_ac},
+                            {'n': 2, 'ang': 45, 'tag': b'bc', 't': self.t_pm},
+                            {'n': 2, 'ang': 135, 'tag': b'bc', 't': self.t_mm},
+                            {'n': 2, 'ang': 135, 'tag': b'cb', 't': self.t_pp},
+                            {'n': 2, 'ang': 45, 'tag': b'cb', 't': self.t_mp}]
         else:
-            list_hop=[{'tag': b'ac', 't': self.t_ca}, {'tag': b'ca', 't': self.t_ac}]
-        self.set_defect_dimer(list_hop=list_hop, x_bottom_left=0, y_bottom_left=y)
+            list_hop = [{'n': 1, 'tag': b'ac', 't': self.t_ca},
+                            {'n': 1, 'tag': b'ca', 't': self.t_ac}]
+        self.change_hopping(list_hop=list_hop, x_bottom_left=0, y_bottom_left=y)
         if self.defect_dimer_y:
             raise RuntimeError('\n\n*set_defect_dimer_y* already called')
         self.defect_dimer_y = y
-        if isinstance(self.defect_dimer_x, int) and self.nnn:
-            list_hop = [{'tag': b'++', 't': self.t_mm}, {'tag': b'-+', 't': self.t_pm},
-                            {'tag': b'--', 't': self.t_pp}, {'tag': b'+-', 't': self.t_mp}]
-            self.set_defect_dimer(list_hop=list_hop,
-                                          x_bottom_left=self.defect_dimer_x,
-                                          y_bottom_left=self.defect_dimer_y)
+        if self.defect_dimer_x and self.nnn:
+            list_hop = [{'n': 2, 'ang': 45, 'tag': b'bc', 't': self.t_pp},
+                            {'n': 2, 'ang': 135, 'tag': b'bc', 't': self.t_pm},
+                            {'n': 2, 'ang': 135, 'tag': b'cb', 't': self.t_mp},
+                            {'n': 2, 'ang': 45, 'tag': b'cb', 't': self.t_pp}]
+            self.change_hopping(list_hop=list_hop,
+                                              x_bottom_left=self.defect_dimer_x,
+                                              y_bottom_left=self.defect_dimer_y)
 
     def set_disorder_generic(self, alpha):
         '''
@@ -148,9 +157,8 @@ class liebEig(eigTB):
         .. note ::
 
             This disorder preserves the zero mode.
-
         '''
-        test_set_disorder(alpha)
+        error_handling.number(alpha, 'alpha')
         ind_nn = ((self.hop['tag'] == b'ab') | (self.hop['tag'] == b'ba') |
                        (self.hop['tag'] == b'ac') | (self.hop['tag'] == b'ca'))
         bonds_nn = len(self.hop[ind_nn]) 
@@ -169,7 +177,7 @@ class liebEig(eigTB):
             This disorder preserves the zero mode.
 
         '''
-        test_set_disorder(alpha)
+        error_handling.number(alpha, 'alpha')
         sites_x = len(self.lat.coor['tag'][self.lat.coor['y'] < 1e-4]) 
         sites_y = len(self.lat.coor['tag'][self.lat.coor['x'] < 1e-4]) 
         rand_x = 1. + alpha * rand.uniform(-1., 1., sites_x-1)
@@ -192,7 +200,7 @@ class liebEig(eigTB):
 
             This disorder preserves the zero mode.
         '''
-        test_set_disorder(alpha)
+        error_handling.number(alpha, 'alpha')
         sites_x = len(self.lat.coor['tag'][self.lat.coor['y'] < 1e-4]) 
         sites_y = len(self.lat.coor['tag'][self.lat.coor['x'] < 1e-4]) 
         for y in range(0, sites_y, 2):
@@ -218,7 +226,7 @@ class liebEig(eigTB):
             This disorder preserves the zero mode.
 
         '''
-        self.set_disorder_hop(alpha)
+        error_handling.number(alpha, 'alpha')
         list_placket = self.get_placket()
         for placket in list_placket:
             t1 = self.hop['t'][(self.hop['i'] == placket[0]) & (self.hop['j'] == placket[1])]
