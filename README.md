@@ -6,13 +6,11 @@ Python Tight-Binding module
 
 
 
- **Python** module to build up and solve **Tight-Binding** models. 
+**Python** module to build up and solve **Tight-Binding** models. 
 
 **TB** is written in fully vectorized **Numpy**
 
-
 **TB** is composed of the following classes:
-
 
     * lattice
     * system
