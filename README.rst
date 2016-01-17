@@ -2,7 +2,7 @@ Python Tight-Binding module
 ======================
 
 
-![alt tag](https://github.com/cpoli/TB/blob/master/logoTB.png)
+![alt tag](cpoli/TB/blob/master/logoTB.png)
 
 
  **Python** module to build up and solve **Tight-Binding** models. 
