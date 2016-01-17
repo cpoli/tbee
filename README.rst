@@ -1,10 +1,11 @@
 Python Tight-Binding module
 ======================
 
+
 .. image:: logoTB.png
     :width:  35%
-    :scale: 50 %
     :align: center
+
 
  **Python** module to build up and solve **Tight-Binding** models. 
 ---------------------------------------------------------------------------------------------------------
