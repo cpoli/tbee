@@ -2,8 +2,9 @@ Python Tight-Binding module
 ========================
 
 
-![Alt text](https://github.com/cpoli/TB/blob/master/logoTB_.png)
-
+.. image:: https://github.com/cpoli/TB/blob/master/logoTB.png
+    :width:  35%
+    :align: center
 
 
  **Python** module to build up and solve **Tight-Binding** models. 
@@ -46,11 +47,11 @@ Python Tight-Binding module
 
 To use TB:
 
-  * Install Python3.5 and three additional packages:
+  *Please install Python3.5 and three additional packages:
 
-      * numpy 1.10
-      * scipy 0.16
-      * matplotlib 1.5
+    * numpy 1.10
+    * scipy 0.16
+    * matplotlib 1.5
 
     * See https://cpoli.github.io/python-doc.html for Python installation details
       and to install a github repository (for mac).
