@@ -11,6 +11,7 @@ Python Tight-Binding module
 Sphinx documentation of **TB**: http://cpoli.github.io/TBdoc/indexTB.html
 
 **TB** is composed of:
+
     * lattice
     * system
     * plot
