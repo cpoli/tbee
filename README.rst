@@ -53,7 +53,7 @@ To use TB:
     * scipy 0.16
     * matplotlib 1.5
 
-  *See https://cpoli.github.io/python-doc.html for Python installation details
-    and to install a github repository (for mac).
+    * See https://cpoli.github.io/python-doc.html for Python installation details
+      and to install a github repository (for mac).
 
 Examples are available at https://github.com/cpoli/TB/tree/master/examples
