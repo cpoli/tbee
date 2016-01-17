@@ -12,45 +12,33 @@ Python Tight-Binding module
 
 **TB** is composed of the following classes:
 
-    * lattice
-    * system
-    * plot
-    * propagation
-    * save
+    - lattice
+    - system
+    - plot
+    - propagation
+    - save
 
 
 **TB** main features:
 
     * Complex lattice structures.
-
     * Complex-valued onsite energies and hoppings.
-
     * Hermitian and non-Hermitian Tight-Binding Hamiltonians.
-
     * Onsite energies defined by tags.
-
     * Hoppings defined by their type, tags, and angles.
-
     * Any type of hoppings:
 
         * Neighbors hoppings
-
         * Next-neighbors hoppings, 
-
         * Next-next-neighbors hoppings,
-
         * etc..
 
     * Implementation of onsite energies and hopping patterns:
 
        * Dimerization defects.
-
        * Magnetic field.
-
        * Strain.
-
        * Hopping disorder.
-
        * Onsite disorder.
 
     * Time propagation
