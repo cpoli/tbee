@@ -27,16 +27,20 @@ Python Tight-Binding module
     * Onsite energies defined by tags.
     * Hoppings defined by their type, tags, and angles.
     * Any type of hoppings:
+
         * Neighbors hoppings
         * Next-neighbors hoppings, 
         * Next-next-neighbors hoppings,
         * etc..
+
     * Implementation of onsite energies and hopping patterns:
+
        * Dimerization defects.
        * Magnetic field.
        * Strain.
        * Hopping disorder.
        * Onsite disorder.
+
     * Time propagation
 
 **TB** is available at https://github.com/cpoli/TB
@@ -50,7 +54,7 @@ To use TB:
       * scipy 0.16
       * matplotlib 1.5
 
-    * See https://cpoli.github.io/python-doc.html for Python installation details
+  * See https://cpoli.github.io/python-doc.html for Python installation details
       and to install a github repository (for mac).
 
 Examples are available at https://github.com/cpoli/TB/tree/master/examples
