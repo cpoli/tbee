@@ -9,7 +9,8 @@ Python Tight-Binding module
 **Python** module to build up and solve **Tight-Binding** models. 
 
 **TB** is written in fully vectorized **Numpy**,
-is composed of the classes:
+
+**TB** is composed of the following classes:
 
     * lattice
     * system
@@ -18,7 +19,7 @@ is composed of the classes:
     * save
 
 
-and can handle:
+**TB** main features:
 
     * Complex lattice structures.
     * Complex-valued onsite energies and hoppings.
@@ -45,7 +46,7 @@ and can handle:
 **TB** is available at https://github.com/cpoli/TB
 
 
-To use TB:
+To use **TB**:
 
   * Install Python3.5 and three additional packages:
 
