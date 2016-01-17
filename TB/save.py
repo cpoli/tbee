@@ -1,5 +1,5 @@
 import os
-
+import TB.error_handling as error_handling
 #################################
 # CLASS SAVE
 #################################
@@ -21,26 +21,26 @@ class save():
         error_handling.string(dir_name, 'dir_name')
         error_handling.string(dir_main, 'dir_main')
         error_handling.file_format(file_format)
-        self.params = params  # dictionary parameters
-        self.file_format = file_format  # file format
+        self.params = params
+        self.file_format = file_format
         if dir_main is None:
-            self.dir_main = '../TBfig/'  # main directory name
+            self.dir_main = 'TBfig/'
         else:
             self.dir_main = dir_name
-        self.dir_name = self.dir_name(dir_name)  # directory name
-        self.check_dir()
+        self.dir_name = self.dir_name(dir_name)
+        self.create_dir()
 
     def dir_name(self, dir_name):
         '''
         Set the name of the directory in which the figures are stored.
 
-        :param dir_name: String. First part of the directory name. 
+        :param dir_name: String. Directory name. 
         '''
-
+        error_handling.string(dir_name, 'dir_name')
         dir_name = self.dir_main + dir_name
         return dir_name
 
-    def check_dir(self):
+    def create_dir(self):
         '''
         Create the directory to store the figures exists.
         '''

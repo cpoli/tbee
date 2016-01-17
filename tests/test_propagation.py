@@ -1,6 +1,6 @@
-from lattice import *
-from system import *
-from propagation import *
+from TB.lattice import *
+from TB.system import *
+from TB.propagation import *
 import unittest
 import numpy as np
 from math import sqrt

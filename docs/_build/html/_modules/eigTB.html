@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>eigTB &mdash; TB  documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TB  documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../indexTB.html" class="fa fa-home"> TB</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../indexLatticeTB.html">Lattice TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../codeLatticeTB.html">latticeTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../indexLatticeTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../indexEigTB.html">Eig TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../codeEigTB.html">eigTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../indexEigTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../indexPlotTB.html">PlotTB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../codePlotTB.html">plotTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../indexPlotTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../indexPropTB.html">Prop TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../codePropTB.html">Code Prop TB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../indexPropTB.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../indexTB.html">TB</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../indexTB.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>eigTB</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for eigTB</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sparse</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="kn">as</span> <span class="nn">rand</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<div class="viewcode-block" id="eigTB"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB">[docs]</a><span class="k">class</span> <span class="nc">eigTB</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Solve the Tight-Binding eigenvalue problem of a lattice defined </span>
+<span class="sd">    using the class **latticeTB**.</span>
+
+<span class="sd">    :param lat: **latticeTB** class instance.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+           <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method get_lattice() of latticeTB first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">tags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">sites</span>  <span class="c"># sites could be changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>  <span class="c"># coor could be changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ny</span> <span class="o">=</span> <span class="n">lat</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">ny</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span> <span class="c">#  Sublattice onsite energies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="p">{</span><span class="s">&#39;names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="s">&#39;formats&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">]})</span> <span class="c">#  Hoppings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span> <span class="c">#  Onsites energies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(([],([],[])),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>  <span class="c"># Hamiltonian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c"># Eigenenergies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c"># Eigenvectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># Intensities (|vn|**2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pola</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># sublattices polarisation (|vn^{(S)}|**2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c"># hopping disorder strength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_on</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c"># onsite disorder strength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="eigTB.set_onsite"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_onsite">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set onsite energies.</span>
+
+<span class="sd">        :param on:  Array. Sublattice onsite energies.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="n">on</span>
+        <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">on</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
+</div>
+<div class="viewcode-block" id="eigTB.set_hop"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_hop">[docs]</a>    <span class="k">def</span> <span class="nf">set_hop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ho</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the lattice hoppings.</span>
+
+<span class="sd">        :param ho: Array (size :math:`n`). nth first hopping values.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">dif_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dif_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dif_x</span> <span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dif_y</span> <span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">dis_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dis</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">decimals</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="p">{</span><span class="s">&#39;names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">],</span> 
+                                            <span class="s">&#39;formats&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ho</span><span class="p">):</span> 
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">((</span><span class="n">dis</span> <span class="o">&gt;</span> <span class="n">dis_u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-.</span><span class="mo">01</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;</span> <span class="n">dis_u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+.</span><span class="mo">01</span><span class="p">))</span>
+            <span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="p">{</span><span class="s">&#39;names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">],</span> 
+                                                                  <span class="s">&#39;formats&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">]})</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">,</span> <span class="n">hop</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="eigTB.set_onsite_def"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_onsite_def">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">on_def</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set specific onsite energies.</span>
+
+<span class="sd">        :param ind:  Array. Site indices. </span>
+<span class="sd">        :param on_def:  Array. Onsite energy values.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="p">])</span>
+        <span class="n">on_def</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">on_def</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">on_def</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span>
+</div>
+<div class="viewcode-block" id="eigTB.set_hop_def"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_hop_def">[docs]</a>    <span class="k">def</span> <span class="nf">set_hop_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">hop_def</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set specific hoppings. </span>
+
+<span class="sd">        :param ind: Array. Hopping Indices, size :math:`(2 \times N_{def})`.</span>
+<span class="sd">        :param on_def: Array. Onsite energy values.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method set_hop() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">hop_def</span><span class="p">):</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">cond</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">cond</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+</div>
+<div class="viewcode-block" id="eigTB.set_disorder"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_disorder">[docs]</a>    <span class="k">def</span> <span class="nf">set_disorder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set a generic hopping disorder. </span>
+
+<span class="sd">        :param alpha: Stength of the disorder.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method set_hop() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">1</span><span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">rand</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+</div>
+<div class="viewcode-block" id="eigTB.set_disorder_on"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.set_disorder_on">[docs]</a>    <span class="k">def</span> <span class="nf">set_disorder_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set a generic disorder. </span>
+
+<span class="sd">        :param alpha: Stength of the disorder.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span> <span class="o">*=</span> <span class="mi">1</span><span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">rand</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha_on</span> <span class="o">=</span> <span class="n">alpha</span>
+</div>
+<div class="viewcode-block" id="eigTB.get_ham"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.get_ham">[docs]</a>    <span class="k">def</span> <span class="nf">get_ham</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compl_trans</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the Tight-Binding Hamiltonian.</span>
+
+<span class="sd">        :param compl_trans: Default value False. Add complex transposed part to the Hamiltonian.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method set_hop() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])),</span> 
+                                                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span> \
+                       <span class="o">+</span> <span class="n">sparse</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">compl_trans</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">+=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">])),</span> 
+                                                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="eigTB.get_eig"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.get_eig">[docs]</a>    <span class="k">def</span> <span class="nf">get_eig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvec</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the eigenergies, eigenvectors and polarisations of the Tight-Binding model</span>
+<span class="sd">        for non-Hermitian Hamiltonians.</span>
+
+<span class="sd">        :param eigenvec: Default value False. Get the eigenvectors.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method get_ham() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eigenvec</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">H</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pola</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">,</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">H</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="eigTB.get_state_pola"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.get_state_pola">[docs]</a>    <span class="k">def</span> <span class="nf">get_state_pola</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pola_tag</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the state with maximal polarization on one sublattice.</span>
+
+<span class="sd">        :param tag: Sublattice tag.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **intensity** -- Intensity of max polarized state on *tag*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method get_eig() or get_eigh() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">i_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">==</span> <span class="n">pola_tag</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[:,</span> <span class="n">i_tag</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;State with polarization:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="n">i_tag</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="eigTB.get_states_en"><a class="viewcode-back" href="../codeEigTB.html#eigTB.eigTB.get_states_en">[docs]</a>    <span class="k">def</span> <span class="nf">get_states_en</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_min</span><span class="p">,</span> <span class="n">e_max</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get, if any, the intensity of the sum of the states </span>
+<span class="sd">        between *e_min* and *e_max*.</span>
+
+<span class="sd">        :param e_min: Energy min.</span>
+<span class="sd">        :param e_max: Energy max.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **intensity** -- Sum of the intensities between *e_min* and *e_max*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n\n</span><span class="s">Run method get_eig() or get_eigh() first.</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">&gt;</span> <span class="n">e_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">&lt;</span> <span class="n">e_max</span><span class="p">))</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;{} states between {} and {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">),</span> <span class="n">e_min</span><span class="p">,</span> <span class="n">e_max</span><span class="p">))</span>
+        <span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vn</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">intensity</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

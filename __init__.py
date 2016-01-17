@@ -23,9 +23,11 @@ setup(name='TB',
       py_modules=['lattice', 'system', 'plot', 'propagation', 'save', 'error_handling'],
       )
 
-from lattice import *
-from system import *
-from plot import *
-from propagation import *
-from save import *
-import error_handling
+__all__ = ["lattice", "system", "plot", "propagation", "save", "error_handling"]
+
+from TB.lattice import *
+from TB.system import *
+from TB.plot import *
+from TB.propagation import *
+from TB.save import *
+import TB.error_handling

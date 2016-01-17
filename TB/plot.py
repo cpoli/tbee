@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.legend_handler import HandlerLine2D
-import error_handling
+import TB.error_handling as error_handling
 import os
 
 
@@ -163,10 +163,8 @@ class plot:
             * **fig** -- Figure.
         '''
         error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-        error_handling.positive_real
-        positive_real(ms, 'ms')
-        error_handling.positive_real
-        positive_real(fs, 'fs')
+        error_handling.positive_real(ms, 'ms')
+        error_handling.positive_real(fs, 'fs')
         error_handling.lims(lims)
         fig, ax1 = plt.subplots()
         ax1 = plt.gca()
@@ -186,7 +184,7 @@ class plot:
             label.set_color('b')
         if tag_pola:
             error_handling.tag(tag_pola, self.sys.lat.tags)
-            fig, ax2 = self.pola(fig=fig, ax1=ax1, ms=ms, fs=fs, tag_pola=tag_pola, ind=ind)
+            fig, ax2 = self.polarization(fig=fig, ax1=ax1, ms=ms, fs=fs, tag_pola=tag_pola, ind=ind)
         elif ipr:
             fig, ax2 = self.ipr(fig=fig, ax1=ax1, ms=ms, fs=fs, ind=ind)
         elif peterman:
@@ -221,10 +219,8 @@ class plot:
         if fig is None:
             error_handling.sys(self.sys)
             error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-            error_handling.positive_real
-            positive_real(ms, 'ms')
-            error_handling.positive_real
-            positive_real(fs, 'fs')
+            error_handling.positive_real(ms, 'ms')
+            error_handling.positive_real(fs, 'fs')
             error_handling.lims(lims)
             fig, ax2 = plt.subplots()
             ax2 = plt.gca()
@@ -343,10 +339,8 @@ class plot:
             * **fig** -- Figure.
         '''
         error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-        error_handling.positive_real
-        positive_real(ms, 'ms')
-        error_handling.positive_real
-        positive_real(fs, 'fs')
+        error_handling.positive_real(ms, 'ms')
+        error_handling.positive_real(fs, 'fs')
         error_handling.lims(lims)
         fig, ax1 = plt.subplots()
         ax1 = plt.gca()

@@ -30,7 +30,7 @@ def positive_int(var, var_name):
         raise ValueError('\n\nParameter {} must be a positive integer.\n'.format(var_name))
 
 
-def positive_real_lim(var, var_name, nmax):
+def positive_int_lim(var, var_name, nmax):
     '''
     Check if *var* is a positive integer smaller than nmax.
 
@@ -284,10 +284,8 @@ def get_lattice(prim_vec, n1, n2):
     :raises ValueError: Parameter n1 must be a positive integer.
     :raises ValueError: Parameter n2 must be a positive integer.
     '''
-    positive_real
-positive_real(n1, 'n1')
-    positive_real
-positive_real(n2, 'n2')
+    positive_int(n1, 'n1')
+    positive_int(n2, 'n2')
     if len(prim_vec) == 1 and n2 > 1:
         raise ValueError('\n\nParameter n2 should be equal to 1\n'
                                     'if one primitive vector is given\n')
@@ -767,10 +765,8 @@ def fig_size(sigsize):
     if figsize is None:
         figsize = (5, 4)
     error_handling.list_tuple_2elem(figsize, 'figsize')
-    error_handling.positive_real
-positive_real(figsize[0], 'figsize[0]')
-    error_handling.positive_real
-positive_real(figsize[1], 'figsize[1]')
+    error_handling.positive_real(figsize[0], 'figsize[0]')
+    error_handling.positive_real(figsize[1], 'figsize[1]')
 
 
 ####################################

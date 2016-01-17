@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Lattice TB &mdash; TB  documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TB  documentation" href="index.html"/>
+        <link rel="next" title="latticeTB code" href="codeLatticeTB.html"/>
+        <link rel="prev" title="Tight-Binding" href="indexTB.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="indexTB.html" class="fa fa-home"> TB</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Lattice TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codeLatticeTB.html">latticeTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexEigTB.html">Eig TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codeEigTB.html">eigTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexEigTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexPlotTB.html">PlotTB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codePlotTB.html">plotTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexPlotTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexPropTB.html">Prop TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codePropTB.html">Code Prop TB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexPropTB.html#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="indexTB.html">TB</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="indexTB.html">Docs</a> &raquo;</li>
+      
+    <li>Lattice TB</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/indexLatticeTB.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="lattice-tb">
+<h1>Lattice TB<a class="headerlink" href="#lattice-tb" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p><strong>latticeTB</strong> creates finite two dimensional lattices.</p>
+<p><strong>latticeTB</strong> can:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">create a generic lattice defined by:</p>
+<blockquote>
+<div><ul class="simple">
+<li>position of the sites within the unit cell.</li>
+<li>number of cells along <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> and <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>.</li>
+<li>norm of the two primitive vectors (chosen to be egal).</li>
+<li>angle between the two primitive vectors.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">eliminate dangling sites (sites conneted to just another site).</p>
+</li>
+<li><p class="first">eliminate selected sites.</p>
+</li>
+</ul>
+</div></blockquote>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Dimer chain</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+<span class="n">lat_chain</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ang</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">lat_chain</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">fig_chain</span> <span class="o">=</span> <span class="n">lat_chain</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_chain</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">lat_chain</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;chain&#39;</span><span class="p">)</span>
+<span class="n">save_chain</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_chain</span><span class="p">,</span> <span class="s">&#39;lattice&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lattice.png"><img alt="_images/lattice.png" class="align-center" src="_images/lattice.png" style="width: 95%; height: 100px;" /></a>
+<p>Face centered square</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+<span class="n">lat_fcs</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lat_fcs</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">fig_fcs</span> <span class="o">=</span> <span class="n">lat_fcs</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_fcs</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">lat_fcs</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;fc_square&#39;</span><span class="p">)</span>
+<span class="n">save_fcs</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_fcs</span><span class="p">,</span> <span class="s">&#39;lattice&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lattice1.png"><img alt="_images/lattice1.png" class="align-center" src="_images/lattice1.png" style="width: 55%; height: 100px;" /></a>
+<p>Lieb lattice</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="n">lat_lieb</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lat_lieb</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">fig_lieb</span> <span class="o">=</span> <span class="n">lat_lieb</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">lat_lieb</span><span class="o">.</span><span class="n">remove_dangling</span><span class="p">(</span><span class="n">nor_bond</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">fig_lieb_dang</span> <span class="o">=</span> <span class="n">lat_lieb</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_lieb</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">fig_lieb_dang</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;lieb&#39;</span><span class="p">)</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_lieb</span><span class="p">,</span> <span class="s">&#39;lattice&#39;</span><span class="p">)</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_lieb_dang</span><span class="p">,</span> <span class="s">&#39;lattice_dang&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lattice2.png"><img alt="_images/lattice2.png" src="_images/lattice2.png" style="width: 45%; height: 100px;" /></a>
+<a class="reference internal image-reference" href="_images/lattice_dang.png"><img alt="_images/lattice_dang.png" src="_images/lattice_dang.png" style="width: 45%; height: 100px;" /></a>
+<p>Graphene</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+<span class="n">lat_graphene</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">lat_graphene</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">lat_graphene</span><span class="o">.</span><span class="n">remove_dangling</span><span class="p">(</span><span class="n">nor_bond</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">fig_graphene</span> <span class="o">=</span> <span class="n">lat_graphene</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">plt_label</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">lat_graphene</span><span class="o">.</span><span class="n">remove_sites</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="n">fig_graphene_rem</span> <span class="o">=</span> <span class="n">lat_graphene</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_graphene</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">lat_graphene</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;graphene&#39;</span><span class="p">)</span>
+<span class="n">save_graphene</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_graphene</span><span class="p">,</span> <span class="s">&#39;lattice&#39;</span><span class="p">)</span>
+<span class="n">save_graphene</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_graphene_rem</span><span class="p">,</span> <span class="s">&#39;lattice_rem&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lattice3.png"><img alt="_images/lattice3.png" src="_images/lattice3.png" style="width: 45%; height: 100px;" /></a>
+<a class="reference internal image-reference" href="_images/lattice_rem.png"><img alt="_images/lattice_rem.png" src="_images/lattice_rem.png" style="width: 45%; height: 100px;" /></a>
+<p>Kagome</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="n">lat_kagome</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">lat_kagome</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">fig_kagome</span> <span class="o">=</span> <span class="n">lat_kagome</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_kagome</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">lat_kagome</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;kagome&#39;</span><span class="p">)</span>
+<span class="n">save_kagome</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_kagome</span><span class="p">,</span> <span class="s">&#39;lattice&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lattice4.png"><img alt="_images/lattice4.png" class="align-center" src="_images/lattice4.png" style="width: 65%; height: 100px;" /></a>
+<p>Hexagon line centered</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mf">0.25</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.75</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mf">0.25</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="mf">1.</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;e&#39;</span><span class="p">]</span>
+<span class="n">hexa_lc</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">hexa_lc</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">fig_hexa_lc</span> <span class="o">=</span> <span class="n">hexa_lc</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">],</span> <span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">hexa_lc</span><span class="o">.</span><span class="n">remove_dangling</span><span class="p">(</span><span class="n">nor_bond</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">fig_hexa_lc_dang</span> <span class="o">=</span> <span class="n">hexa_lc</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">],</span> <span class="n">ms</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">save_hlc</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">hexa_lc</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;hexa_lc&#39;</span><span class="p">)</span>
+<span class="n">save_hlc</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_hexa_lc</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">)</span>
+<span class="n">save_hlc</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_hexa_lc_dang</span><span class="p">,</span> <span class="s">&#39;lat_dang&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lat1.png"><img alt="_images/lat1.png" src="_images/lat1.png" style="width: 45%; height: 100px;" /></a>
+<a class="reference internal image-reference" href="_images/lat_dang.png"><img alt="_images/lat_dang.png" src="_images/lat_dang.png" style="width: 45%; height: 100px;" /></a>
+<div class="section" id="feedback">
+<h3>Feedback<a class="headerlink" href="#feedback" title="Permalink to this headline">¶</a></h3>
+<p>Please send comments or suggestions for improvement to cpoli83 at hotmail dot fr</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="codeLatticeTB.html" class="btn btn-neutral float-right" title="latticeTB code">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="indexTB.html" class="btn btn-neutral" title="Tight-Binding"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

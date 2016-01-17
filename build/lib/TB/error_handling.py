@@ -17,8 +17,7 @@ def boolean(var, var_name):
         raise TypeError('\n\nParameter {} must be a bool.\n'.format(var_name))
 
 
-def positive_real
-positive_real(var, var_name):
+def positive_int(var, var_name):
     '''
     Check if *var* is a positive integer.
 
@@ -31,8 +30,7 @@ positive_real(var, var_name):
         raise ValueError('\n\nParameter {} must be a positive integer.\n'.format(var_name))
 
 
-def positive_real
-positive_real_lim(var, var_name, nmax):
+def positive_int_lim(var, var_name, nmax):
     '''
     Check if *var* is a positive integer smaller than nmax.
 
@@ -155,6 +153,7 @@ def ndarray(var, var_name, length):
         raise ValueError('\n\nParameter {} must be a numpy ndarray of {}\n'
                                     ''.format(var_name, length))
 
+
 def ndarray_null(var, var_name):
     '''
     Check if parameter *var* is not a null numpy array.
@@ -164,6 +163,7 @@ def ndarray_null(var, var_name):
     array_null = np.zeros(len(var))
     if np.allclose(var, array_null):
         raise ValueError('\n\nParameter {} must not be a null numpy ndarray.\n'.format(var_name))
+
 
 def list_tuple_2elem(var, var_name):
     '''
@@ -179,6 +179,7 @@ def list_tuple_2elem(var, var_name):
     if len(var) != 2:
         raise ValueError('\n\nParameter {} must be a list/tuple of length two.\n'.format(var_name))
 
+
 def tuple_2elem(var, var_name):
     '''
     Check if parameter *var* is a tuple with 2 elements.
@@ -192,6 +193,7 @@ def tuple_2elem(var, var_name):
         raise TypeError('\n\nParameter {} must be a tuple\n'.format(var_name))
     if len(var) != 2:
         raise ValueError('\n\nParameter {} must be a list/tuple of length two.\n'.format(var_name))
+
 
 ###############################
 # LATTICE EXCEPTION HANDLING
@@ -282,10 +284,8 @@ def get_lattice(prim_vec, n1, n2):
     :raises ValueError: Parameter n1 must be a positive integer.
     :raises ValueError: Parameter n2 must be a positive integer.
     '''
-    positive_real
-positive_real(n1, 'n1')
-    positive_real
-positive_real(n2, 'n2')
+    positive_int(n1, 'n1')
+    positive_int(n2, 'n2')
     if len(prim_vec) == 1 and n2 > 1:
         raise ValueError('\n\nParameter n2 should be equal to 1\n'
                                     'if one primitive vector is given\n')
@@ -765,10 +765,8 @@ def fig_size(sigsize):
     if figsize is None:
         figsize = (5, 4)
     error_handling.list_tuple_2elem(figsize, 'figsize')
-    error_handling.positive_real
-positive_real(figsize[0], 'figsize[0]')
-    error_handling.positive_real
-positive_real(figsize[1], 'figsize[1]')
+    error_handling.positive_real(figsize[0], 'figsize[0]')
+    error_handling.positive_real(figsize[1], 'figsize[1]')
 
 
 ####################################

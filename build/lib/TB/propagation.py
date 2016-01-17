@@ -8,7 +8,7 @@ try:
 except:
     pass
 import os
-import error_handling
+import TB.error_handling as error_handling
 
 
 class propagation():

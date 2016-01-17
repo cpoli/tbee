@@ -8,7 +8,7 @@ try:
 except:
     pass
 import os
-import error_handling
+import TB.error_handling as error_handling
 
 
 class propagation():
@@ -103,7 +103,7 @@ class propagation():
         '''
         error_handling.get_pump(hams)
         error_handling.ndarray(psi_init, 'psi_init', self.lat.sites)
-        error_handling.positive_int(step, 'step')
+        error_handling.positive_int(steps, 'steps')
         error_handling.positive_real(dz, 'dz')
         error_handling.boolean(norm, 'norm')
         self.steps = steps
@@ -274,14 +274,9 @@ class propagation():
         error_handling.positive_real(fs, 'fs')
         error_handling.ani_type(ani_type)
         error_handling.tuple_2elem(figsize, 'figsize')
-        if ani_type == 'real':
+        if ani_type == 'real' or ani_type == 'imag':
             color = self.prop.real
-            max_val = max(np.max(color), -np.min(color))
-            ticks = [-max_val, max_val]
-            cmap = 'seismic'
-        elif ani_type == 'imag':
-            color = self.prop.imag
-            max_val = max(np.max(color), -np.min(color))
+            max_val = max(np.max(color[:, -1]), -np.min(color[:, -1]))
             ticks = [-max_val, max_val]
             cmap = 'seismic'
         else:
@@ -289,32 +284,33 @@ class propagation():
             ticks = [0., np.max(color)]
             cmap = 'Reds'
         fig = plt.figure()
-        ## TO CHANGE
-        scat = plt.scatter(self.lat.coor['x'], self.lat.coor['y'], c=color[:, 0],
-                                    s=s, vmin=ticks[0], vmax=ticks[1],
-                                    cmap=cmap)
+        ax = plt.axes(xlim=(np.min(self.lat.coor['x']-.5), np.max(self.lat.coor['x']+.5)), 
+                             ylim=(np.min(self.lat.coor['y']-.5), np.max(self.lat.coor['y']+.5)))
+        ax.set_aspect('equal')
         frame = plt.gca()
         frame.axes.get_xaxis().set_ticks([])
         frame.axes.get_yaxis().set_ticks([])
-        if ani_type == 'norm':
-            cbar = fig.colorbar(scat, ticks=[0, ticks[1]])
-            cbar.ax.set_yticklabels(['0','max'])
-        else:
+        scat = plt.scatter(self.lat.coor['x'], self.lat.coor['y'], c=color[:, 0],
+                                    s=s, vmin=ticks[0], vmax=ticks[1],
+                                    cmap=cmap)
+        if ani_type == 'real' or ani_type == 'imag':
             cbar = fig.colorbar(scat, ticks=[ticks[0], 0, ticks[1]])
             cbar.ax.set_yticklabels(['min', '0','max'])
+        else:
+            cbar = fig.colorbar(scat, ticks=[0, ticks[1]])
+            cbar.ax.set_yticklabels(['0','max'])
 
         def init():
             scat.set_array(color[:, 0])
-            print('IIIIIII')
             return scat,
 
         def animate(i):
-            print(i)
-            scat.set_array(color[:, i])
+            scat.set_array(color[:, i])    
             return scat,
 
         return animation.FuncAnimation(fig, animate, init_func=init,
-                                                           frames=self.steps, interval=120)
+                                   frames=self.steps, interval=120, blit=True)
+
 
     def plt_prop_dimer(self, lw=5, fs=20):
         '''
@@ -338,4 +334,3 @@ class propagation():
         plt.ylabel('$|\psi_j|^2$', fontsize=fs)
         plt.xlim([0, z[-1]])
         return fig
-

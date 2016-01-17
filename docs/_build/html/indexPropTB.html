@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Prop TB &mdash; TB  documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TB  documentation" href="index.html"/>
+        <link rel="next" title="Code Prop TB" href="codePropTB.html"/>
+        <link rel="prev" title="plotTB code" href="codePlotTB.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="indexTB.html" class="fa fa-home"> TB</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="indexLatticeTB.html">Lattice TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codeLatticeTB.html">latticeTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexLatticeTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexEigTB.html">Eig TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codeEigTB.html">eigTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexEigTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexPlotTB.html">PlotTB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codePlotTB.html">plotTB code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexPlotTB.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Prop TB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codePropTB.html">Code Prop TB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="indexTB.html">TB</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="indexTB.html">Docs</a> &raquo;</li>
+      
+    <li>Prop TB</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/indexPropTB.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="prop-tb">
+<h1>Prop TB<a class="headerlink" href="#prop-tb" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p><strong>propTB</strong> gets the field Time Evolution.</p>
+<p><strong>propTB</strong> can:</p>
+<blockquote>
+<div><ul class="simple">
+<li>consider linear time dependent Schrödinger equation.</li>
+<li>consider non-linear time dependent Schrödinger equation.</li>
+</ul>
+</div></blockquote>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Lieb Lattice - Passive amplication of a zero-mode:</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">latticeTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">eigTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">plotTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">propTB</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span>
+<span class="n">ri</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+<span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s">&#39;c&#39;</span><span class="p">]</span>
+<span class="n">lat_lieb</span> <span class="o">=</span> <span class="n">latticeTB</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span> <span class="n">ri</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span> <span class="n">nor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ang</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lat_lieb</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">)</span>
+<span class="n">lat_lieb</span><span class="o">.</span><span class="n">remove_dangling</span><span class="p">(</span><span class="n">nor_bond</span><span class="o">=</span><span class="mf">1.</span><span class="p">)</span>
+
+<span class="n">eig_lieb</span> <span class="o">=</span> <span class="n">eigTB</span><span class="p">(</span><span class="n">lat_lieb</span><span class="p">)</span>
+<span class="n">t1</span><span class="p">,</span> <span class="n">t2</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span>
+<span class="n">eig_lieb</span><span class="o">.</span><span class="n">set_hop</span><span class="p">([</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">])</span>
+<span class="n">eig_lieb</span><span class="o">.</span><span class="n">set_onsite</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">-.</span><span class="mi">2j</span><span class="p">,</span> <span class="o">-.</span><span class="mi">2j</span><span class="p">])</span>
+<span class="n">eig_lieb</span><span class="o">.</span><span class="n">get_ham</span><span class="p">()</span>
+<span class="n">eig_lieb</span><span class="o">.</span><span class="n">get_eig</span><span class="p">(</span><span class="n">eigenvec</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">zero_mode</span> <span class="o">=</span> <span class="n">eig_lieb</span><span class="o">.</span><span class="n">get_state_pola</span><span class="p">(</span><span class="n">pola_tag</span><span class="o">=</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+
+<span class="n">plt_lieb</span> <span class="o">=</span> <span class="n">plotTB</span><span class="p">(</span><span class="n">eig_lieb</span><span class="p">)</span>
+<span class="n">fig_lat</span> <span class="o">=</span> <span class="n">plt_lieb</span><span class="o">.</span><span class="n">plt_lattice</span><span class="p">(</span><span class="n">ms</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">fig_spec</span> <span class="o">=</span> <span class="n">plt_lieb</span><span class="o">.</span><span class="n">plt_spec</span><span class="p">(</span><span class="n">pola_tag</span><span class="o">=</span><span class="n">b</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">fig_zero_mode</span> <span class="o">=</span> <span class="n">plt_lieb</span><span class="o">.</span><span class="n">plt_intensity</span><span class="p">(</span><span class="n">zero_mode</span><span class="p">)</span>
+
+<span class="n">prop</span> <span class="o">=</span> <span class="n">propTB</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="n">lat_lieb</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">psi_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">eig_lieb</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eig_lieb</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+<span class="n">prop</span><span class="o">.</span><span class="n">get_prop</span><span class="p">(</span><span class="n">ham</span><span class="o">=</span><span class="n">eig_lieb</span><span class="o">.</span><span class="n">ham</span><span class="p">,</span> <span class="n">psi_init</span><span class="o">=</span><span class="n">psi_init</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">ani</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get_ani</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">save_lieb</span> <span class="o">=</span> <span class="n">saveFigTB</span><span class="p">(</span><span class="n">sys</span><span class="o">=</span><span class="n">eig_lieb</span><span class="p">,</span> <span class="n">dir_name</span><span class="o">=</span><span class="s">&#39;lieb&#39;</span><span class="p">,</span>
+                                      <span class="n">params</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">([(</span><span class="s">&#39;t1&#39;</span><span class="p">,</span> <span class="n">t1</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;t2&#39;</span><span class="p">,</span> <span class="n">t2</span><span class="p">)]))</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_lat</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">)</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_fig_lat</span><span class="p">(</span><span class="n">fig_spec</span><span class="p">,</span> <span class="s">&#39;spec&#39;</span><span class="p">)</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">fig_zero_mode</span><span class="p">,</span> <span class="s">&#39;zero_mode&#39;</span><span class="p">)</span>
+<span class="n">save_lieb</span><span class="o">.</span><span class="n">save_ani</span><span class="p">(</span><span class="n">ani</span><span class="p">,</span> <span class="s">&#39;ani&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/lat2.png"><img alt="_images/lat2.png" src="_images/lat2.png" style="width: 45%; height: 100px;" /></a>
+<a class="reference internal image-reference" href="_images/spec_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png"><img alt="_images/spec_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png" src="_images/spec_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png" style="width: 45%; height: 100px;" /></a>
+<a class="reference internal image-reference" href="_images/zero_mode_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png"><img alt="_images/zero_mode_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png" class="align-center" src="_images/zero_mode_ea0j_eb-2j_ec-2j_t1(1+0j)_t2(0,2+0j).png" style="width: 55%; height: 100px;" /></a>
+<div class="section" id="feedback">
+<h3>Feedback<a class="headerlink" href="#feedback" title="Permalink to this headline">¶</a></h3>
+<p>Please send comments or suggestions for improvement to cpoli83 at hotmail dot fr</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="codePropTB.html" class="btn btn-neutral float-right" title="Code Prop TB">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="codePlotTB.html" class="btn btn-neutral" title="plotTB code"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

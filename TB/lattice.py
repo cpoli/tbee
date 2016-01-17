@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import error_handling
+import TB.error_handling as error_handling
+
 
 PI = np.pi
 
