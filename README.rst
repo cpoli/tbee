@@ -3,6 +3,7 @@ Python Tight-Binding module
 
 .. image:: logoTB.png
     :width:  35%
+    :scale: 50 %
     :align: center
 
 **TB** is a **Python** module of **Tight-Binding** models. **TB**  builds up and solves finite tight-binding models with complex-valued onsite energies and complex-valued hoppings. 
@@ -10,11 +11,11 @@ Python Tight-Binding module
 Sphinx documentation of **TB**: http://cpoli.github.io/TBdoc/indexTB.html
 
 **TB** is composed of:
-* lattice
-* system
-* plot
-* propagation
-* save
+    * lattice
+    * system
+    * plot
+    * propagation
+    * save
 
 **TB** is written in fully vectorized **Numpy**.:
 
