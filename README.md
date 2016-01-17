@@ -8,18 +8,17 @@ Python Tight-Binding module
 
 **Python** module to build up and solve **Tight-Binding** models. 
 
-**TB** is written in fully vectorized **Numpy**
+**TB** is written in fully vectorized **Numpy**,
+is composed of the classes:
 
-**TB** is composed of the following classes:
-
-    - lattice
-    - system
-    - plot
-    - propagation
-    - save
+    * lattice
+    * system
+    * plot
+    * propagation
+    * save
 
 
-**TB** main features:
+and can handle:
 
     * Complex lattice structures.
     * Complex-valued onsite energies and hoppings.
