@@ -6,7 +6,7 @@ Python Tight-Binding module
     :scale: 50 %
     :align: center
 
-**TB** is a **Python** module of **Tight-Binding** models. **TB**  builds up and solves finite tight-binding models with complex-valued onsite energies and complex-valued hoppings. 
+**TB** is a **Python** module building and solving **Tight-Binding** models. 
 
 Sphinx documentation of **TB**: http://cpoli.github.io/TBdoc/indexTB.html
 
