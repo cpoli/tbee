@@ -2,9 +2,7 @@ Python Tight-Binding module
 ======================
 
 
-.. image:: logoTB.png
-    :width:  35%
-    :align: center
+![alt tag](https://github.com/cpoli/TB/blob/master/logoTB.png)
 
 
  **Python** module to build up and solve **Tight-Binding** models. 
