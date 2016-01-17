@@ -1,8 +1,10 @@
 Python Tight-Binding module
-======================
+========================
 
 
-![alt tag](cpoli/TB/blob/master/logoTB.png)
+.. image:: logoTB.png
+    :width:  35%
+    :align: center
 
 
  **Python** module to build up and solve **Tight-Binding** models. 
