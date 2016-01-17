@@ -8,14 +8,12 @@ Python Tight-Binding module
 
 
  **Python** module to build up and solve **Tight-Binding** models. 
----------------------------------------------------------------------------------------------------------
 
-written in fully vectorized **Numpy**
-----------------------------------------------------------------------
+**TB** is written in fully vectorized **Numpy**
 
 
 **TB** is composed of the following classes:
-----------------------------------------------------------------------
+
 
     * lattice
     * system
@@ -25,7 +23,6 @@ written in fully vectorized **Numpy**
 
 
 **TB** main features:
------------------------------------
 
     * Complex lattice structures.
     * Complex-valued onsite energies and hoppings.
@@ -46,22 +43,17 @@ written in fully vectorized **Numpy**
     * Time propagation
 
 **TB** is available at https://github.com/cpoli/TB
-----------------------------------------------------------------------
 
 
-To use TB
------------------------------------
+To use TB:
 
-Please install Python3.5 and three additional packages:
+  *Please install Python3.5 and three additional packages:
 
-* numpy 1.10
-* scipy 0.16
-* matplotlib 1.5
+    * numpy 1.10
+    * scipy 0.16
+    * matplotlib 1.5
 
-See https://cpoli.github.io/python-doc.html for Python installation details
-and to install a github repository (for mac).
+  *See https://cpoli.github.io/python-doc.html for Python installation details
+    and to install a github repository (for mac).
 
-Examples
----------------------------------------------------------------------------------------------------------
-
-Example  are available at https://github.com/cpoli/TB/tree/master/examples
+Examples are available at https://github.com/cpoli/TB/tree/master/examples
