@@ -509,7 +509,7 @@ class plot:
         error_handling.string(title, 'title')
         i_beta_min = np.argmin(np.abs(betas))
         ind_en = np.argwhere((butterfly[i_beta_min, :] > lims[0]) & 
-                                        (butterfly[i_beta_min, :] < lims[1]))
+                                            (butterfly[i_beta_min, :] < lims[1]))
         ind_en = np.ravel(ind_en)
         fig, ax = plt.subplots()
         plt.title('Energies depending on strain', fontsize=fs)

@@ -8,7 +8,7 @@ Python Tight-Binding module
 
 **Python** module to build up and solve **Tight-Binding** models. 
 
-**TB** is written in fully vectorized **Numpy**,
+**TB** is written in fully vectorized **Numpy**.
 
 **TB** is composed of the following classes:
 
@@ -28,7 +28,7 @@ Python Tight-Binding module
     * Hoppings defined by their type, tags, and angles.
     * Any type of hoppings:
 
-        * Neighbors hoppings
+        * Neighbors hoppings,
         * Next-neighbors hoppings, 
         * Next-next-neighbors hoppings,
         * etc..
