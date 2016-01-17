@@ -16,15 +16,16 @@ from math import sqrt, pi, sin, cos
 PI = pi
 
 
-__all__ = ['latticeTB', 'eigTB', 'plotTB', 'propTB', 'grapheneTB', 'liebTB']
-from .latticeTB import latticeTB
-from .eigTB import eigTB
-from .plotTB import plotTB
-from .propTB import propTB
-from .grapheneTB import grapheneTB
-from .liebTB import liebTB
+from distutils.core import setup
 
-#    exec('from . import {}'.format(module))
+setup(name='TB',
+      version='0.1',
+      py_modules=['lattice', 'system', 'plot', 'propagation', 'save', 'error_handling'],
+      )
 
-#execfile(test_latticeTB.py)
-#execfile(test_eigTB.py, "-v")
+from lattice import *
+from system import *
+from plot import *
+from propagation import *
+from save import *
+import error_handling
