@@ -51,49 +51,9 @@ class propagation():
             if norm:
                 self.prop[:, i] /= np.abs(self.prop[:, i]).sum()
 
-    def get_propagation_nonlin(self, ham, psi_init, steps, dz, nu=0, norm=True):
-        '''
-        Get the time evolution.
-
-        :param ham: Tight-Binding Hamilonian.
-        :param psi_init: np.ndarray. Initial state.
-        :param steps: Positive Integer. Number of steps.
-        :param dz: Positive number. Step value.
-        :param nu: Real number. Nonlinearity strength.
-        :param norm: Boolean. Default value True. Normalize the norm to 1 at each step.
-        '''
-        self.steps = steps
-        self.dz = dz
-        from scipy.integrate import odeint
-        sites = self.lat.sites
-        N = 2 * sites
-
-        def eq_motion(y, t, H, nu):
-            non_lin = y ** 2
-            non_lin = nu *(non_lin[:sites] + non_lin[sites:])
-            T = np.copy(H)
-            T[range(sites), range(sites, N)] += non_lin
-            T[range(sites, N), range(sites)] -= non_lin
-            dy = np.dot(T, y)
-            return dy
-
-        ham = ham.toarray()
-        H = np.zeros((N, N))
-        H[:sites, :sites] = ham.imag
-        H[:sites, sites:] = ham.real
-        H[sites:, :sites] = - ham.real
-        H[sites:, sites:] = ham.imag
-        y0 = np.zeros(N)
-        y0[:sites] = psi_init.real
-        y0[sites:] = psi_init.imag
-        t = np.arange(0., self.dz*self.steps, self.dz)
-        param= (H, nu)
-        y = odeint(eq_motion, y0, t, args=param)
-        self.prop = y[:, :sites].T +1j * y[:, sites:].T
-
     def get_pumping(self, hams, psi_init, steps, dz, norm=True):
         '''
-        Get the time evolution under adiabatic pumpings.
+        Get the time evolution with adiabatic pumpings.
 
         :param hams: List of sparse.csr_matrices. Tight-Binding Hamilonians.
         :param psi_init: np.ndarray. Initial state.
@@ -140,62 +100,81 @@ class propagation():
             if norm:
                 self.prop[:,  no*delta+i] /= np.abs(self.prop[:,  no*delta+i]).sum()
 
-    def plt_propagation_1d(self, fs=20):
+    def plt_propagation_1d(self, prop_type='real', fs=20, figsize=None):
         '''
         Plot time evolution for 1D systems. 
 
         :param fs: Default value 20. Fontsize.
         '''
-        if not self.prop.any():
-            raise Exception('\n\nRun method get_prop() or get_pump() first.\n')
-        fig, ax = plt.subplots(figsize=(8, 6))
-        prop = np.abs(self.prop[::-1, :]) **2
-        color = self.prop_smooth_1d(prop)
-        plt.title('$|\psi(z)|^2$', fontsize=fs)
+        error_handling.empty_ndarray(self.prop, 'get_propagation or get_pumping')
+        error_handling.positive_real(fs, 'fs')
+        error_handling.prop_type(prop_type)
+        error_handling.tuple_2elem(figsize, 'figsize')
+        fig, ax = plt.subplots(figsize=figsize)
         plt.ylabel('n', fontsize=fs)
         plt.xlabel('z', fontsize=fs)
-        vmin, vmax = 0., np.max(color[:, 0: self.lat.sites])
-        extent = (0, self.steps*self.dz, 
-                       -self.lat.sites//2+0.5, self.lat.sites-self.lat.sites//2+0.5)
+        if prop_type == 'real':
+            color = self.prop_smooth_1d(self.prop.real)
+            max_val = max(np.max(color), -np.min(color))
+            ticks = [-max_val, max_val]
+            cmap = 'seismic'
+        elif prop_type == 'imag':
+            color = self.prop_smooth_1d(self.prop.imag)
+            max_val = max(np.max(color), -np.min(color))
+            ticks = [-max_val, max_val]
+            cmap = 'seismic'
+        else:
+            color = self.prop_smooth_1d(np.abs(self.prop) ** 2)
+            ticks = [0., np.max(color[:, -1])]
+            cmap = plt.cm.hot
+        extent = (-0, self.steps*self.dz, self.lat.sites-.5, -.5)
         aspect = 'auto'
         interpolation = 'nearest'
-        im = plt.imshow(color, cmap=plt.cm.hot, aspect=aspect,
+        im = plt.imshow(color, cmap=cmap, aspect=aspect,
                                   interpolation=interpolation, extent=extent,
-                                  vmin=vmin, vmax=vmax)
-        cbar = plt.colorbar(im, ticks=[vmin, vmax])
-        cbar.ax.set_yticklabels(['0', 'max'], fontsize=fs)
-        ya = ax.get_yaxis()
-        ya.set_major_locator(plt.MaxNLocator(integer=True))
+                                  vmin=ticks[0], vmax=ticks[-1])
+        for label in ax.xaxis.get_majorticklabels():
+            label.set_fontsize(fs)
+        for label in ax.yaxis.get_majorticklabels():
+            label.set_fontsize(fs)
+        ax.get_yaxis().set_major_locator(plt.MaxNLocator(integer=True))
+        if prop_type == 'norm':
+            cbar = fig.colorbar(im, ticks=ticks)
+            cbar.ax.set_yticklabels(['0','max'])
+        else:
+            cbar = fig.colorbar(im, ticks=[ticks[0], 0, ticks[1]])
+            cbar.ax.set_yticklabels(['min', '0','max'])
+        cbar.ax.tick_params(labelsize=fs)
         return fig
 
-    def prop_smooth_1d(self, prop, a=14., no=40):
+    def prop_smooth_1d(self, prop, a=10, no=40):
         r'''
         Private function. Used in *plt_propagation_1d*.
-        Smooth propagation for 1D systems ().
+        Smooth propagation for 1D systems.
         Perform Gaussian interpolation :math:`e^{-a(x-x_i)^2}`,
 
         :param prop: Propagation.
-        :param a: Default value 10. Gaussian Parameter.
-        :param no: Default value 40. Number of points of each Gaussians.
+        :param a: Default value 15. Gaussian Parameter.
+        :param no: Default value 40. Number of points of each Gaussian.
 
         :returns:
            * **smooth** -- Smoothed propagation.
         '''
-        x = np.linspace(-0.5, 0.5, no)
+        func = np.exp(- a * np.linspace(-0.5, 0.5, no) ** 2) 
         smooth = np.empty((self.lat.sites * no, self.steps))
         for iz in range(0, self.steps):
             for i in range(self.lat.sites):
-                smooth[i*no: (i+1)*no, iz] = prop[i, iz] * np.exp(-a * x ** 2)
+                smooth[i*no: (i+1)*no, iz] = prop[i, iz] * func
         return smooth
 
-    def get_animation(self, s=300., fs=20., ani_type='real', figsize=None):
+    def get_animation(self, s=300., fs=20., prop_type='real', figsize=None):
         '''
         Get time evolution animation.
 
         :param s: Default value 300. Circle size.
         :param fs: Default value 20. Fontsize.
         :param figsize: Tuple. Default value None. Figsize.
-        :param ani_type: Default value None. Figsize.
+        :param prop_type: Default value None. Figsize.
 
         :returns:
           * **ani** -- Animation.
@@ -203,18 +182,18 @@ class propagation():
         error_handling.empty_ndarray(self.prop, 'get_propagation or get_pumping')
         error_handling.positive_real(s, 's')
         error_handling.positive_real(fs, 'fs')
-        error_handling.ani_type(ani_type)
+        error_handling.prop_type(prop_type)
         error_handling.tuple_2elem(figsize, 'figsize')
         if os.name == 'posix':
             blit = False
         else:
             blit = True
-        if ani_type == 'real':
+        if prop_type == 'real':
             color = self.prop.real
             max_val = max(np.max(color), -np.min(color))
             ticks = [-max_val, max_val]
             cmap = 'seismic'
-        elif ani_type == 'imag':
+        elif prop_type == 'imag':
             color = self.prop.imag
             max_val = max(np.max(color), -np.min(color))
             ticks = [-max_val, max_val]
@@ -233,8 +212,8 @@ class propagation():
         frame.axes.get_xaxis().set_ticks([])
         frame.axes.get_yaxis().set_ticks([])
         ax.set_aspect('equal')
-        if ani_type == 'norm':
-            cbar = fig.colorbar(scat, ticks=[0, ticks[1]])
+        if prop_type == 'norm':
+            cbar = fig.colorbar(scat, ticks=ticks)
             cbar.ax.set_yticklabels(['0','max'])
         else:
             cbar = fig.colorbar(scat, ticks=[ticks[0], 0, ticks[1]])
@@ -248,7 +227,7 @@ class propagation():
                                                   fargs=(color, scat), blit=blit, repeat=False)
         return ani
 
-    def get_animation_nb(self, s=300., fs=20., ani_type='real', figsize=None):
+    def get_animation_nb(self, s=300., fs=20., prop_type='real', figsize=None):
         '''
         Get time evolution animation for iPython notebooks.
 
@@ -264,7 +243,7 @@ class propagation():
         :param s: Default value 300. Circle size.
         :param fs: Default value 20. Fontsize.
         :param figsize: Tuple. Default value None. Figsize.
-        :param ani_type: Default value None. Figsize.
+        :param prop_type: Default value None. Figsize.
 
         :returns:
           * **ani** -- Animation.
@@ -272,9 +251,9 @@ class propagation():
         error_handling.empty_ndarray(self.prop, 'get_propagation or get_pumping')
         error_handling.positive_real(s, 's')
         error_handling.positive_real(fs, 'fs')
-        error_handling.ani_type(ani_type)
+        error_handling.prop_type(prop_type)
         error_handling.tuple_2elem(figsize, 'figsize')
-        if ani_type == 'real' or ani_type == 'imag':
+        if prop_type == 'real' or prop_type == 'imag':
             color = self.prop.real
             max_val = max(np.max(color[:, -1]), -np.min(color[:, -1]))
             ticks = [-max_val, max_val]
@@ -293,7 +272,7 @@ class propagation():
         scat = plt.scatter(self.lat.coor['x'], self.lat.coor['y'], c=color[:, 0],
                                     s=s, vmin=ticks[0], vmax=ticks[1],
                                     cmap=cmap)
-        if ani_type == 'real' or ani_type == 'imag':
+        if prop_type == 'real' or prop_type == 'imag':
             cbar = fig.colorbar(scat, ticks=[ticks[0], 0, ticks[1]])
             cbar.ax.set_yticklabels(['min', '0','max'])
         else:

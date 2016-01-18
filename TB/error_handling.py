@@ -789,8 +789,8 @@ def get_pump(hams):
     for ham in hams:
         empty_ham(ham)
 
-def ani_type(ani_type):
-    string(ani_type, 'ani_type')
-    if ani_type not in ['real', 'imag', 'norm']:
-        raise ValueError('\n\nParameter ani_type must be a string:\n'
+def prop_type(prop_type):
+    string(prop_type, 'prop_type')
+    if prop_type not in ['real', 'imag', 'norm']:
+        raise ValueError('\n\nParameter prop_type must be a string:\n'
                                    '"real", "imag", "norm".\n')

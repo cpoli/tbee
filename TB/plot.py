@@ -356,7 +356,7 @@ class plot:
         ax1.plot(x[ind], self.sys.en.imag[ind], 'or', markersize=ms)
         ax1.set_title('Spectrum', fontsize=fs)
         ax1.set_xlabel('$n$', fontsize=fs)
-        ax1.set_ylabel('$E_n$', fontsize=fs, color='blue')
+        ax1.set_ylabel('Re '+r'$E_n$'+',    Im '+r'$E_n$', fontsize=fs)
         for label in ax1.xaxis.get_majorticklabels():
             label.set_fontsize(fs)
         for label in ax1.yaxis.get_majorticklabels():

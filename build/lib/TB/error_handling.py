@@ -165,6 +165,16 @@ def ndarray_null(var, var_name):
         raise ValueError('\n\nParameter {} must not be a null numpy ndarray.\n'.format(var_name))
 
 
+def ndarray_empty(var, var_name):
+    '''
+    Check if parameter *var* is not an empty numpy array.
+
+    :raises ValueError: Parameter *var* must not be an emptynumpy ndarray.
+    '''
+    if var.size == 0:
+        raise ValueError('\n\nParameter {} must not be an emptynumpy ndarray.\n'.format(var_name))
+
+
 def list_tuple_2elem(var, var_name):
     '''
     Check if parameter *var* is a list/tuple with 2 elements.
@@ -779,8 +789,8 @@ def get_pump(hams):
     for ham in hams:
         empty_ham(ham)
 
-def ani_type(ani_type):
-    string(ani_type, 'ani_type')
-    if ani_type not in ['real', 'imag', 'norm']:
-        raise ValueError('\n\nParameter ani_type must be a string:\n'
+def prop_type(prop_type):
+    string(prop_type, 'prop_type')
+    if prop_type not in ['real', 'imag', 'norm']:
+        raise ValueError('\n\nParameter prop_type must be a string:\n'
                                    '"real", "imag", "norm".\n')

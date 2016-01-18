@@ -163,10 +163,8 @@ class plot:
             * **fig** -- Figure.
         '''
         error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-        error_handling.positive_real
-        positive_real(ms, 'ms')
-        error_handling.positive_real
-        positive_real(fs, 'fs')
+        error_handling.positive_real(ms, 'ms')
+        error_handling.positive_real(fs, 'fs')
         error_handling.lims(lims)
         fig, ax1 = plt.subplots()
         ax1 = plt.gca()
@@ -186,7 +184,7 @@ class plot:
             label.set_color('b')
         if tag_pola:
             error_handling.tag(tag_pola, self.sys.lat.tags)
-            fig, ax2 = self.pola(fig=fig, ax1=ax1, ms=ms, fs=fs, tag_pola=tag_pola, ind=ind)
+            fig, ax2 = self.polarization(fig=fig, ax1=ax1, ms=ms, fs=fs, tag_pola=tag_pola, ind=ind)
         elif ipr:
             fig, ax2 = self.ipr(fig=fig, ax1=ax1, ms=ms, fs=fs, ind=ind)
         elif peterman:
@@ -221,10 +219,8 @@ class plot:
         if fig is None:
             error_handling.sys(self.sys)
             error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-            error_handling.positive_real
-            positive_real(ms, 'ms')
-            error_handling.positive_real
-            positive_real(fs, 'fs')
+            error_handling.positive_real(ms, 'ms')
+            error_handling.positive_real(fs, 'fs')
             error_handling.lims(lims)
             fig, ax2 = plt.subplots()
             ax2 = plt.gca()
@@ -343,10 +339,8 @@ class plot:
             * **fig** -- Figure.
         '''
         error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-        error_handling.positive_real
-        positive_real(ms, 'ms')
-        error_handling.positive_real
-        positive_real(fs, 'fs')
+        error_handling.positive_real(ms, 'ms')
+        error_handling.positive_real(fs, 'fs')
         error_handling.lims(lims)
         fig, ax1 = plt.subplots()
         ax1 = plt.gca()
@@ -362,7 +356,7 @@ class plot:
         ax1.plot(x[ind], self.sys.en.imag[ind], 'or', markersize=ms)
         ax1.set_title('Spectrum', fontsize=fs)
         ax1.set_xlabel('$n$', fontsize=fs)
-        ax1.set_ylabel('$E_n$', fontsize=fs, color='blue')
+        ax1.set_ylabel('Re '+r'$E_n$'+',    Im '+r'$E_n$', fontsize=fs)
         for label in ax1.xaxis.get_majorticklabels():
             label.set_fontsize(fs)
         for label in ax1.yaxis.get_majorticklabels():
@@ -515,7 +509,7 @@ class plot:
         error_handling.string(title, 'title')
         i_beta_min = np.argmin(np.abs(betas))
         ind_en = np.argwhere((butterfly[i_beta_min, :] > lims[0]) & 
-                                        (butterfly[i_beta_min, :] < lims[1]))
+                                            (butterfly[i_beta_min, :] < lims[1]))
         ind_en = np.ravel(ind_en)
         fig, ax = plt.subplots()
         plt.title('Energies depending on strain', fontsize=fs)
