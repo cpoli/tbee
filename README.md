@@ -2,7 +2,7 @@ Python Tight-Binding module
 ========================
 
 
-![Alt text](https://github.com/cpoli/TB/blob/master/logoTB_.png)
+![Alt text](https://github.com/cpoli/TB/blob/master/logoTBee.png)
 
 
 
