@@ -9,7 +9,12 @@ ATOL = 1e-3
 DX = 0.5 * sqrt(3)
 DY = 0.5
 
-        
+ 
+#################################
+# CLASS GRAPHENE
+#################################
+
+       
 class grapheneLat(lattice):
     def __init__(self):
         unit_cell = [{'tag': b'a', 'r0': (0, 0)}, 
@@ -110,9 +115,6 @@ class grapheneSys(system):
         error_handling.number(t, 't')
         error_handling.real_number(beta, 'beta')
         self.get_distances()
-
-        #ind = np.argwhere((self.vec_hop['d'] > self.dist_uni[1]-1e-3) &
-        #                           (self.vec_hop['d'] < self.dist_uni[1]+1e-3))
         ind = np.argwhere(np.isclose(self.dist_uni[1], self.vec_hop['dis'], atol=ATOL))
         ind_up = ind[ind[:, 1] > ind[:, 0]]  
         self.hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 

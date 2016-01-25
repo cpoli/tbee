@@ -11,6 +11,12 @@ import os
 import TB.error_handling as error_handling
 
 
+
+#################################
+# CLASS PROPAGATION
+#################################
+
+
 class propagation():
     def __init__(self, lat):
         '''
@@ -289,7 +295,6 @@ class propagation():
 
         return animation.FuncAnimation(fig, animate, init_func=init,
                                    frames=self.steps, interval=120, blit=True)
-
 
     def plt_prop_dimer(self, lw=5, fs=20):
         '''

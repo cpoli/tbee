@@ -57,6 +57,7 @@ def real_number(var, var_name):
     if not isinstance(var, (int, float)):
         raise TypeError('\n\nParameter {} must be a real number.\n'.format(var_name))
 
+
 def positive_real(var, var_name):
     '''
     Check if parameter *var* is a positive number.
@@ -127,6 +128,7 @@ def smaller(var1, var_name1, var2, var_name2):
     if var1 >= var2:
         raise ValueError('\n\n{} must be smaller than {}.\n'
                                     .format(var_name1, var_name2))
+
 
 def string(var, var_name):
     '''
@@ -300,6 +302,7 @@ def get_lattice(prim_vec, n1, n2):
         raise ValueError('\n\nParameter n2 should be equal to 1\n'
                                     'if one primitive vector is given\n')
 
+
 def coor(coor):
     '''
     Check if *coor* is a structured array with 
@@ -327,6 +330,7 @@ def empty_coor_hop(coor):
     if coor.size == 0:
         raise RuntimeError('\n\nRun method sys.get_coor_hop first.\n')
 
+
 def coor_1d(coor):
     '''
     Check if *coor* is 1d (coor['y'] = cst).
@@ -351,6 +355,7 @@ def remove_sites(index, sites):
         raise ValueError('\n\nParameter index must be a list of integers.\n')
     if not all(-1 < i < sites for i in index):
         raise ValueError('\n\nElements of index must be between 0 and sites - 1.\n')
+
 
 def shift(shift):
     '''
@@ -400,6 +405,7 @@ def sites(sites):
     if sites == 0:
         raise RuntimeError('\n\nRun method lat.get_lattice first.\n')
 
+
 ####################################
 # CLASS SYSTEM EXCEPTION HANDLING
 ####################################
@@ -446,6 +452,7 @@ def set_onsite(onsite, tags):
         if not isinstance(val, (int, float, complex)):
             raise ValueError('\n\nParameter onsite values must be\n'\
                                        'real and/or complex numbers.\n')
+
 
 def set_hopping(list_hop, n_max):
     '''
@@ -591,6 +598,7 @@ def hop_sites(hop, sites):
     if sites < ind_max:
         raise ValueError('\n\nRun method system.clean_hopping.\n'
                                     'and redefine the hoppings.\n')
+
 
 def empty_coor(coor):
     '''
@@ -771,6 +779,7 @@ def file_format(file_format):
         raise ValueError('\n\nfile_format must be a string given by,\n'\
                                    ' "png", "pdf", "ps", "eps", or "svg".\n')
 
+
 def fig_size(sigsize):
     if figsize is None:
         figsize = (5, 4)
@@ -782,6 +791,7 @@ def fig_size(sigsize):
 ####################################
 # PROPAGATION
 ####################################
+
 
 def get_pump(hams):
     if not isinstance(hams, list):

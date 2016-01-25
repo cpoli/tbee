@@ -36,6 +36,7 @@ class system():
         self.pola = np.array([], 'f8')  # sublattices polarisation (|rn^{(S)}|**2)
         self.petermann = np.array([], 'f8')  # Inverse Participation Ratio
         self.nmax = 0  # number of different hoppings
+
     def clear_hopping(self):
         '''
         Clear structured array *hop*.
@@ -123,7 +124,6 @@ class system():
         hop['tag'] = npc.add(self.lat.coor['tag'][ind_up[:, 0]], 
                                          self.lat.coor['tag'][ind_up[:, 1]])
         self.store_hop[n] = hop
-
 
     def set_hopping(self, list_hop, low=False):
         '''
