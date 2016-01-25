@@ -1,8 +1,8 @@
 # Copyright 2014 Charles Poli.
 #
-# This file is part of TB.  It is subject to the license terms in the
+# This file is part of tbee.  It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
-# https://github.com/cpoli/TB.  
+# https://github.com/cpoli/tbee.  
 '''
 import numpy as np
 import numpy.core.defchararray as npc

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.legend_handler import HandlerLine2D
-import TB.error_handling as error_handling
+import tbee.error_handling as error_handling
 import os
 
 

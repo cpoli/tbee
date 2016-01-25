@@ -1,8 +1,8 @@
 # Copyright 2014 Charles Poli.
 #
-# This file is part of TB.  It is subject to the license terms in the
+# This file is part of TBEE.  It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
-# https://github.com/cpoli/TB.  
+# https://github.com/cpoli/tbee.  
 
 import numpy as np
 import numpy.core.defchararray as npc
@@ -18,16 +18,16 @@ PI = pi
 
 from distutils.core import setup
 
-setup(name='TB',
+setup(name='tbee',
       version='0.1',
       py_modules=['lattice', 'system', 'plot', 'propagation', 'save', 'error_handling'],
       )
 
 __all__ = ["lattice", "system", "plot", "propagation", "save", "error_handling"]
 
-from TB.lattice import *
-from TB.system import *
-from TB.plot import *
-from TB.propagation import *
-from TB.save import *
-import TB.error_handling
+from tbee.lattice import *
+from tbee.system import *
+from tbee.plot import *
+from tbee.propagation import *
+from tbee.save import *
+import tbee.error_handling

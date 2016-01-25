@@ -8,7 +8,7 @@ try:
 except:
     pass
 import os
-import TB.error_handling as error_handling
+import tbee.error_handling as error_handling
 
 
 

@@ -2,15 +2,15 @@ Python Tight-Binding module
 ========================
 
 
-![Alt text](https://github.com/cpoli/TB/blob/master/logoTBee.png)
+![Alt text](https://github.com/cpoli/tbee/blob/master/logoTBee.png)
 
 
 
 **Python** module to build up and solve **Tight-Binding** models. 
 
-**TB** is written in fully vectorized **Numpy**.
+**tbee** is written in fully vectorized **Numpy**.
 
-**TB** is composed of the following classes:
+**tbee** is composed of the following classes:
 
     * lattice
     * system
@@ -19,7 +19,7 @@ Python Tight-Binding module
     * save
 
 
-**TB** main features:
+**tbee** main features:
 
     * Complex lattice structures.
     * Complex-valued onsite energies and hoppings.
@@ -43,12 +43,12 @@ Python Tight-Binding module
 
     * Time propagation
 
-**TB** is available at https://github.com/cpoli/TB
+**tbee** is available at https://github.com/cpoli/tbee
 
 
-To use **TB**:
+To use **tbee**:
 
-  * Install Python3.5 and three additional packages:
+  * Install Python3.4 or Python3.5 and three additional packages:
 
       * numpy 1.10
       * scipy 0.16
@@ -57,4 +57,4 @@ To use **TB**:
   * See https://cpoli.github.io/python-doc.html for Python installation details
       and to install a github repository (for mac).
 
-Examples are available at https://github.com/cpoli/TB/tree/master/examples
+Examples are available at https://github.com/cpoli/tbee/tree/master/examples

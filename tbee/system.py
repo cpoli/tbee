@@ -4,7 +4,7 @@ import scipy.linalg as LA
 import numpy.random as rand
 import numpy.core.defchararray as npc
 from math import sin, cos
-import TB.error_handling as error_handling
+import tbee.error_handling as error_handling
 
 
 PI = np.pi

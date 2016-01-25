@@ -1,6 +1,6 @@
-from TB.lattice import *
-from TB.plot import *
-from TB.system import *
+from tbee.lattice import *
+from tbee.plot import *
+from tbee.system import *
 import numpy as np
 from math import sqrt
 
