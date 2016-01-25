@@ -8,7 +8,13 @@ try:
 except:
     pass
 import os
-import TB.error_handling as error_handling
+import tbee.error_handling as error_handling
+
+
+
+#################################
+# CLASS PROPAGATION
+#################################
 
 
 class propagation():
@@ -289,7 +295,6 @@ class propagation():
 
         return animation.FuncAnimation(fig, animate, init_func=init,
                                    frames=self.steps, interval=120, blit=True)
-
 
     def plt_prop_dimer(self, lw=5, fs=20):
         '''
