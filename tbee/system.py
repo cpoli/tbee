@@ -179,7 +179,6 @@ class system():
             Both upper AND lower parts are used to build up
             non-Hermitian hopping matrix.
         '''
-        print('HERE')
         error_handling.sites(self.lat.sites)
         error_handling.boolean(low, 'low')
         self.get_distances()
@@ -192,12 +191,9 @@ class system():
             if n not in self.store_hop:
                 self.fill_store_hop(n)
         # fill self.hop
-
         for dic in list_hop:
             if len(dic) == 2:
                 size = len(self.store_hop[dic['n']])
-                #print(self.store_hop[dic['n']])
-                print(len(self.lat.coor))
                 if not low:
                     mask = (self.hop['n'] == dic['n']) & (self.hop['i'] < self.hop['j'])
                 else:
