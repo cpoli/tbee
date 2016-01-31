@@ -1,7 +1,6 @@
 from tbee.lattice import *
 from tbee.plot import *
 from tbee.system import *
-import numpy as np
 from math import sqrt
 
 PI = np.pi

@@ -1,6 +1,6 @@
-from TB.lattice import *
-from TB.system import *
-from TB.propagation import *
+from tbee.lattice import *
+from tbee.system import *
+from tbee.propagation import *
 import unittest
 import numpy as np
 from math import sqrt

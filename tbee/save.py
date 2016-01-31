@@ -26,7 +26,7 @@ class save():
         self.params = params
         self.file_format = file_format
         if dir_main is None:
-            self.dir_main = 'TBfig/'
+            self.dir_main = 'figs/'
         else:
             self.dir_main = dir_name
         self.dir_name = self.dir_name(dir_name)

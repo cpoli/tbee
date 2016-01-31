@@ -1,4 +1,4 @@
-from TB.lattice import lattice
+from tbee.lattice import lattice
 import unittest
 import numpy as np
 

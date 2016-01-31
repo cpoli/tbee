@@ -385,3 +385,9 @@ class lattice():
                                     ha='right', va='bottom', size=fs)
         plt.draw()
         return fig
+
+    def show(self):
+        """
+        Emulate Matplotlib method plt.show().
+        """
+        plt.show()

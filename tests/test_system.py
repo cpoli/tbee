@@ -1,5 +1,5 @@
-from TB.lattice import *
-from TB.system import *
+from tbee.lattice import *
+from tbee.system import *
 
 import unittest
 import numpy as np

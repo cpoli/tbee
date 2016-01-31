@@ -21,13 +21,14 @@ class system():
         '''
         error_handling.lat(lat)
         self.lat = lat
+        self.sites = self.lat.sites  # used to check if sites changes
         self.coor_hop = np.array([], dtype=[ ('x', 'f8'), ('y', 'f8'), ('tag', 'S1')])
         self.vec_hop = np.array([], dtype=[('dis', 'f8'),  ('ang', 'f8')]) # Hopping distances and angles
         self.dist_uni = np.array([], 'f8')  # Different hopping distances
-        self.store_hop = {} #  Store the relevant hoppings (dynamic programming)
+        self.store_hop = {}  #  Store the relevant hoppings (dynamic programming)
         self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                        ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')]) #  Hoppings to build-up the Hamiltonian
-        self.onsite = np.array([], 'c16') #  Onsite energies
+        self.onsite = np.array([], 'c16')  #  Onsite energies
         self.ham = sparse.csr_matrix(([], ([], [])), shape=(self.lat.sites, self.lat.sites))  # Hamiltonian
         self.en = np.array([], 'c16')  # Eigenenergies
         self.rn = np.array([], 'c16')  # Right eigenvectors: H |rn> = en |rn>
@@ -177,7 +178,8 @@ class system():
             the upper part OR diagonal down and complex conjugaison. 
             Both upper AND lower parts are used to build up
             non-Hermitian hopping matrix.
-        '''        
+        '''
+        print('HERE')
         error_handling.sites(self.lat.sites)
         error_handling.boolean(low, 'low')
         self.get_distances()
@@ -185,13 +187,17 @@ class system():
         error_handling.set_hopping(list_hop, self.nmax)
         list_n = np.unique([dic['n'] for dic in list_hop])
         # fill, if needed self.store_hop
+        self.check_sites()
         for n in list_n:
             if n not in self.store_hop:
                 self.fill_store_hop(n)
-        # fill, self.hop
+        # fill self.hop
+
         for dic in list_hop:
             if len(dic) == 2:
                 size = len(self.store_hop[dic['n']])
+                #print(self.store_hop[dic['n']])
+                print(len(self.lat.coor))
                 if not low:
                     mask = (self.hop['n'] == dic['n']) & (self.hop['i'] < self.hop['j'])
                 else:
@@ -252,6 +258,11 @@ class system():
                 error_handling.index(ind, dic)
                 hop = self.set_given_hopping(dic['n'], size, dic, ind, low=low)
             self.hop = np.concatenate([self.hop, hop])
+
+    def check_sites(self):
+        if self.sites != self.lat.sites:
+             self.store_hop = {}
+             self.sites = self.lat.sites
 
     def set_given_hopping(self, n, size, dic, mask, low):
         '''
