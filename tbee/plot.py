@@ -124,7 +124,7 @@ class plot:
                                                  plt_hop_low, plt_index, figsize)
 
 
-    def spectrum_hist(self, nbr_bins=61, lims=None):
+    def spectrum_hist(self, nbr_bins=61, fs=20, lims=None):
         """
         Plot the spectrum.
             
@@ -137,18 +137,23 @@ class plot:
         fig, ax = plt.subplots()
         if lims is None:
             en_max = np.max(self.sys.en.real)
-            ax.set_ylim([-en_max-0.2, en_max+0.2])
             ind_en = np.ones(self.sys.lat.sites, bool)
+            ax.set_ylim([-en_max, en_max])
         else:
             ind_en = np.argwhere((self.sys.en > lims[0]) & (self.sys.en < lims[1]))
             ind_en = np.ravel(ind_en)
+            ax.set_xlim(lims)
         en = self.sys.en[ind_en]
-        fig.canvas.set_window_title('Spectrum')
-        n, bins, patches = plt.hist(en, bins=nbr_bins, color='#00008B')
-        ax.set_xlabel('$E$', fontsize=20)
-        ax.set_ylabel('number of states', fontsize=20)
-        ax.set_ylim([0, np.max(n)])
-        ax.set_xlim(lims)
+        n, bins, patches = plt.hist(en, bins=nbr_bins, color='b', alpha=0.8)
+        ax.set_title('Spectrum', fontsize=fs)
+        ax.set_xlabel('$E$', fontsize=fs)
+        ax.set_ylabel('number of states', fontsize=fs)
+        ax.set_ylim([0, np.max(n)+1])
+        for label in ax.xaxis.get_majorticklabels():
+            label.set_fontsize(fs)
+        for label in ax.yaxis.get_majorticklabels():
+            label.set_fontsize(fs)
+        
 
     def spectrum(self, ms=10, fs=20, lims=None, 
                           tag_pola=None, ipr=None, peterman=None):

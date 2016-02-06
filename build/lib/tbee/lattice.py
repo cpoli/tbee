@@ -104,7 +104,8 @@ class lattice():
         '''
         error_handling.coor(coor)
         self.coor = np.concatenate([self.coor, coor])
-        self.sites += len(self.coor)
+        self.sites += len(coor)
+        self.tags = np.unique(np.concatenate([self.tags, coor['tag']]))
 
     def remove_sites(self, index):
         '''

@@ -47,7 +47,7 @@ class system():
 
     def get_distances(self):
         '''
-        Primate method.
+        Private method.
         Get distances and angles of the edges.
         '''
         error_handling.sites(self.lat.sites)
@@ -179,7 +179,6 @@ class system():
             Both upper AND lower parts are used to build up
             non-Hermitian hopping matrix.
         '''
-        print('HERE')
         error_handling.sites(self.lat.sites)
         error_handling.boolean(low, 'low')
         self.get_distances()
@@ -192,12 +191,9 @@ class system():
             if n not in self.store_hop:
                 self.fill_store_hop(n)
         # fill self.hop
-
         for dic in list_hop:
             if len(dic) == 2:
                 size = len(self.store_hop[dic['n']])
-                #print(self.store_hop[dic['n']])
-                print(len(self.lat.coor))
                 if not low:
                     mask = (self.hop['n'] == dic['n']) & (self.hop['i'] < self.hop['j'])
                 else:
@@ -260,6 +256,10 @@ class system():
             self.hop = np.concatenate([self.hop, hop])
 
     def check_sites(self):
+        '''
+        Private method.
+        Check if the number of sites was changed after calling sys.set_hopping()
+        '''
         if self.sites != self.lat.sites:
              self.store_hop = {}
              self.sites = self.lat.sites
@@ -291,6 +291,31 @@ class system():
             hop['tag'] = npc.add(self.lat.coor['tag'][hop['i']], 
                                             self.lat.coor['tag'][hop['j']])
         return hop
+
+    def set_hopping_manual(self, dict_hop, low=False):
+        '''
+        Set hoppings manually.
+
+        :param dict_hop: Dictionary of hoppings.
+            key: hopping indices, val: hopping values. 
+        '''
+        hop = np.zeros(len(dict_hop), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
+                                                                    ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
+        i = [h[0] for h in dict_hop.keys()]
+        j = [h[1] for h in dict_hop.keys()]
+        t = [val for val in dict_hop.values()]
+        hop['i'],  hop['j']= i, j
+        hop['t'] = t 
+        hop['tag'] = npc.add(self.lat.coor['tag'][i], 
+                                        self.lat.coor['tag'][j])
+        ang = 180 / PI * np.arctan2(self.lat.coor['y'][j]-self.lat.coor['y'][i],
+                                                    self.lat.coor['x'][j]-self.lat.coor['x'][i])
+        if not low:
+            ang[ang < 0] += 180
+        else:
+            ang[ang >= 0] -= 180
+        hop['ang'] = ang
+        self.hop = np.concatenate([self.hop, hop])
 
     def  set_hopping_dis(self, alpha):
         '''
@@ -340,16 +365,18 @@ class system():
         '''
         Set specific hoppings. 
 
-        :param hopping_def:  Dictionary. 
+        :param hopping_def:  Dictionary of hoppings. 
             key: hopping indices, val: hopping values. 
 
         Example usage::
 
-            sys.set_hopping_def((0, 1): 1., (1, 2): -1j)
+            sys.set_hopping_def({(0, 1): 1., (1, 2): -1j})
         '''
         error_handling.empty_hop(self.hop)
         error_handling.set_hopping_def(self.hop, hopping_def, self.lat.sites)
         for key, val in hopping_def.items():
+            print(key[0], key[1], val)
+            print(self.vec_hop['ang'].size)
             cond = (self.hop['i'] == key[0]) & (self.hop['j'] == key[1])
             self.hop['t'][cond] = val
             self.hop['ang'] = self.vec_hop['ang'][key[0], key[1]]

@@ -256,6 +256,10 @@ class system():
             self.hop = np.concatenate([self.hop, hop])
 
     def check_sites(self):
+        '''
+        Private method.
+        Check if the number of sites was changed after calling sys.set_hopping()
+        '''
         if self.sites != self.lat.sites:
              self.store_hop = {}
              self.sites = self.lat.sites
