@@ -132,13 +132,17 @@ class plot:
         :param lims: List, lims[0] energy min, lims[1] energy max.
         """
         error_handling.empty_ndarray(self.sys.en, 'sys.get_eig')
-        error_handling.positive_real
-        positive_real(nbr_bins, 'nbr_bins')
+        error_handling.positive_real(nbr_bins, 'nbr_bins')
         error_handling.lims(lims)
-        ind_en = np.argwhere((self.sys.en > lims[0]) & (self.sys.en < lims[1]))
-        ind_en = np.ravel(ind_en)
-        en = self.sys.en[ind_en]
         fig, ax = plt.subplots()
+        if lims is None:
+            en_max = np.max(self.sys.en.real)
+            ax.set_ylim([-en_max-0.2, en_max+0.2])
+            ind_en = np.ones(self.sys.lat.sites, bool)
+        else:
+            ind_en = np.argwhere((self.sys.en > lims[0]) & (self.sys.en < lims[1]))
+            ind_en = np.ravel(ind_en)
+        en = self.sys.en[ind_en]
         fig.canvas.set_window_title('Spectrum')
         n, bins, patches = plt.hist(en, bins=nbr_bins, color='#00008B')
         ax.set_xlabel('$E$', fontsize=20)
