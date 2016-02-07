@@ -137,8 +137,8 @@ class grapheneSys(system):
         ''''
         Get energies depending on strain.
 
-        :param t: Hopping value.
-        :param N: number of strain values between the max strains.
+        :param t: Unstrained hopping value.
+        :param N: number of strain values between min and max strains.
         '''
         error_handling.number(t, 't')
         error_handling.positive_int(N, 'N')
@@ -165,15 +165,3 @@ class grapheneSys(system):
         beta_lims[0] = -4. / ym + 1e-6
         print('Strain limits: {}'.format(beta_lims))
         return beta_lims
-
-    def set_vortex(self):
-        '''
-        Set a vortex at the center of mass of the flake.
-        '''
-        ind = ((self.hop['ang'] == 90) & (self.lat.coor['y'][self.hop['i']] > -1.) & 
-                (self.lat.coor['x'][self.hop['i']] <0) & (self.lat.coor['y'][self.hop['i']] < 0))
-        self.hop['t'][ind] *= -1 
-        if ind.sum() == 0:
-            ind = ((self.hop['ang'] == 90) & (self.lat.coor['y'][self.hop['i']] > -2.) & 
-                (self.lat.coor['x'][self.hop['i']] <0) & (self.lat.coor['y'][self.hop['i']] < 0))
-            self.hop['t'][ind] *= -1 

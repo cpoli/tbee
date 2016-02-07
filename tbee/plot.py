@@ -517,6 +517,8 @@ class plot:
         error_handling.lims(lims)
         error_handling.string(title, 'title')
         i_beta_min = np.argmin(np.abs(betas))
+        if lims is None:
+            lims = [butterfly[i_beta_min, 0], butterfly[i_beta_min, -1]]
         ind_en = np.argwhere((butterfly[i_beta_min, :] > lims[0]) & 
                                             (butterfly[i_beta_min, :] < lims[1]))
         ind_en = np.ravel(ind_en)
@@ -525,14 +527,13 @@ class plot:
         plt.xlabel(r'$\beta/\beta_{max}$', fontsize=fs)
         plt.ylabel('$E$', fontsize=fs)
         ax.set_title(title, fontsize=fs)
-        plt.yticks(np.arange(lims[0], lims[1]+1e-2), fontsize=fs)
+        plt.yticks(np.arange(lims[0], lims[1]+1, (lims[1]-lims[0])/4), fontsize=fs)
+        plt.ylim(lims)
         beta_max = max(self.sys.betas)
         plt.xticks([-beta_max, -0.5*beta_max, 0, 
                         0.5*beta_max, beta_max], fontsize=fs)
         ax.set_xticklabels(('-1', '-1/2', '0', '1/2', '1'))
         plt.xlim([betas[0], betas[-1]])
-        plt.ylim(lims)
-        no_en = len(ind_en)
         for i in ind_en:
             plt.plot(betas, butterfly[:, i], 'b', lw=lw)
         fig.set_tight_layout(True)
