@@ -8,18 +8,18 @@ import tbee.error_handling as error_handling
 
 
 class save():
-    def __init__(self, dir_name, dir_main=None, params={}, file_format='png'):
-        '''
-        Create folder and save figures / animations obtained via 
-        **plot** or **propagation**. 
-        Plot the results of the classes **lattice** or **system**.
+    '''
+    Create folder and save figures / animations obtained via 
+    **plot** or **propagation**. 
+    Plot the results of the classes **lattice** or **system**.
 
-        :param dir_main: Name of the directory.
-        :param dir_name: Default value None. Relative path of the main directory.
-          if None, figures stored in ''../TBfig/'dir_name/'
-        :param params: dictionary. file name information
-        :param file_format: Default value 'png'. Figure format.
-        '''
+    :param dir_main: Name of the directory.
+    :param dir_name: Default value None. Relative path of the main directory.
+      if None, figures stored in ''../TBfig/'dir_name/'
+    :param params: dictionary. file name information
+    :param file_format: Default value 'png'. Figure format.
+    '''
+    def __init__(self, dir_name, dir_main=None, params={}, file_format='png'):
         error_handling.string(dir_name, 'dir_name')
         error_handling.string(dir_main, 'dir_main')
         error_handling.file_format(file_format)

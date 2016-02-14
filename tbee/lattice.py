@@ -12,32 +12,38 @@ PI = np.pi
 
 
 class lattice():
+    r'''
+    Build up 1D or 2D lattice.
+    Lattice is defined by the discrete operation:
+
+    .. math::
+
+        \mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2
+
+    where :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2` are the two primitive
+    vectors and :math:`n_1` and :math:`n_2` are the number of unit cells along 
+    :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2`.
+
+    :param unit_cell: List of dictionaries. 
+     One dictionary per site within the unit cell. Each dictionary has two keys:
+
+        * 'tag', Binary Char. label of the associated sublattice.
+        * 'r0', Tuple. Position.
+    :param prim_vec: List of tuples. 
+     Define the primitive vectors. List of one/two tuples for 1D/2D respectively:
+     
+        * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_1`.
+        * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_2`.
+
+    Example usage::
+
+        # Line-Centered Square lattice
+        unit_cell = [{'tag': b'a', r0=(0., 0.)}, {'tag': b'a', r0=(0., 1.)}]
+        prim_vec = [(0, 2), (2, 0)]
+        lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+    '''
+
     def __init__(self, unit_cell, prim_vec):
-        '''
-        Build up 1D or 2D lattice.
-        Lattice is defined by the discrete operation:
-        :math:`\mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2`
-        where :math:`\mathbf{a}_1` and `\mathbf{a}_2` are the two primitive vectors and
-        :math:`n_1` and `n_2` are the number of unit cells along 
-        `\mathbf{a}_1` and `\mathbf{a}_2`.
-        :param unit_cell: List of dictionaries. 
-            One dictionary per site within the unit cell.
-            Each dictionary has two keys:
-                * 'tag', Binary Char. label of the site.
-                * 'r0', Tuple. Position.
-        :param prim_vec: List. 
-            Define the primitive vectors.
-            List of one/two tuples for 1D/2D respectively:
-                * Tuple, cartesian coordinate of the primitive vector `\mathbf{a}_1`.
-                * Tuple, cartesian coordinate of the primitive vector `\mathbf{a}_2`.
-
-        Example usage::
-
-            # Line-Centered Square lattice
-            unit_cell = [{'tag': b'a', r0=(0., 0.)}, {'tag': b'a', r0=(0., 1.)}]
-            prim_vec = [(0, 2), (2, 0)]
-            lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
-        '''
         error_handling.unit_cell(unit_cell)
         error_handling.prim_vec(prim_vec)
         self.unit_cell = unit_cell
@@ -106,11 +112,12 @@ class lattice():
         self.coor = np.concatenate([self.coor, coor])
         self.sites += len(coor)
         self.tags = np.unique(np.concatenate([self.tags, coor['tag']]))
+        self.coor = np.sort(self.coor, order=('y', 'x'))
 
     def remove_sites(self, index):
         '''
         Remove sites defined by their indices
-        (use method lattice(plt.plt_index=True)
+        (use method lattice.plot(plt_index=True)
         to get access to the site indices).
 
         :param index: List. Site indices to be removed.
@@ -157,7 +164,7 @@ class lattice():
         '''
         Shift the x coordinates.
 
-        :param shift: Float. Shift value.
+        :param shift: Real number. Shift value.
         '''
         error_handling.empty_coor(self.coor)
         error_handling.real_number(shift, 'shift')
@@ -167,7 +174,7 @@ class lattice():
         '''
         Shift by *delta_x* the x coordinates.
 
-        :param shift: Float Shift value.
+        :param shift: Real number. Shift value.
         '''
         error_handling.empty_coor(self.coor)
         error_handling.real_number(shift, 'shift')
@@ -191,9 +198,9 @@ class lattice():
         '''
         Select sites according to :math:`c_yy+c_xx > c_0`.
 
-        :param cx: Float. cx value.
-        :param cy: Float. cy value.
-        :param co: Float. co value.
+        :param cx: Real number. cx value.
+        :param cy: Real number. cy value.
+        :param co: Real number. co value.
         '''
         error_handling.empty_coor(self.coor)
         error_handling.real_number(cx, 'cx')
@@ -204,13 +211,17 @@ class lattice():
 
     def ellipse_in(self, rx, ry, x0, y0):
         '''
-        Select sites according to :math:`(x-x0)^2/a^2+(y-y0)^2/b^2 < 1`.
+        Select sites according to 
+
+        .. math:: 
+
+            (x-x_0)^2/a^2+(y-y_0)^2/b^2 < 1\,  .
 
         :param list_hop: List of Dictionary (see set_hopping definition).
-        :param rx: Positive Float. Radius along :math:`x`. 
-        :param ry: Positive Float. Radius along :math:`y`.
-        :param x0: Float. :math:`x` center. 
-        :param y0: Float. :math:`y` center.
+        :param rx: Positive Real number. Radius along :math:`x`. 
+        :param ry: Positive Real number. Radius along :math:`y`.
+        :param x0: Real number. :math:`x` center. 
+        :param y0: Real number. :math:`y` center.
         '''
         error_handling.empty_coor(self.coor)
         error_handling.positive_real(rx, 'rx')
@@ -223,13 +234,18 @@ class lattice():
 
     def ellipse_out(self, rx, ry, x0, y0):
         '''
-        Select sites according to :math:`(x-x0)^2/a^2+(y-y0)^2/b^2 < 1`.
+        Select sites according to
+
+        .. math:: 
+
+            (x-x_0)^2/a^2+(y-y_0)^2/b^2 > 1\,  .
+
 
         :param list_hop: List of Dictionary (see set_hopping definition).
-        :param rx: Positive Float. Radius along :math:`x`. 
-        :param ry: Positive Float. Radius along :math:`y`.
-        :param x0: Float. :math:`x` center. 
-        :param y0: Float. :math:`y` center.
+        :param rx: Positive Real number. Radius along :math:`x`. 
+        :param ry: Positive Real number. Radius along :math:`y`.
+        :param x0: Real number. :math:`x` center. 
+        :param y0: Real number. :math:`y` center.
         '''
         error_handling.empty_coor(self.coor)
         error_handling.positive_real(rx, 'rx')
@@ -249,7 +265,7 @@ class lattice():
         self.coor['y'] -= np.mean(self.coor['y'])
 
     def rotation(self, theta):
-        '''
+        r'''
         Rotate the lattice structure by the angle :math:`\theta`.
 
         :param theta: Rotation angle in degrees.
@@ -346,8 +362,8 @@ class lattice():
         '''
         Plot lattice in hopping space.
 
-        :param ms: Float. Default value 20. Markersize.
-        :param fs: Float. Default value 20. Fontsize.
+        :param ms: Positive number. Default value 20. Markersize.
+        :param fs: Positve number. Default value 20. Fontsize.
         :param plt_index: Boolean. Default value False. Plot site labels.
         :param axis: Boolean. Default value False. Plot axis.
         :param figsize: Tuple. Default value None. Figsize.

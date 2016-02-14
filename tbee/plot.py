@@ -12,13 +12,14 @@ import os
 
 
 class plot:
-    def __init__(self, sys, colors=None):
-        '''
-        Plot the results of the classes **lattice** or **system**.
+    '''
+    Plot the results of the classes **lattice** or **system**.
 
-        :param sys: class instance **system**.
-        :param colors: Default value None. Color plot.
-        '''
+    :param sys: class instance **system**.
+    :param colors: Default value None. Color plot.
+    '''
+
+    def __init__(self, sys, colors=None):
         error_handling.sys(sys)
         self.sys = sys
         if colors is None:
