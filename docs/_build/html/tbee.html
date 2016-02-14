@@ -1,0 +1,2602 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tbee package &mdash; tbee 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tbee 0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index_tbee.html" class="icon icon-home"> tbee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">tbee package</a><ul>
+<li><a class="reference internal" href="#module-tbee.lattice">tbee.lattice module</a></li>
+<li><a class="reference internal" href="#module-tbee.system">tbee.system module</a></li>
+<li><a class="reference internal" href="#module-tbee.plot">tbee.plot module</a></li>
+<li><a class="reference internal" href="#module-tbee.propagation">tbee.propagation module</a></li>
+<li><a class="reference internal" href="#module-tbee.save">tbee.save module</a></li>
+<li><a class="reference internal" href="#module-tbee.graphene">tbee.graphene module</a></li>
+<li><a class="reference internal" href="#module-tbee.error_handling">tbee.error_handling module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index_tbee.html">tbee</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index_tbee.html">Docs</a> &raquo;</li>
+      
+    <li>tbee package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tbee.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tbee-package">
+<h1>tbee package<a class="headerlink" href="#tbee-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-tbee.lattice">
+<span id="tbee-lattice-module"></span><h2>tbee.lattice module<a class="headerlink" href="#module-tbee.lattice" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.lattice.lattice">
+<em class="property">class </em><code class="descclassname">tbee.lattice.</code><code class="descname">lattice</code><span class="sig-paren">(</span><em>unit_cell</em>, <em>prim_vec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Build up 1D or 2D lattice.
+Lattice is defined by the discrete operation:</p>
+<div class="math">
+<p><img src="_images/math/addd395a86398405cbe498fa5772f1ea4813d135.png" alt="\mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2"/></p>
+</div><p>where <img class="math" src="_images/math/14d0574e4091dad17f7c8fc1427919dc7a68008d.png" alt="\mathbf{a}_1"/> and <img class="math" src="_images/math/8760615e8cea1ff039f875f7e0fa5d51113107c1.png" alt="\mathbf{a}_2"/> are the two primitive
+vectors and <img class="math" src="_images/math/26038e5468fa3f743e11b649cd49e30d4bf2d9aa.png" alt="n_1"/> and <img class="math" src="_images/math/a8ab03f1f7e4f60328e1b8d96389e2d5a31e6e24.png" alt="n_2"/> are the number of unit cells along 
+<img class="math" src="_images/math/14d0574e4091dad17f7c8fc1427919dc7a68008d.png" alt="\mathbf{a}_1"/> and <img class="math" src="_images/math/8760615e8cea1ff039f875f7e0fa5d51113107c1.png" alt="\mathbf{a}_2"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>unit_cell</strong> &#8211; <p>List of dictionaries. 
+One dictionary per site within the unit cell. Each dictionary has two keys:</p>
+<blockquote>
+<div><ul>
+<li>&#8216;tag&#8217;, Binary Char. label of the associated sublattice.</li>
+<li>&#8216;r0&#8217;, Tuple. Position.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><strong>prim_vec</strong> &#8211; <p>List of tuples. 
+Define the primitive vectors. List of one/two tuples for 1D/2D respectively:</p>
+<blockquote>
+<div><ul>
+<li>Tuple, cartesian coordinate of the primitive vector <img class="math" src="_images/math/14d0574e4091dad17f7c8fc1427919dc7a68008d.png" alt="\mathbf{a}_1"/>.</li>
+<li>Tuple, cartesian coordinate of the primitive vector <img class="math" src="_images/math/8760615e8cea1ff039f875f7e0fa5d51113107c1.png" alt="\mathbf{a}_2"/>.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># Line-Centered Square lattice
+unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}, {&#39;tag&#39;: b&#39;a&#39;, r0=(0., 1.)}]
+prim_vec = [(0, 2), (2, 0)]
+lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+</pre></div>
+</div>
+<dl class="method">
+<dt id="tbee.lattice.lattice.get_lattice">
+<code class="descname">get_lattice</code><span class="sig-paren">(</span><em>n1</em>, <em>n2=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.get_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.get_lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the lattice positions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n1</strong> &#8211; Positive Integer.
+Number of unit cells along <img class="math" src="_images/math/14d0574e4091dad17f7c8fc1427919dc7a68008d.png" alt="\mathbf{a}_1"/>.</li>
+<li><strong>n2</strong> &#8211; Positive Integer. Default value 1.
+Number of unit cells along <img class="math" src="_images/math/8760615e8cea1ff039f875f7e0fa5d51113107c1.png" alt="\mathbf{a}_2"/>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># Line-Centered Square lattice
+unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}, {&#39;tag&#39;: b&#39;a&#39;, r0=(0., 1.)}]
+prim_vec = [(0, 2), (2, 0)]
+lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+lat.get_lattice(n1=4, n2=5)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.add_sites">
+<code class="descname">add_sites</code><span class="sig-paren">(</span><em>coor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.add_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.add_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add sites.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>coor</strong> &#8211; Structured array with keys: {&#8216;x&#8217;, &#8216;y&#8217;, &#8216;tag&#8217;}.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># Square lattice
+unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}]
+prim_vec = [(0, 1), (1, 0)]
+lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+lat.get_lattice(n1=2, n2=2)
+coor = np.array([(-1., -1, b&#39;b&#39;), (-2., -2, b&#39;c&#39;)], 
+                          dtype=[(&#39;x&#39;, &#39;f8&#39;), (&#39;y&#39;, &#39;f8&#39;), (&#39;tag&#39;, &#39;S1&#39;)])
+lat.add_sites(coor)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.remove_sites">
+<code class="descname">remove_sites</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.remove_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.remove_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove sites defined by their indices
+(use method lattice.plot(plt_index=True)
+to get access to the site indices).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> &#8211; List. Site indices to be removed.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># Square lattice
+unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}]
+prim_vec = [(0, 1), (1, 0)]
+lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
+lat.get_lattice(n1=2, n2=2)
+lat.remove_sites([0, 2])
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.remove_dangling">
+<code class="descname">remove_dangling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.remove_dangling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.remove_dangling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove dangling sites
+(sites connected with just another site).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.shift_x">
+<code class="descname">shift_x</code><span class="sig-paren">(</span><em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.shift_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.shift_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the x coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shift</strong> &#8211; Real number. Shift value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.shift_y">
+<code class="descname">shift_y</code><span class="sig-paren">(</span><em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.shift_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.shift_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift by <em>delta_x</em> the x coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shift</strong> &#8211; Real number. Shift value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.change_sign_x">
+<code class="descname">change_sign_x</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.change_sign_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.change_sign_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change x coordinates sign.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.change_sign_y">
+<code class="descname">change_sign_y</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.change_sign_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.change_sign_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change y coordinates sign.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.boundary_line">
+<code class="descname">boundary_line</code><span class="sig-paren">(</span><em>cx</em>, <em>cy</em>, <em>co</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.boundary_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.boundary_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select sites according to <img class="math" src="_images/math/5c9a7646368cba21f4abf00367f61f591a528c12.png" alt="c_yy+c_xx &gt; c_0"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cx</strong> &#8211; Real number. cx value.</li>
+<li><strong>cy</strong> &#8211; Real number. cy value.</li>
+<li><strong>co</strong> &#8211; Real number. co value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.ellipse_in">
+<code class="descname">ellipse_in</code><span class="sig-paren">(</span><em>rx</em>, <em>ry</em>, <em>x0</em>, <em>y0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.ellipse_in"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.ellipse_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select sites according to</p>
+<div class="math">
+<p><img src="_images/math/d1d542fb93b25a64c8e592dec1da67ade23f99a9.png" alt="(x-x_0)^2/a^2+(y-y_0)^2/b^2 &lt; 1\,  ."/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; List of Dictionary (see set_hopping definition).</li>
+<li><strong>rx</strong> &#8211; Positive Real number. Radius along <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/>.</li>
+<li><strong>ry</strong> &#8211; Positive Real number. Radius along <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>.</li>
+<li><strong>x0</strong> &#8211; Real number. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> center.</li>
+<li><strong>y0</strong> &#8211; Real number. <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/> center.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.ellipse_out">
+<code class="descname">ellipse_out</code><span class="sig-paren">(</span><em>rx</em>, <em>ry</em>, <em>x0</em>, <em>y0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.ellipse_out"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.ellipse_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select sites according to</p>
+<div class="math">
+<p><img src="_images/math/2ce9ec93a4e3f671604d7a360eb408cef8b88211.png" alt="(x-x_0)^2/a^2+(y-y_0)^2/b^2 &gt; 1\,  ."/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; List of Dictionary (see set_hopping definition).</li>
+<li><strong>rx</strong> &#8211; Positive Real number. Radius along <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/>.</li>
+<li><strong>ry</strong> &#8211; Positive Real number. Radius along <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>.</li>
+<li><strong>x0</strong> &#8211; Real number. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> center.</li>
+<li><strong>y0</strong> &#8211; Real number. <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/> center.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.center">
+<code class="descname">center</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix the center of mass of the lattice at (0, 0).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.rotation">
+<code class="descname">rotation</code><span class="sig-paren">(</span><em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.rotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the lattice structure by the angle <img class="math" src="_images/math/a9cfbeb8ebee1f365919e147a79e242dcb67ee5d.png" alt="\theta"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theta</strong> &#8211; Rotation angle in degrees.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.clean_coor">
+<code class="descname">clean_coor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.clean_coor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.clean_coor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Keep only the sites with different coordinates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>ms=20</em>, <em>fs=20</em>, <em>plt_index=False</em>, <em>axis=False</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot lattice in hopping space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms</strong> &#8211; Positive number. Default value 20. Markersize.</li>
+<li><strong>fs</strong> &#8211; Positve number. Default value 20. Fontsize.</li>
+<li><strong>plt_index</strong> &#8211; Boolean. Default value False. Plot site labels.</li>
+<li><strong>axis</strong> &#8211; Boolean. Default value False. Plot axis.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figsize.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.lattice.lattice.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/lattice.html#lattice.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.lattice.lattice.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emulate Matplotlib method plt.show().</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.system">
+<span id="tbee-system-module"></span><h2>tbee.system module<a class="headerlink" href="#module-tbee.system" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.system.system">
+<em class="property">class </em><code class="descclassname">tbee.system.</code><code class="descname">system</code><span class="sig-paren">(</span><em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Solve the Tight-Binding eigenvalue problem of a lattice defined 
+by the class <strong>lattice</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lat</strong> &#8211; <strong>lattice</strong> class instance.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tbee.system.system.clear_hopping">
+<code class="descname">clear_hopping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.clear_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.clear_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear structured array <em>hop</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_distances">
+<code class="descname">get_distances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_distances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Get distances and angles of the edges.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.print_distances">
+<code class="descname">print_distances</code><span class="sig-paren">(</span><em>n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.print_distances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.print_distances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print distances and positive angles (in degrees) <img class="math" src="_images/math/b991eff5783dad88ddadbc72667f38499ba2d601.png" alt="\phi_+\in[0, 180)"/> 
+of the nth shortest edges. Negative angles are given by: 
+<img class="math" src="_images/math/3ede2285ff35e6af26e3bfb5d193e148bcc99aec.png" alt="\phi_-= \phi_+-180"/> and <img class="math" src="_images/math/402e2d3c7061cde251c1cebf7af97960accaa761.png" alt="\phi_+\in[-180, 0)"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> &#8211; Positive integer. Number of shortest edges.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_onsite">
+<code class="descname">set_onsite</code><span class="sig-paren">(</span><em>dict_onsite</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_onsite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_onsite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set onsite energies.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>on</strong> &#8211; Array. Sublattice onsite energies.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># Line-Centered Square lattice
+sys.set_onsite({b&#39;a&#39;: -1j, {b&#39;b&#39;:, -2j}})    
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.fill_store_hop">
+<code class="descname">fill_store_hop</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.fill_store_hop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.fill_store_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.</p>
+<p>Store in <em>store_hop</em> indices (with <img class="math" src="_images/math/439f864761bd345c9ea55c71351b082be487395b.png" alt="i &lt; j"/>), positive angles, tags (up and low)
+of a given type of hopping.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_hopping">
+<code class="descname">set_hopping</code><span class="sig-paren">(</span><em>list_hop</em>, <em>low=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set lattice hoppings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; <p>List of Dictionaries.
+Dictionary with keys (&#8216;n&#8217;, &#8216;ang&#8217;, &#8216;tag&#8217;, &#8216;t&#8217;) where:</p>
+<blockquote>
+<div><ul>
+<li>&#8216;n&#8217; Positive integer, type of hoppings:<blockquote>
+<div><ul>
+<li>&#8216;n&#8217;: 1 for nearest neighbours.</li>
+<li>&#8216;n&#8217;: 2 for next-nearest neighbours.</li>
+<li>&#8216;n&#8217;: 3 for next-next-nearest neighbours.</li>
+<li>etc...</li>
+</ul>
+</div></blockquote>
+</li>
+<li>&#8216;ang&#8217; value, float, angle, in deg, of the hoppings. (optional).<blockquote>
+<div>Hopping angles are given by the method <em>print_distances</em>.<blockquote>
+<div><ul>
+<li>If <img class="math" src="_images/math/94eb273e7461a840c2425e9fd139f8fa942ae79d.png" alt="ang \in[0, 180)"/>, fill the Hamiltonian diagonal up.</li>
+<li>If <img class="math" src="_images/math/135fa0e2cd67825aa47cce82bc9e5f3dc4e94d08.png" alt="ang \in[-180, 0)"/>, fill the Hamiltonian diagonal low.</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li>&#8216;tag&#8217; binary string of length 2  (optional).<blockquote>
+<div>Hopping tags.</div></blockquote>
+</li>
+<li>&#8216;t&#8217; Complex number.<blockquote>
+<div>Hopping value.</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><strong>low</strong> &#8211; <p>Boolean. Default value False.</p>
+<ul>
+<li>True get hoppings with (<img class="math" src="_images/math/501a956dc5e793dd1722a7ff5c3aabb9aab6c8d6.png" alt="i&lt;j"/>) <em>i.e.</em> fill the Hamiltonian lower part.</li>
+<li>False get hoppings with (<img class="math" src="_images/math/eabdd28a8bfc01780f9fe914a0399d01e393369a.png" alt="i&gt;j"/>) <em>i.e.</em> fill the Hamiltonian upper part.</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre># fill upper part:
+sys.set_hopping([{&#39;n&#39;: 1, t: 1.}])
+# fill lower part:
+sys.set_hopping([{&#39;n&#39;: 1, t: 1.}], low=True)
+# fill upper part: specifying the angles:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., t: 1.}, {&#39;n&#39;: 1, &#39;ang&#39;: 90,  t: 2.}])
+# fill lower part:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: -180., t: 1.}, {&#39;n&#39;: 1, &#39;ang&#39;: -90,  t: 2.}], low=True)
+# fill upper part: specifying the tags:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, {&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ba&#39;,  t: 2.}])
+# fill lower part:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, {&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ba&#39;,  t: 2.}], low=True)
+# fill upper part: specifying the angles and tags:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, 
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ba&#39;,  t: 2.},
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ab&#39;, t: 3.}, 
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ba&#39;,  t: 4.}])
+# fill lower part:
+sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, 
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ba&#39;,  t: 2.},
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ab&#39;, t: 3.}, 
+                            {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ba&#39;,  t: 4.}]), low=True)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>A Hermitian hopping matrix can be build-up only using 
+its upper part OR only using its lower part. The full matrix is then
+automatic built by Hermitian conjugaison.</p>
+<p class="last">If both upper AND lower parts are used to build up the hopping matrix.
+non Hermitian conjugaison is not performed <em>i.e.</em> non-Hermitian hopping matrix
+can be built.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.check_sites">
+<code class="descname">check_sites</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.check_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.check_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Check if the number of sites was changed after calling the 
+method system.set_hopping().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_given_hopping">
+<code class="descname">set_given_hopping</code><span class="sig-paren">(</span><em>n</em>, <em>size</em>, <em>dic</em>, <em>mask</em>, <em>low</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_given_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_given_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Fill self.hop.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n</strong> &#8211; Integer. Hopping type.</li>
+<li><strong>size</strong> &#8211; Integer. Number of hoppings.</li>
+<li><strong>doc</strong> &#8211; Dictionary. Hopping dictionary.</li>
+<li><strong>mask</strong> &#8211; np.ndarray. Mask.</li>
+<li><strong>low</strong> &#8211; Boolean. If True, self.hop[&#8216;i&#8217;] &gt; self.hop[&#8216;j&#8217;].</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_hopping_manual">
+<code class="descname">set_hopping_manual</code><span class="sig-paren">(</span><em>dict_hop</em>, <em>low=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_hopping_manual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_hopping_manual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set hoppings manually.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dict_hop</strong> &#8211; Dictionary of hoppings.
+key: hopping indices, val: hopping values.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_hopping_dis">
+<code class="descname">set_hopping_dis</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_hopping_dis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_hopping_dis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set uniform hopping disorder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>alpha</strong> &#8211; Complex or Real number. Disorder stength.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sys</span><span class="o">.</span><span class="n">set_hopping_dis</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_onsite_dis">
+<code class="descname">set_onsite_dis</code><span class="sig-paren">(</span><em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_onsite_dis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_onsite_dis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set uniform onsite disorder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>alpha</strong> &#8211; Complex or Real number. Disorder stength.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<p>sys.set_onsite_dis(alpha=0.1)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_onsite_def">
+<code class="descname">set_onsite_def</code><span class="sig-paren">(</span><em>onsite_def</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_onsite_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_onsite_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set specific onsite energies.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>onsite_def</strong> &#8211; Dictionary. 
+key: site indices, val: onsite values.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre>set_onsite_def(0: 1., 1: -1j)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_hopping_def">
+<code class="descname">set_hopping_def</code><span class="sig-paren">(</span><em>hopping_def</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_hopping_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_hopping_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set specific hoppings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hopping_def</strong> &#8211; Dictionary of hoppings. 
+key: hopping indices, val: hopping values.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sys</span><span class="o">.</span><span class="n">set_hopping_def</span><span class="p">({(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="mf">1.</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="o">-</span><span class="mi">1j</span><span class="p">})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.set_new_hopping">
+<code class="descname">set_new_hopping</code><span class="sig-paren">(</span><em>list_hop</em>, <em>ind</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.set_new_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.set_new_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Set new hoppings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; List of Dictionary (see set_hopping definition).</li>
+<li><strong>ind</strong> &#8211; List. List of indices.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.find_square">
+<code class="descname">find_square</code><span class="sig-paren">(</span><em>xlims</em>, <em>ylims</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.find_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.find_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Find hoppings within the square.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xlims</strong> &#8211; List or Tuple. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> interval.</li>
+<li><strong>ylims</strong> &#8211; List or Tuple. <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/> interval.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.find_ellipse">
+<code class="descname">find_ellipse</code><span class="sig-paren">(</span><em>rx</em>, <em>ry</em>, <em>x0</em>, <em>y0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.find_ellipse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.find_ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method.
+Find hoppings within the ellipse.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rx</strong> &#8211; Positive Float. Radius along <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/>.</li>
+<li><strong>ry</strong> &#8211; Positive Float. Radius along <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>.</li>
+<li><strong>x0</strong> &#8211; Float. Defalut value 0. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> center.</li>
+<li><strong>y0</strong> &#8211; Float. Defalut value 0. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> center.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.change_hopping_square">
+<code class="descname">change_hopping_square</code><span class="sig-paren">(</span><em>list_hop, xlims, ylims=[-1.0, 1.0]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.change_hopping_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.change_hopping_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change hopping values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; List of Dictionary (see set_hopping definition).</li>
+<li><strong>xlims</strong> &#8211; List or Tuple. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> interval.</li>
+<li><strong>ylims</strong> &#8211; List or Tuple. <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/> interval.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.change_hopping_ellipse">
+<code class="descname">change_hopping_ellipse</code><span class="sig-paren">(</span><em>list_hop</em>, <em>rx</em>, <em>ry</em>, <em>x0=0.0</em>, <em>y0=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.change_hopping_ellipse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.change_hopping_ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change hopping values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>list_hop</strong> &#8211; List of Dictionary (see set_hopping definition).</li>
+<li><strong>rx</strong> &#8211; Positive Float. Radius along <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/>.</li>
+<li><strong>ry</strong> &#8211; Positive Float. Radius along <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>.</li>
+<li><strong>x0</strong> &#8211; Float. Default value 0. <img class="math" src="_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> center.</li>
+<li><strong>y0</strong> &#8211; Float. Default value 0. <img class="math" src="_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/> center.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_coor_hop">
+<code class="descname">get_coor_hop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_coor_hop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_coor_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the site coordinates in hopping space
+only considering the nearest neighbours hoppings.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_ham">
+<code class="descname">get_ham</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_ham"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_ham" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Tight-Binding Hamiltonian using sys.hop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_eig">
+<code class="descname">get_eig</code><span class="sig-paren">(</span><em>eigenvec=False</em>, <em>left=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_eig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_eig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the eigenergies, eigenvectors and polarisation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>eigenvec</strong> &#8211; Boolean. Default value False. 
+If True, get the eigenvectors.</li>
+<li><strong>left</strong> &#8211; Boolean. Default value False. 
+If True, get the left eigenvectors too. 
+Relevant for non-Hermitian matrices.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_ipr">
+<code class="descname">get_ipr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_ipr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_ipr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Inverse Participation Ratio:</p>
+<div class="math">
+<p><img src="_images/math/6a6c2d690f3d543fbd8b8f9b9d321949a4e561ed.png" alt="IPR_n = |\sum_i\psi_i^{n}|^4\, ."/></p>
+</div></dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_petermann">
+<code class="descname">get_petermann</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_petermann"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_petermann" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Petermann factor:</p>
+<div class="math">
+<p><img src="_images/math/2e1763605e3a21c72e549cd542049786a379c6a2.png" alt="K_n = \frac{\langle\psi_L^{n}|\psi_L^{n}\rangle\langle\psi_R^{n}|\psi_R^{n}\rangle}{\langle\psi_L^{n}|\psi_R^{n}\rangle}\, ."/></p>
+</div><div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">LA.eig fixes the norm such that <img class="math" src="_images/math/54383f0644b3ab890b00100ab6975a0475dcd396.png" alt="\langle\psi_L^{n}|\psi_L^{n}\rangle = 1"/> and <img class="math" src="_images/math/a26396abd7586876ba759f7d0abcef8013d1c5d6.png" alt="\langle\psi_R^{n}|\psi_R^{n}\rangle = 1"/>.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_intensity_pola_max">
+<code class="descname">get_intensity_pola_max</code><span class="sig-paren">(</span><em>tag_pola</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_intensity_pola_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_intensity_pola_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the state with largest polarization on one sublattice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag_pola</strong> &#8211; Binary char. Sublattice tag.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>intensity</strong> &#8211; Intensity of max polarized state on <em>tag</em>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_intensity_pola_min">
+<code class="descname">get_intensity_pola_min</code><span class="sig-paren">(</span><em>tag_pola</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_intensity_pola_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_intensity_pola_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the state with smallest polarization on one sublattice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tag_pola</strong> &#8211; Binary char. Sublattice tag.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>intensity</strong> &#8211; Intensity of max polarized state on <em>tag</em>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.system.system.get_intensity_en">
+<code class="descname">get_intensity_en</code><span class="sig-paren">(</span><em>lims</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/system.html#system.get_intensity_en"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.system.system.get_intensity_en" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get, if any, the intensity of the sum of the states 
+between <em>lims[0]</em> and <em>lims[1]</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lims</strong> &#8211; List. lims[0] energy min, lims[1] energy max.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>intensity</strong> &#8211; Sum of the intensities between (lims[0], lims[1]).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.plot">
+<span id="tbee-plot-module"></span><h2>tbee.plot module<a class="headerlink" href="#module-tbee.plot" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.plot.plot">
+<em class="property">class </em><code class="descclassname">tbee.plot.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>sys</em>, <em>colors=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Plot the results of the classes <strong>lattice</strong> or <strong>system</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sys</strong> &#8211; class instance <strong>system</strong>.</li>
+<li><strong>colors</strong> &#8211; Default value None. Color plot.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tbee.plot.plot.plt_hopping">
+<code class="descname">plt_hopping</code><span class="sig-paren">(</span><em>coor</em>, <em>hop</em>, <em>c</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.plt_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.plt_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method called by <em>lattice_generic</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.lattice_generic">
+<code class="descname">lattice_generic</code><span class="sig-paren">(</span><em>coor</em>, <em>ms</em>, <em>lw</em>, <em>c</em>, <em>fs</em>, <em>axis</em>, <em>plt_hop</em>, <em>plt_hop_low</em>, <em>plt_index</em>, <em>figsize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.lattice_generic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.lattice_generic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private method called by <em>lattice</em> and <em>lattice_hop</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.lattice">
+<code class="descname">lattice</code><span class="sig-paren">(</span><em>ms=20</em>, <em>lw=5.0</em>, <em>c=3.0</em>, <em>fs=20</em>, <em>axis=False</em>, <em>plt_hop=False</em>, <em>plt_hop_low=False</em>, <em>plt_index=False</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot lattice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms</strong> &#8211; Positive number. Default value 20. Markersize.</li>
+<li><strong>c</strong> &#8211; Positive number. Default value 3. 
+Coefficient. Hopping linewidths given by c*hop[&#8216;t&#8217;].</li>
+<li><strong>fs</strong> &#8211; Positive number. Default value 20. Fontsize.</li>
+<li><strong>plt_hop</strong> &#8211; Boolean. Default value False. Plot hoppings.</li>
+<li><strong>plt_hop_low</strong> &#8211; Boolean. Default value False. 
+Plot hoppings diagonal low.</li>
+<li><strong>plt_index</strong> &#8211; Boolean. Default value False. Plot site labels.</li>
+<li><strong>axis</strong> &#8211; Boolean. Default value False. Plot axis.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figure size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.lattice_hop">
+<code class="descname">lattice_hop</code><span class="sig-paren">(</span><em>ms=20</em>, <em>lw=5</em>, <em>c=3.0</em>, <em>fs=20</em>, <em>axis=False</em>, <em>plt_hop=False</em>, <em>plt_hop_low=False</em>, <em>plt_index=False</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.lattice_hop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.lattice_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot lattice in hopping space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms</strong> &#8211; Positive Float. Default value 20. Markersize.</li>
+<li><strong>c</strong> &#8211; Positive Float. Default value 3. Coefficient.
+Hopping linewidths given by c*hop[&#8216;t&#8217;].</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>axis</strong> &#8211; Boolean. Default value False. Plot axis.</li>
+<li><strong>plt_hop</strong> &#8211; Boolean. Default value False. Plot hoppings.</li>
+<li><strong>plt_index</strong> &#8211; Boolean. Default value False. Plot site labels.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figure size.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.spectrum_hist">
+<code class="descname">spectrum_hist</code><span class="sig-paren">(</span><em>nbr_bins=61</em>, <em>fs=20</em>, <em>lims=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.spectrum_hist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.spectrum_hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nbr_bins</strong> &#8211; Default value 101. Number of bins of the histogram.</li>
+<li><strong>lims</strong> &#8211; List, lims[0] energy min, lims[1] energy max.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.spectrum">
+<code class="descname">spectrum</code><span class="sig-paren">(</span><em>ms=10</em>, <em>fs=20</em>, <em>lims=None</em>, <em>tag_pola=None</em>, <em>ipr=None</em>, <em>peterman=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.spectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot spectrum (eigenenergies real part (blue circles),
+and sublattice polarization if <em>pola</em> not empty (red circles).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms</strong> &#8211; Default value 10. Markersize.</li>
+<li><strong>fs</strong> &#8211; Default value 20. Fontsize.</li>
+<li><strong>lims</strong> &#8211; List, lims[0] energy min, lims[1] energy max.</li>
+<li><strong>tag_pola</strong> &#8211; Default value None. Binary char. Tag of the sublattice.</li>
+<li><strong>ipr</strong> &#8211; Default value None. If True plot the Inverse Partitipation Ration.</li>
+<li><strong>petermann</strong> &#8211; Default value None. If True plot the Petermann factor.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.polarization">
+<code class="descname">polarization</code><span class="sig-paren">(</span><em>fig=None</em>, <em>ax1=None</em>, <em>ms=10.0</em>, <em>fs=20.0</em>, <em>lims=None</em>, <em>tag_pola=None</em>, <em>ind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.polarization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.polarization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot sublattice polarization.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fig</strong> &#8211; Figure. Default value None. (used by the method spectrum).</li>
+<li><strong>ax1</strong> &#8211; Axis. Default value None. (used by the method spectrum).</li>
+<li><strong>ms</strong> &#8211; Positive Float. Default value 10. Markersize.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>lims</strong> &#8211; List, lims[0] energy min, lims[1] energy max.</li>
+<li><strong>tag_pola</strong> &#8211; Binary char. Default value None. Tag of the sublattice.</li>
+<li><strong>ind</strong> &#8211; List. Default value None. List of indices. (used in the method spectrum).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.ipr">
+<code class="descname">ipr</code><span class="sig-paren">(</span><em>fig=None</em>, <em>ax1=None</em>, <em>ms=10</em>, <em>fs=20</em>, <em>lims=None</em>, <em>ind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.ipr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.ipr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Inverse Participation Ration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fig</strong> &#8211; Figure. Default value None. (used by the method spectrum).</li>
+<li><strong>ax1</strong> &#8211; Axis. Default value None. (used by the method spectrum).</li>
+<li><strong>ms</strong> &#8211; Positive Float. Default value 10. Markersize.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>lims</strong> &#8211; List. lims[0] energy min, lims[1] energy max.</li>
+<li><strong>ind</strong> &#8211; List. Default value None. List of indices. (used in the method spectrum).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.petermann">
+<code class="descname">petermann</code><span class="sig-paren">(</span><em>fig=None</em>, <em>ax1=None</em>, <em>ms=10</em>, <em>fs=20</em>, <em>lims=None</em>, <em>ind=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.petermann"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.petermann" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Peterman factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fig</strong> &#8211; Figure. Default value None. (used by the method spectrum).</li>
+<li><strong>ax1</strong> &#8211; Axis. Default value None. (used by the method spectrum).</li>
+<li><strong>ms</strong> &#8211; Positive Float. Default value 10. Markersize.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>lims</strong> &#8211; List. lims[0] energy min, lims[1] energy max.</li>
+<li><strong>ind</strong> &#8211; List. Default value None. List of indices. (used in the method spectrum).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.spectrum_complex">
+<code class="descname">spectrum_complex</code><span class="sig-paren">(</span><em>ms=10.0</em>, <em>fs=20.0</em>, <em>lims=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.spectrum_complex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.spectrum_complex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot complex value eigenenergies,real part (blue circles),
+and imaginary part (red circles).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ms</strong> &#8211; Positive Float. Default value 20. Markersize.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Font size.</li>
+<li><strong>lims</strong> &#8211; List. lims[0] energy min, lims[1] energy max.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.intensity_1d">
+<code class="descname">intensity_1d</code><span class="sig-paren">(</span><em>intensity</em>, <em>ms=20.0</em>, <em>lw=2.0</em>, <em>fs=20.0</em>, <em>title='$|\\psi^{(j)}|^2$'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.intensity_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.intensity_1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot intensity for 1D lattices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>intensity</strong> &#8211; np.array. Field intensity.</li>
+<li><strong>ms</strong> &#8211; Positive Float. Default value 20. Markersize.</li>
+<li><strong>lw</strong> &#8211; Positive Float. Default value 2. Linewith, connect sublattice sites.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Font size.</li>
+<li><strong>title</strong> &#8211; String. Default value &#8216;Intensity&#8217;. Figure title.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.intensity_disk">
+<code class="descname">intensity_disk</code><span class="sig-paren">(</span><em>intensity</em>, <em>s=200.0</em>, <em>fs=20.0</em>, <em>lims=None</em>, <em>figsize=None</em>, <em>title='$|\\psi|^2$'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.intensity_disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.intensity_disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the intensity. Colormap with identical disk shape.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>intensity</strong> &#8211; np.array.Field intensity.</li>
+<li><strong>s</strong> &#8211; Default value 200. Disk size.</li>
+<li><strong>fs</strong> &#8211; Default value 20. Font size.</li>
+<li><strong>lims</strong> &#8211; List. Default value None. Colormap limits.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figure size.</li>
+<li><strong>title</strong> &#8211; String. Default value &#8216;$|psi_n|^2$&#8217;. Title.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.intensity_area">
+<code class="descname">intensity_area</code><span class="sig-paren">(</span><em>intensity</em>, <em>s=1000.0</em>, <em>lw=1.0</em>, <em>fs=20.0</em>, <em>plt_hop=False</em>, <em>figsize=None</em>, <em>title='$|\\psi|^2$'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.intensity_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.intensity_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the intensity. Intensity propotional to disk shape.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>intensity</strong> &#8211; np.array. Intensity.</li>
+<li><strong>s</strong> &#8211; Positive Float. Default value 1000. 
+Circle size given by s * intensity.</li>
+<li><strong>lw</strong> &#8211; Positive Float. Default value 1. Hopping linewidths.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>plt_hop</strong> &#8211; Boolean. Default value False. Plot hoppings.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figure size.</li>
+<li><strong>title</strong> &#8211; String. Default value &#8216;$|psi_{ij}|^2$&#8217;. Figure title.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.butterfly">
+<code class="descname">butterfly</code><span class="sig-paren">(</span><em>betas</em>, <em>butterfly</em>, <em>lw=1.0</em>, <em>fs=20.0</em>, <em>lims=None</em>, <em>title=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.butterfly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.butterfly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot energies depending on a parameter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>betas</strong> &#8211; np.array. Parameter values.</li>
+<li><strong>butterfly</strong> &#8211; np.array. Eigenvalues.</li>
+<li><strong>lw</strong> &#8211; Positive Float. Default value 1. Hopping linewidths.</li>
+<li><strong>fs</strong> &#8211; Positive Float. Default value 20. Fontsize.</li>
+<li><strong>lims</strong> &#8211; List, lims[0] energy min, lims[1] energy max.</li>
+<li><strong>title</strong> &#8211; Default value &#8216;&#8217;. Figure title.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.plot.plot.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/plot.html#plot.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.plot.plot.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emulate Matplotlib method plt.show().</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.propagation">
+<span id="tbee-propagation-module"></span><h2>tbee.propagation module<a class="headerlink" href="#module-tbee.propagation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.propagation.propagation">
+<em class="property">class </em><code class="descclassname">tbee.propagation.</code><code class="descname">propagation</code><span class="sig-paren">(</span><em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Get lattice time evolution. Time dependent Schrodinger equation solved by
+Crank-Nicolson method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lat</strong> &#8211; <strong>lattice</strong> class instance.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tbee.propagation.propagation.get_propagation">
+<code class="descname">get_propagation</code><span class="sig-paren">(</span><em>ham</em>, <em>psi_init</em>, <em>steps</em>, <em>dz</em>, <em>norm=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.get_propagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.get_propagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time evolution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ham</strong> &#8211; sparse.csr_matrix. Tight-Binding Hamilonian.</li>
+<li><strong>psi_init</strong> &#8211; np.ndarray. Initial state.</li>
+<li><strong>steps</strong> &#8211; Positive Integer. Number of steps.</li>
+<li><strong>dz</strong> &#8211; Positive number. Step.</li>
+<li><strong>norm</strong> &#8211; Boolean. Default value True. Normalize the norm to 1 at each step.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.get_pumping">
+<code class="descname">get_pumping</code><span class="sig-paren">(</span><em>hams</em>, <em>psi_init</em>, <em>steps</em>, <em>dz</em>, <em>norm=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.get_pumping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.get_pumping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time evolution with adiabatic pumpings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>hams</strong> &#8211; List of sparse.csr_matrices. Tight-Binding Hamilonians.</li>
+<li><strong>psi_init</strong> &#8211; np.ndarray. Initial state.</li>
+<li><strong>steps</strong> &#8211; Positive integer. Number of steps.</li>
+<li><strong>dz</strong> &#8211; Positive number. Step.</li>
+<li><strong>norm</strong> &#8211; Boolean. Default value True. Normalize the norm to 1 at each step.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.plt_propagation_1d">
+<code class="descname">plt_propagation_1d</code><span class="sig-paren">(</span><em>prop_type='real'</em>, <em>fs=20</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.plt_propagation_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.plt_propagation_1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot time evolution for 1D systems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fs</strong> &#8211; Default value 20. Fontsize.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.prop_smooth_1d">
+<code class="descname">prop_smooth_1d</code><span class="sig-paren">(</span><em>prop</em>, <em>a=10</em>, <em>no=40</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.prop_smooth_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.prop_smooth_1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Private function. Used in <em>plt_propagation_1d</em>.
+Smooth propagation for 1D systems.
+Perform Gaussian interpolation <img class="math" src="_images/math/f45945b56f4e9b6e1678e7e3dacd3c302c21a44f.png" alt="e^{-a(x-x_i)^2}"/>,</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prop</strong> &#8211; Propagation.</li>
+<li><strong>a</strong> &#8211; Default value 15. Gaussian Parameter.</li>
+<li><strong>no</strong> &#8211; Default value 40. Number of points of each Gaussian.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>smooth</strong> &#8211; Smoothed propagation.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.get_animation">
+<code class="descname">get_animation</code><span class="sig-paren">(</span><em>s=300.0</em>, <em>fs=20.0</em>, <em>prop_type='real'</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.get_animation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.get_animation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get time evolution animation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; Default value 300. Circle size.</li>
+<li><strong>fs</strong> &#8211; Default value 20. Fontsize.</li>
+<li><strong>figsize</strong> &#8211; Tuple. Default value None. Figsize.</li>
+<li><strong>prop_type</strong> &#8211; Default value None. Figsize.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>ani</strong> &#8211; Animation.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.get_animation_nb">
+<code class="descname">get_animation_nb</code><span class="sig-paren">(</span><em>s=300.0</em>, <em>fs=20.0</em>, <em>prop_type='real'</em>, <em>figsize=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.get_animation_nb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.get_animation_nb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get time evolution animation for iPython notebooks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> &#8211; Default value 300. Circle shape.</li>
+<li><strong>fs</strong> &#8211; Default value 20. Fontsize.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>ani</strong> &#8211; Animation.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.propagation.propagation.plt_prop_dimer">
+<code class="descname">plt_prop_dimer</code><span class="sig-paren">(</span><em>lw=5</em>, <em>fs=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/propagation.html#propagation.plt_prop_dimer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.propagation.propagation.plt_prop_dimer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot time evolution for dimers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lw</strong> &#8211; Default value 5. Linewidth.</li>
+<li><strong>fs</strong> &#8211; Default value 20. Fontsize.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>fig</strong> &#8211; Figure.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.save">
+<span id="tbee-save-module"></span><h2>tbee.save module<a class="headerlink" href="#module-tbee.save" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.save.save">
+<em class="property">class </em><code class="descclassname">tbee.save.</code><code class="descname">save</code><span class="sig-paren">(</span><em>dir_name</em>, <em>dir_main=None</em>, <em>params={}</em>, <em>file_format='png'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Create folder and save figures / animations obtained via 
+<strong>plot</strong> or <strong>propagation</strong>. 
+Plot the results of the classes <strong>lattice</strong> or <strong>system</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dir_main</strong> &#8211; Name of the directory.</li>
+<li><strong>dir_name</strong> &#8211; Default value None. Relative path of the main directory.
+if None, figures stored in &#8216;&#8217;../TBfig/&#8217;dir_name/&#8217;</li>
+<li><strong>params</strong> &#8211; dictionary. file name information</li>
+<li><strong>file_format</strong> &#8211; Default value &#8216;png&#8217;. Figure format.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="tbee.save.save.dir_name">
+<code class="descname">dir_name</code><span class="sig-paren">(</span><em>dir_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.dir_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.dir_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the name of the directory in which the figures are stored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dir_name</strong> &#8211; String. Directory name.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.save.save.create_dir">
+<code class="descname">create_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.create_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.create_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the directory to store the figures exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.save.save.file_name">
+<code class="descname">file_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the file name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><strong>file_name</strong> &#8211; File name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.save.save.fig">
+<code class="descname">fig</code><span class="sig-paren">(</span><em>fig</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.fig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.fig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the figure in the directory defined by the method <em>dir_name()</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig</strong> &#8211; Matplotlib fig.</li>
+<li><strong>name</strong> &#8211; String. Fist part of the file name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.save.save.fig_lat">
+<code class="descname">fig_lat</code><span class="sig-paren">(</span><em>fig</em>, <em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.fig_lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.fig_lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the figure in the directory defined by the method <em>dir_name()</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fig</strong> &#8211; Matplotlib fig.</li>
+<li><strong>name</strong> &#8211; String. First part of the file name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.save.save.ani">
+<code class="descname">ani</code><span class="sig-paren">(</span><em>ani</em>, <em>name</em>, <em>fps=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/save.html#save.ani"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.save.save.ani" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.graphene">
+<span id="tbee-graphene-module"></span><h2>tbee.graphene module<a class="headerlink" href="#module-tbee.graphene" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tbee.graphene.grapheneLat">
+<em class="property">class </em><code class="descclassname">tbee.graphene.</code><code class="descname">grapheneLat</code><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tbee.lattice.lattice" title="tbee.lattice.lattice"><code class="xref py py-class docutils literal"><span class="pre">tbee.lattice.lattice</span></code></a></p>
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.triangle_zigzag">
+<code class="descname">triangle_zigzag</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.triangle_zigzag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.triangle_zigzag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangular flake with zigzag terminations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along the edges.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.hexagon_zigzag">
+<code class="descname">hexagon_zigzag</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.hexagon_zigzag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.hexagon_zigzag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hexagonal flake with zigzag terminations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along the edges.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.triangle_armchair">
+<code class="descname">triangle_armchair</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.triangle_armchair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.triangle_armchair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangular flake with armchair terminations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along the edges.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.hexagon_armchair">
+<code class="descname">hexagon_armchair</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.hexagon_armchair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.hexagon_armchair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hexagonal flake with armchair terminations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along each edge.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.square">
+<code class="descname">square</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Squared flake.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along x.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneLat.circle">
+<code class="descname">circle</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneLat.circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneLat.circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Circular flake.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Param:</th><td class="field-body"><ol class="first last loweralpha simple" start="14">
+<li>Int. Number of plackets along the diameter.</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tbee.graphene.grapheneSys">
+<em class="property">class </em><code class="descclassname">tbee.graphene.</code><code class="descname">grapheneSys</code><span class="sig-paren">(</span><em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneSys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneSys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tbee.system.system" title="tbee.system.system"><code class="xref py py-class docutils literal"><span class="pre">tbee.system.system</span></code></a></p>
+<dl class="method">
+<dt id="tbee.graphene.grapheneSys.set_hop_linear_strain">
+<code class="descname">set_hop_linear_strain</code><span class="sig-paren">(</span><em>t</em>, <em>beta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneSys.set_hop_linear_strain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneSys.set_hop_linear_strain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set nearest neighbors hoppings according to the linear trixial strain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>t</strong> &#8211; Hopping value without strain.</li>
+<li><strong>beta</strong> &#8211; Strength of the strain.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneSys.get_butterfly">
+<code class="descname">get_butterfly</code><span class="sig-paren">(</span><em>t</em>, <em>N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneSys.get_butterfly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneSys.get_butterfly" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#8216;
+Get energies depending on strain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>t</strong> &#8211; Unstrained hopping value.</li>
+<li><strong>N</strong> &#8211; number of strain values between min and max strains.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tbee.graphene.grapheneSys.get_beta_lims">
+<code class="descname">get_beta_lims</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/graphene.html#grapheneSys.get_beta_lims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.graphene.grapheneSys.get_beta_lims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the extremal values of strain keeping positive hoppings.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-tbee.error_handling">
+<span id="tbee-error-handling-module"></span><h2>tbee.error_handling module<a class="headerlink" href="#module-tbee.error_handling" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tbee.error_handling.boolean">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">boolean</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.boolean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>var</em> is a boolean.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a bool.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.positive_int">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">positive_int</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#positive_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.positive_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>var</em> is a positive integer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be an integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a positive integer.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.positive_int_lim">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">positive_int_lim</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em>, <em>nmax</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#positive_int_lim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.positive_int_lim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>var</em> is a positive integer smaller than nmax.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be an integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a positive integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a positive integer
+smaller than nmax.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.real_number">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">real_number</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#real_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.real_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a real number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a real number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.positive_real">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">positive_real</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#positive_real"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.positive_real" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a positive number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a real number.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a positive number.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.positive_real_zero">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">positive_real_zero</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#positive_real_zero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.positive_real_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a positive number or zero.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a real number.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a positive number or zero.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.negative_real">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">negative_real</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#negative_real"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.negative_real" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a negative number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a real number.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must be a negative number.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.number">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">number</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a number.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a real number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.larger">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">larger</code><span class="sig-paren">(</span><em>var1</em>, <em>var_name1</em>, <em>var2</em>, <em>var_name2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#larger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.larger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>var1</em> larger than <em>val</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; Parameter <em>var1</em> larger than <em>var2</em>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.smaller">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">smaller</code><span class="sig-paren">(</span><em>var1</em>, <em>var_name1</em>, <em>var2</em>, <em>var_name2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#smaller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.smaller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>var1</em> smaller than <em>var2</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; Parameter <em>var1</em> must be smaller than <em>var2</em>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.string">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">string</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a string.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.ndarray">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">ndarray</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em>, <em>length</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#ndarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a numpy ndarray.</li>
+<li><strong>ValueError</strong> &#8211; length array must be equal to length.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.ndarray_null">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">ndarray_null</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#ndarray_null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.ndarray_null" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is not a null numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; Parameter <em>var</em> must not be a null numpy ndarray.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.ndarray_empty">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">ndarray_empty</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#ndarray_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.ndarray_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is not an empty numpy array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; Parameter <em>var</em> must not be an emptynumpy ndarray.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.list_tuple_2elem">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">list_tuple_2elem</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#list_tuple_2elem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.list_tuple_2elem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a list/tuple with 2 elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a list/tuple.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must contain 2 elements.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.tuple_2elem">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">tuple_2elem</code><span class="sig-paren">(</span><em>var</em>, <em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#tuple_2elem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.tuple_2elem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter <em>var</em> is a tuple with 2 elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>var</em> must be a tuple.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>var</em> must contain 2 elements.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.lat">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">lat</code><span class="sig-paren">(</span><em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#lat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.lat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter is an instance of the <em>lattice</em>.
+:raises TypeError: Parameter must be an instance of the class lattice.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.unit_cell">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">unit_cell</code><span class="sig-paren">(</span><em>unit_cell</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#unit_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.unit_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check parameter <em>unit_cell</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter unit_cell must be a list.</li>
+<li><strong>KeyError</strong> &#8211; Dictionaries must contain the key &#8220;tag&#8221;.</li>
+<li><strong>KeyError</strong> &#8211; Dictionaries must contain the key &#8220;r0&#8221;.</li>
+<li><strong>TypeError</strong> &#8211; Key &#8220;tags&#8221; must contain a binary char.</li>
+<li><strong>ValueError</strong> &#8211; Key &#8220;tags&#8221; must contain a binary char.</li>
+<li><strong>ValueError</strong> &#8211; Key &#8220;r0&#8221; must contain be a list.</li>
+<li><strong>TypeError</strong> &#8211; Key &#8220;r0&#8221; must contain be a tuple.</li>
+<li><strong>ValueError</strong> &#8211; Key &#8220;r0&#8221; must contain a tuple of length two.</li>
+<li><strong>ValueError</strong> &#8211; Key &#8220;r0&#8221; must contain a tuple of two real numbers.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.prim_vec">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">prim_vec</code><span class="sig-paren">(</span><em>prim_vec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#prim_vec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.prim_vec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check parameter <em>prim_vec</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter prim_vec must be a list.</li>
+<li><strong>ValueError</strong> &#8211; Parameter prim_vec must be a list
+of length 1 for 1D lattices or length 2 fro 2D lattices.</li>
+<li><strong>TypeError</strong> &#8211; List elements must be tuples.</li>
+<li><strong>ValueError</strong> &#8211; List elements must be 1 or 2 tuples.</li>
+<li><strong>ValueError</strong> &#8211; Tuples must be of length 2.</li>
+<li><strong>ValueError</strong> &#8211; Tuples must containt real numbers.</li>
+<li><strong>ValueError</strong> &#8211; Norm of coor should be larger than 0.1.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.get_lattice">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">get_lattice</code><span class="sig-paren">(</span><em>prim_vec</em>, <em>n1</em>, <em>n2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#get_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.get_lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>get_lattice</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter n1 must be an integer.</li>
+<li><strong>TypeError</strong> &#8211; Parameter n2 must be an integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter n1 must be a positive integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter n2 must be a positive integer.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.coor">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">coor</code><span class="sig-paren">(</span><em>coor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#coor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.coor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>coor</em> is a structured array with 
+dtype=[(&#8216;x&#8217;, &#8216;&lt;f8&#8217;), (&#8216;y&#8217;, &#8216;&lt;f8&#8217;), (&#8216;tag&#8217;, &#8216;S1&#8217;)].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.coor_1d">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">coor_1d</code><span class="sig-paren">(</span><em>coor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#coor_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.coor_1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>coor</em> is 1d (coor[&#8216;y&#8217;] = cst).
+:raises ValueError: <em>coor</em> must be 1d( coor[&#8216;y&#8217;] = cst)..</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.remove_sites">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">remove_sites</code><span class="sig-paren">(</span><em>index</em>, <em>sites</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#remove_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.remove_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>remove_sites</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter index must be a list.</li>
+<li><strong>ValueError</strong> &#8211; Parameter index must be a list of integers.</li>
+<li><strong>ValueError</strong> &#8211; Indices must be between 0 and sites -1.
+of integers between 0 and sites</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.shift">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">shift</code><span class="sig-paren">(</span><em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check <em>shift_x</em> and <em>shift_y</em>.
+:raises TypeError: Parameter delta must be a real number.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.boundary_line">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">boundary_line</code><span class="sig-paren">(</span><em>cx</em>, <em>cy</em>, <em>co</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#boundary_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.boundary_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check <em>boundary_line</em>.
+:raises TypeError: Parameter cx must be a real number.
+:raises TypeError: Parameter cy must be a real number.
+:raises TypeError: Parameter co must be a real number.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.ellipse">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">ellipse</code><span class="sig-paren">(</span><em>a</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#ellipse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check <em>ellipse_in</em> and <em>ellipse_out</em>.
+:raises TypeError: Parameter a must be a positive number.
+:raises TypeError: Parameter b must be a positive number.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.sites">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">sites</code><span class="sig-paren">(</span><em>sites</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>get_lattice</em> has been called (<em>coor</em> not empty).
+:raises RuntimeError: Run method lat.get_lattice first.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.sys">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">sys</code><span class="sig-paren">(</span><em>sys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#sys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.sys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter is an instance of the <em>system</em>.
+:raises TypeError: Parameter must be an instance of the class system.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.print_hopping">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">print_hopping</code><span class="sig-paren">(</span><em>n</em>, <em>nmax</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#print_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.print_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>print_vec_hopping</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>nmax</em> must be an integer.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>nmax</em> must be a positive integer.
+between 1 and n_max-1.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.set_onsite">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">set_onsite</code><span class="sig-paren">(</span><em>onsite</em>, <em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#set_onsite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.set_onsite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>set_onsite</em>.
+:raises TypeError: Parameter onsite must be a dictionary.
+:raises ValueError: Parameter onsite keys must be a tag.
+:raises ValueError: Parameter onsite values must be</p>
+<blockquote>
+<div>real and/or complex numbers.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.set_hopping">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">set_hopping</code><span class="sig-paren">(</span><em>list_hop</em>, <em>n_max</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#set_hopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.set_hopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>set_hopping</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>list_hop</em> must be a list.</li>
+<li><strong>TypeError</strong> &#8211; Parameter <em>list_hop</em> must be a list of dictionary.</li>
+<li><strong>KeyError</strong> &#8211; &#8220;n&#8221; and &#8220;t&#8221; must be dictionary keys.</li>
+<li><strong>KeyError</strong> &#8211; &#8220;tag&#8221; or &#8220;ang&#8221; must be a key.</li>
+<li><strong>KeyError</strong> &#8211; &#8220;tag&#8221; and &#8220;ang&#8221; must be a key.</li>
+<li><strong>ValueError</strong> &#8211; Dictionaries must be of length 2, 4, or 4.</li>
+<li><strong>ValueError</strong> &#8211; &#8220;n&#8221; must be between 1 and nmax&#8221;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.index">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">index</code><span class="sig-paren">(</span><em>ind</em>, <em>dic</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if <em>ind</em> not empy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.set_hopping_def">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">set_hopping_def</code><span class="sig-paren">(</span><em>hop</em>, <em>hopping_def</em>, <em>sites</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#set_hopping_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.set_hopping_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>set_hop_def</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>hopping_def</em> must be a dictionary</li>
+<li><strong>TypeError</strong> &#8211; <em>hopping_def</em> keys must be lists.</li>
+<li><strong>ValueError</strong> &#8211; <em>hopping_def</em> keys must be lists of length 2.</li>
+<li><strong>ValueError</strong> &#8211; <em>hopping_def</em> keys must be lists of integers.</li>
+<li><strong>TypeError</strong> &#8211; <em>hopping_def</em> keys must be lists.</li>
+<li><strong>ValueError</strong> &#8211; <em>hopping_def</em> keys must be integers between 0 and sites-1.</li>
+<li><strong>ValueError</strong> &#8211; <em>hopping_def</em> keys must be different integers between 0 and sites-1.</li>
+<li><strong>TypeError</strong> &#8211; <em>hopping_def</em> values must be numbers.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.set_onsite_def">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">set_onsite_def</code><span class="sig-paren">(</span><em>onsite_def</em>, <em>sites</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#set_onsite_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.set_onsite_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method <em>set_ons_def</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>onsite_def</em> must be a dictionary.</li>
+<li><strong>TypeError</strong> &#8211; <em>onsite_def</em> keys must be integers.</li>
+<li><strong>TypeError</strong> &#8211; <em>onsite_def</em> values must be numbers.</li>
+<li><strong>ValueError</strong> &#8211; <em>onsite_def</em> keys must be integers between <img class="math" src="_images/math/f893efb4041299ddcea5137bc08641129389ab1d.png" alt="[0, sites)"/>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.hop_n1">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">hop_n1</code><span class="sig-paren">(</span><em>hop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#hop_n1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.hop_n1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check method if self.hop contains nearest neighbours hoppings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RunTimeError</strong> &#8211; self.hop must contain nearest neighbours hoppings.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_onsite">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_onsite</code><span class="sig-paren">(</span><em>onsite</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_onsite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_onsite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>onsite</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method set_onsite first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_hop">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_hop</code><span class="sig-paren">(</span><em>hop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_hop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>hop</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method set_hopping first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.hop_sites">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">hop_sites</code><span class="sig-paren">(</span><em>hop</em>, <em>sites</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#hop_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.hop_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>hop</em> indices are smaller than <em>sites</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError</strong> &#8211; Run method sys.clean_hopping.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_coor">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_coor</code><span class="sig-paren">(</span><em>coor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_coor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_coor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>coor</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method lattice.get_lattice first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_coor_hop">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_coor_hop</code><span class="sig-paren">(</span><em>coor_hop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_coor_hop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_coor_hop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>coor_hop</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method system.get_coor_hop first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_ham">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_ham</code><span class="sig-paren">(</span><em>ham</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_ham"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_ham" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if Hamiltonian not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method system.get_ham first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_en">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_en</code><span class="sig-paren">(</span><em>en</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_en"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_en" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>en</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method get_ham first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_pola">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_pola</code><span class="sig-paren">(</span><em>pola</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_pola"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_pola" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>pola</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method get_eig(eigenvec=True) first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_vn">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_vn</code><span class="sig-paren">(</span><em>vn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_vn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_vn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>vn</em> not empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>RuntimeError</strong> &#8211; Run method get_eig(eigenvec=True) first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_ipr">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_ipr</code><span class="sig-paren">(</span><em>ipr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_ipr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_ipr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>ipr</em> not empty.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.empty_ndarray">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">empty_ndarray</code><span class="sig-paren">(</span><em>arr</em>, <em>method</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#empty_ndarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.empty_ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>arr</em> is a not empty np.ndarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.tag">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">tag</code><span class="sig-paren">(</span><em>tag</em>, <em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check tag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter <em>tag</em> must be a binary string.</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>tag</em> is not in tags.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.angle">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">angle</code><span class="sig-paren">(</span><em>angle</em>, <em>angles</em>, <em>low</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check angle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; <p>Parameter <em>angle</em> must be</p>
+<ul>
+<li>a positive number if <em>low</em> is False</li>
+<li>a negative real if <em>low</em> is True.</li>
+</ul>
+</li>
+<li><strong>ValueError</strong> &#8211; Parameter <em>angle</em> is not in hop[&#8216;ang&#8217;].</li>
+<li><strong>ValueError</strong> &#8211; Parameter <a href="#id1"><span class="problematic" id="id2">*</span></a>angle*must be positive.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.lims">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">lims</code><span class="sig-paren">(</span><em>lims</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#lims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.lims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check parameter <em>lims</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter lims must be a list.</li>
+<li><strong>TypeError</strong> &#8211; Parameter <em>lims[0]</em> must be a real number.</li>
+<li><strong>TypeError</strong> &#8211; Parameter <em>lims[1]</em> must be a real number.</li>
+<li><strong>ValueError</strong> &#8211; <em>lims</em> must be a list of length 2.</li>
+<li><strong>ValueError</strong> &#8211; <em>lims[0]</em> must be smaller than <em>lims[1]</em>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.lims_positive">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">lims_positive</code><span class="sig-paren">(</span><em>lims</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#lims_positive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.lims_positive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check parameter <em>lims</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; Parameter lims must be a list.</li>
+<li><strong>TypeError</strong> &#8211; Parameter <em>lims[0]</em> must be a positive real number.</li>
+<li><strong>TypeError</strong> &#8211; Parameter <em>lims[1]</em> must be a positive real number.</li>
+<li><strong>ValueError</strong> &#8211; <em>lims</em> must be a list of length 2.</li>
+<li><strong>ValueError</strong> &#8211; <em>lims[0]</em> must be smaller than <em>lims[1]</em>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.fig">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">fig</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#fig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.fig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if fig is an instance of <em>Figure</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; fig must be an instance of <em>Figure</em>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.ani">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">ani</code><span class="sig-paren">(</span><em>ani</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#ani"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.ani" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if ani is an instance of <em>FuncAnimation</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>TypeError</strong> &#8211; ani must be an instance of <em>FuncAnimation</em>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.file_format">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">file_format</code><span class="sig-paren">(</span><em>file_format</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#file_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.file_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if file_format is a string &#8216;png&#8217;, &#8216;pdf&#8217;, &#8216;ps&#8217;, &#8216;eps&#8217;, or &#8216;svg&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>TypeError</strong> &#8211; file_format must be a string.</li>
+<li><strong>ValueError</strong> &#8211; file_format must be a string given by &#8216;png&#8217;, &#8216;pdf&#8217;, &#8216;ps&#8217;, &#8216;eps&#8217;, or &#8216;svg&#8217;.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.fig_size">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">fig_size</code><span class="sig-paren">(</span><em>sigsize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#fig_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.fig_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.get_pump">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">get_pump</code><span class="sig-paren">(</span><em>hams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#get_pump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.get_pump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tbee.error_handling.prop_type">
+<code class="descclassname">tbee.error_handling.</code><code class="descname">prop_type</code><span class="sig-paren">(</span><em>prop_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tbee/error_handling.html#prop_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tbee.error_handling.prop_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

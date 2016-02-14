@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tbee.save &mdash; tbee 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tbee 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index_tbee.html" class="icon icon-home"> tbee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tbee.html">tbee package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index_tbee.html">tbee</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index_tbee.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tbee.save</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tbee.save</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tbee.error_handling</span> <span class="kn">as</span> <span class="nn">error_handling</span>
+
+
+<span class="c">#################################</span>
+<span class="c"># CLASS SAVE</span>
+<span class="c">#################################</span>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../tbee.html#tbee.save.save">[docs]</a><span class="k">class</span> <span class="nc">save</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create folder and save figures / animations obtained via </span>
+<span class="sd">    **plot** or **propagation**. </span>
+<span class="sd">    Plot the results of the classes **lattice** or **system**.</span>
+
+<span class="sd">    :param dir_main: Name of the directory.</span>
+<span class="sd">    :param dir_name: Default value None. Relative path of the main directory.</span>
+<span class="sd">      if None, figures stored in &#39;&#39;../TBfig/&#39;dir_name/&#39;</span>
+<span class="sd">    :param params: dictionary. file name information</span>
+<span class="sd">    :param file_format: Default value &#39;png&#39;. Figure format.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">,</span> <span class="n">dir_main</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{},</span> <span class="n">file_format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">):</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="s">&#39;dir_name&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">dir_main</span><span class="p">,</span> <span class="s">&#39;dir_main&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">file_format</span><span class="p">(</span><span class="n">file_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="n">file_format</span>
+        <span class="k">if</span> <span class="n">dir_main</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dir_main</span> <span class="o">=</span> <span class="s">&#39;figs/&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dir_main</span> <span class="o">=</span> <span class="n">dir_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_dir</span><span class="p">()</span>
+
+<div class="viewcode-block" id="save.dir_name"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.dir_name">[docs]</a>    <span class="k">def</span> <span class="nf">dir_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the name of the directory in which the figures are stored.</span>
+
+<span class="sd">        :param dir_name: String. Directory name. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">dir_name</span><span class="p">,</span> <span class="s">&#39;dir_name&#39;</span><span class="p">)</span>
+        <span class="n">dir_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_main</span> <span class="o">+</span> <span class="n">dir_name</span>
+        <span class="k">return</span> <span class="n">dir_name</span></div>
+
+<div class="viewcode-block" id="save.create_dir"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.create_dir">[docs]</a>    <span class="k">def</span> <span class="nf">create_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create the directory to store the figures exists.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_main</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_main</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="save.file_name"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.file_name">[docs]</a>    <span class="k">def</span> <span class="nf">file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create the file name.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **file_name** -- File name.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file_name</span> <span class="o">+=</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">val</span><span class="o">+</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_name</span></div>
+
+<div class="viewcode-block" id="save.fig"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.fig">[docs]</a>    <span class="k">def</span> <span class="nf">fig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Save the figure in the directory defined by the method *dir_name()*.</span>
+
+<span class="sd">        :param fig: Matplotlib fig.</span>
+<span class="sd">        :param name:  String. Fist part of the file name.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">)</span>
+        <span class="n">name_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name_file</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="save.fig_lat"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.fig_lat">[docs]</a>    <span class="k">def</span> <span class="nf">fig_lat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Save the figure in the directory defined by the method *dir_name()*.</span>
+
+<span class="sd">        :param fig: Matplotlib fig.</span>
+<span class="sd">        :param name:  String. First part of the file name.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">)</span>
+        <span class="n">name_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name_file</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="save.ani"><a class="viewcode-back" href="../../tbee.html#tbee.save.save.ani">[docs]</a>    <span class="k">def</span> <span class="nf">ani</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ani</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">ani</span><span class="p">(</span><span class="n">ani</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_int</span><span class="p">(</span><span class="n">fps</span><span class="p">,</span> <span class="s">&#39;fps&#39;</span><span class="p">)</span>
+        <span class="n">name_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_name</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.mp4&#39;</span>
+        <span class="n">ani</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">name_file</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">,</span> <span class="n">extra_args</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s">&#39;libx264&#39;</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

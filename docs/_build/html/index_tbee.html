@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Python Tight-Binding module &mdash; tbee 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tbee 0.1 documentation" href="index.html"/>
+        <link rel="next" title="tbee package" href="tbee.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> tbee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="tbee.html">tbee package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">tbee</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Python Tight-Binding module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index_tbee.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="python-tight-binding-module">
+<h1>Python Tight-Binding module<a class="headerlink" href="#python-tight-binding-module" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_images/logoTBee.png"><img alt="_images/logoTBee.png" src="_images/logoTBee.png" style="width: 75%;" /></a>
+<div class="toctree-wrapper compound">
+</div>
+<p><strong>Python</strong> module to build up and solve <strong>Tight-Binding</strong> models.</p>
+<p><strong>tbee</strong> is written in fully vectorized <strong>Numpy</strong>.</p>
+<p><strong>tbee</strong> is composed of the following classes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>lattice</li>
+<li>system</li>
+<li>plot</li>
+<li>propagation</li>
+<li>save</li>
+</ul>
+</div></blockquote>
+<p><strong>tbee</strong> main features:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Complex lattice structures.</p>
+</li>
+<li><p class="first">Complex-valued onsite energies and hoppings.</p>
+</li>
+<li><p class="first">Hermitian and non-Hermitian Tight-Binding Hamiltonians.</p>
+</li>
+<li><p class="first">Onsite energies defined by tags.</p>
+</li>
+<li><p class="first">Hoppings defined by their type, tags, and angles.</p>
+</li>
+<li><p class="first">Any type of hoppings:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Neighbors hoppings,</li>
+<li>Next-neighbors hoppings,</li>
+<li>Next-next-neighbors hoppings,</li>
+<li>etc..</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Implementation of onsite energies and hopping patterns:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Dimerization defects.</li>
+<li>Magnetic field.</li>
+<li>Strain.</li>
+<li>Hopping disorder.</li>
+<li>Onsite disorder.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">Time propagation</p>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>tbee</strong> is available at <a class="reference external" href="https://github.com/cpoli/tbee">https://github.com/cpoli/tbee</a></p>
+<p>To use <strong>tbee</strong>:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Install Python3.4 or Python3.5 and the three additional packages:</p>
+<blockquote>
+<div><ul class="simple">
+<li>numpy 1.10</li>
+<li>scipy 0.16</li>
+<li>matplotlib 1.5</li>
+</ul>
+</div></blockquote>
+</li>
+<li><dl class="first docutils">
+<dt>See <a class="reference external" href="https://cpoli.github.io/python-doc.html">https://cpoli.github.io/python-doc.html</a> for Python installation details</dt>
+<dd><p class="first last">and to install a github repository (for mac).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Examples are available at <a class="reference external" href="https://github.com/cpoli/tbee/tree/master/examples">https://github.com/cpoli/tbee/tree/master/examples</a></p>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tbee.html" class="btn btn-neutral float-right" title="tbee package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

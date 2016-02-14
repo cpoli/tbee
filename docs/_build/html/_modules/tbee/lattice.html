@@ -1,0 +1,599 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tbee.lattice &mdash; tbee 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tbee 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index_tbee.html" class="icon icon-home"> tbee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tbee.html">tbee package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index_tbee.html">tbee</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index_tbee.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tbee.lattice</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tbee.lattice</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">tbee.error_handling</span> <span class="kn">as</span> <span class="nn">error_handling</span>
+
+
+<span class="n">PI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+
+<span class="c">#################################</span>
+<span class="c"># CLASS LATTICE</span>
+<span class="c">#################################</span>
+
+
+<div class="viewcode-block" id="lattice"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice">[docs]</a><span class="k">class</span> <span class="nc">lattice</span><span class="p">():</span>
+    <span class="sd">r&#39;&#39;&#39;</span>
+<span class="sd">    Build up 1D or 2D lattice.</span>
+<span class="sd">    Lattice is defined by the discrete operation:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2</span>
+
+<span class="sd">    where :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2` are the two primitive</span>
+<span class="sd">    vectors and :math:`n_1` and :math:`n_2` are the number of unit cells along </span>
+<span class="sd">    :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2`.</span>
+
+<span class="sd">    :param unit_cell: List of dictionaries. </span>
+<span class="sd">     One dictionary per site within the unit cell. Each dictionary has two keys:</span>
+
+<span class="sd">        * &#39;tag&#39;, Binary Char. label of the associated sublattice.</span>
+<span class="sd">        * &#39;r0&#39;, Tuple. Position.</span>
+<span class="sd">    :param prim_vec: List of tuples. </span>
+<span class="sd">     Define the primitive vectors. List of one/two tuples for 1D/2D respectively:</span>
+<span class="sd">     </span>
+<span class="sd">        * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_1`.</span>
+<span class="sd">        * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_2`.</span>
+
+<span class="sd">    Example usage::</span>
+
+<span class="sd">        # Line-Centered Square lattice</span>
+<span class="sd">        unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}, {&#39;tag&#39;: b&#39;a&#39;, r0=(0., 1.)}]</span>
+<span class="sd">        prim_vec = [(0, 2), (2, 0)]</span>
+<span class="sd">        lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit_cell</span><span class="p">,</span> <span class="n">prim_vec</span><span class="p">):</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">(</span><span class="n">unit_cell</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">(</span><span class="n">prim_vec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span> <span class="o">=</span> <span class="n">unit_cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span> <span class="o">=</span> <span class="n">prim_vec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S1&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="lattice.get_lattice"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.get_lattice">[docs]</a>    <span class="k">def</span> <span class="nf">get_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the lattice positions.</span>
+
+<span class="sd">        :param n1: Positive Integer.</span>
+<span class="sd">            Number of unit cells along :math:`\mathbf{a}_1`.</span>
+<span class="sd">        :param n2: Positive Integer. Default value 1.</span>
+<span class="sd">            Number of unit cells along :math:`\mathbf{a}_2`.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            # Line-Centered Square lattice</span>
+<span class="sd">            unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}, {&#39;tag&#39;: b&#39;a&#39;, r0=(0., 1.)}]</span>
+<span class="sd">            prim_vec = [(0, 2), (2, 0)]</span>
+<span class="sd">            lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)</span>
+<span class="sd">            lat.get_lattice(n1=4, n2=5)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">get_lattice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+        <span class="n">sites_uc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">)</span>
+        <span class="n">sites_tag</span> <span class="o">=</span> <span class="n">n1</span><span class="o">*</span><span class="n">n2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="n">sites_uc</span> <span class="o">*</span> <span class="n">sites_tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S1&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;f8&#39;</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;f8&#39;</span><span class="p">)</span>
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n1</span><span class="o">*</span><span class="n">n2</span><span class="p">)</span>
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n1</span><span class="o">*</span><span class="n">n2</span><span class="p">)</span>
+        <span class="n">xx</span><span class="p">[:</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">yy</span><span class="p">[:</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
+            <span class="n">xx</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n1</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">yy</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n1</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">+</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">yy</span> <span class="o">+</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sites_tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="lattice.add_sites"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.add_sites">[docs]</a>    <span class="k">def</span> <span class="nf">add_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coor</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add sites.</span>
+
+<span class="sd">        :param coor: Structured array with keys: {&#39;x&#39;, &#39;y&#39;, &#39;tag&#39;}.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            # Square lattice</span>
+<span class="sd">            unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}]</span>
+<span class="sd">            prim_vec = [(0, 1), (1, 0)]</span>
+<span class="sd">            lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)</span>
+<span class="sd">            lat.get_lattice(n1=2, n2=2)</span>
+<span class="sd">            coor = np.array([(-1., -1, b&#39;b&#39;), (-2., -2, b&#39;c&#39;)], </span>
+<span class="sd">                                      dtype=[(&#39;x&#39;, &#39;f8&#39;), (&#39;y&#39;, &#39;f8&#39;), (&#39;tag&#39;, &#39;S1&#39;)])</span>
+<span class="sd">            lat.add_sites(coor)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">coor</span><span class="p">(</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">,</span> <span class="n">coor</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]]))</span></div>
+
+<div class="viewcode-block" id="lattice.remove_sites"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.remove_sites">[docs]</a>    <span class="k">def</span> <span class="nf">remove_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Remove sites defined by their indices</span>
+<span class="sd">        (use method lattice.plot(plt_index=True)</span>
+<span class="sd">        to get access to the site indices).</span>
+
+<span class="sd">        :param index: List. Site indices to be removed.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            # Square lattice</span>
+<span class="sd">            unit_cell = [{&#39;tag&#39;: b&#39;a&#39;, r0=(0., 0.)}]</span>
+<span class="sd">            prim_vec = [(0, 1), (1, 0)]</span>
+<span class="sd">            lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)</span>
+<span class="sd">            lat.get_lattice(n1=2, n2=2)</span>
+<span class="sd">            lat.remove_sites([0, 2])</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">remove_sites</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="lattice.remove_dangling"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.remove_dangling">[docs]</a>    <span class="k">def</span> <span class="nf">remove_dangling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Remove dangling sites</span>
+<span class="sd">        (sites connected with just another site).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">dif_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">dif_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">dis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dif_x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">dif_y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">dis_unique</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dis</span><span class="p">)</span>
+            <span class="n">len_hop</span> <span class="o">=</span> <span class="n">dis_unique</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dis</span><span class="p">,</span> <span class="n">len_hop</span><span class="p">))</span>
+            <span class="n">dang</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">ind</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dang</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">,</span> <span class="n">dang</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dang</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dang</span> <span class="o">==</span> <span class="p">[]:</span>
+                <span class="k">break</span></div>
+
+<div class="viewcode-block" id="lattice.shift_x"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.shift_x">[docs]</a>    <span class="k">def</span> <span class="nf">shift_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Shift the x coordinates.</span>
+
+<span class="sd">        :param shift: Real number. Shift value.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="s">&#39;shift&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">shift</span></div>
+
+<div class="viewcode-block" id="lattice.shift_y"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.shift_y">[docs]</a>    <span class="k">def</span> <span class="nf">shift_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Shift by *delta_x* the x coordinates.</span>
+
+<span class="sd">        :param shift: Real number. Shift value.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="s">&#39;shift&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">shift</span></div>
+
+<div class="viewcode-block" id="lattice.change_sign_x"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.change_sign_x">[docs]</a>    <span class="k">def</span> <span class="nf">change_sign_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Change x coordinates sign.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="lattice.change_sign_y"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.change_sign_y">[docs]</a>    <span class="k">def</span> <span class="nf">change_sign_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Change y coordinates sign.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="lattice.boundary_line"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.boundary_line">[docs]</a>    <span class="k">def</span> <span class="nf">boundary_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">co</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Select sites according to :math:`c_yy+c_xx &gt; c_0`.</span>
+
+<span class="sd">        :param cx: Real number. cx value.</span>
+<span class="sd">        :param cy: Real number. cy value.</span>
+<span class="sd">        :param co: Real number. co value.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="s">&#39;cx&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">cy</span><span class="p">,</span> <span class="s">&#39;cy&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">co</span><span class="p">,</span> <span class="s">&#39;co&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="n">cy</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">cx</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">co</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="lattice.ellipse_in"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.ellipse_in">[docs]</a>    <span class="k">def</span> <span class="nf">ellipse_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Select sites according to </span>
+
+<span class="sd">        .. math:: </span>
+
+<span class="sd">            (x-x_0)^2/a^2+(y-y_0)^2/b^2 &lt; 1\,  .</span>
+
+<span class="sd">        :param list_hop: List of Dictionary (see set_hopping definition).</span>
+<span class="sd">        :param rx: Positive Real number. Radius along :math:`x`. </span>
+<span class="sd">        :param ry: Positive Real number. Radius along :math:`y`.</span>
+<span class="sd">        :param x0: Real number. :math:`x` center. </span>
+<span class="sd">        :param y0: Real number. :math:`y` center.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="s">&#39;rx&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">ry</span><span class="p">,</span> <span class="s">&#39;ry&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="s">&#39;x0&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="s">&#39;y0&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span><span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">rx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>  \
+                                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span><span class="n">y0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">ry</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="lattice.ellipse_out"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.ellipse_out">[docs]</a>    <span class="k">def</span> <span class="nf">ellipse_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Select sites according to</span>
+
+<span class="sd">        .. math:: </span>
+
+<span class="sd">            (x-x_0)^2/a^2+(y-y_0)^2/b^2 &gt; 1\,  .</span>
+
+
+<span class="sd">        :param list_hop: List of Dictionary (see set_hopping definition).</span>
+<span class="sd">        :param rx: Positive Real number. Radius along :math:`x`. </span>
+<span class="sd">        :param ry: Positive Real number. Radius along :math:`y`.</span>
+<span class="sd">        :param x0: Real number. :math:`x` center. </span>
+<span class="sd">        :param y0: Real number. :math:`y` center.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="s">&#39;rx&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">ry</span><span class="p">,</span> <span class="s">&#39;ry&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="s">&#39;x0&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="s">&#39;y0&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span><span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">rx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>  \
+                                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span><span class="n">y0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">ry</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="mf">1.</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="lattice.center"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.center">[docs]</a>    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fix the center of mass of the lattice at (0, 0).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="lattice.rotation"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.rotation">[docs]</a>    <span class="k">def</span> <span class="nf">rotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+        <span class="sd">r&#39;&#39;&#39;</span>
+<span class="sd">        Rotate the lattice structure by the angle :math:`\theta`.</span>
+
+<span class="sd">        :param theta: Rotation angle in degrees.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="s">&#39;theta&#39;</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">*=</span> <span class="n">PI</span> <span class="o">/</span> <span class="mi">360</span>
+        <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">:</span>
+            <span class="n">x</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;r0&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="lattice.clean_coor"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.clean_coor">[docs]</a>    <span class="k">def</span> <span class="nf">clean_coor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Keep only the sites with different coordinates.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[[</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">],</span> <span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">coor</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Overloading operator +.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">])</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">tags</span><span class="p">])</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">lattice</span><span class="p">(</span><span class="n">unit_cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">,</span> <span class="n">prim_vec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">)</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">add_sites</span><span class="p">(</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">sites</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lat</span>
+
+    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Overloading operator +=.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">+=</span> <span class="n">other</span><span class="o">.</span><span class="n">sites</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">tags</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Overloading operator -.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The tags are not considered in the lattice subtraction.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">tags</span><span class="p">])</span>
+        <span class="n">boo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">):</span>
+            <span class="n">boo</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">])</span>
+        <span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">boo</span><span class="p">)]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">lattice</span><span class="p">(</span><span class="n">unit_cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_cell</span><span class="p">,</span> <span class="n">prim_vec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prim_vec</span><span class="p">)</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">add_sites</span><span class="p">(</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">lat</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span>
+        <span class="k">return</span> <span class="n">lat</span>
+
+    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Overloading operator -=.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            The tags are not considered in the lattice subtraction.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">ind_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">boo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">coor</span><span class="p">):</span>
+            <span class="n">boo</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">boo</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">boo</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="lattice.plot"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">plt_index</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Plot lattice in hopping space.</span>
+
+<span class="sd">        :param ms: Positive number. Default value 20. Markersize.</span>
+<span class="sd">        :param fs: Positve number. Default value 20. Fontsize.</span>
+<span class="sd">        :param plt_index: Boolean. Default value False. Plot site labels.</span>
+<span class="sd">        :param axis: Boolean. Default value False. Plot axis.</span>
+<span class="sd">        :param figsize: Tuple. Default value None. Figsize.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **fig** -- Figure.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_coor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">ms</span><span class="p">,</span> <span class="s">&#39;ms&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s">&#39;fs&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">plt_index</span><span class="p">,</span> <span class="s">&#39;plt_index&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="s">&#39;axis&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">list_tuple_2elem</span><span class="p">(</span><span class="n">figsize</span><span class="p">,</span> <span class="s">&#39;figsize&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">figsize</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;figsize[0]&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">figsize</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;figsize[1]&#39;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="c"># plot sites</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag</span><span class="p">],</span>
+                       <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="n">ms</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span><span class="o">+</span><span class="mf">1.</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">])</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">])</span><span class="o">+</span><span class="mf">1.</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">axis</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">&#39;off&#39;</span><span class="p">)</span>
+        <span class="c"># plot indices</span>
+        <span class="k">if</span> <span class="n">plt_index</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sites</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                    <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;offset points&#39;</span><span class="p">,</span>
+                                    <span class="n">ha</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fs</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="lattice.show"><a class="viewcode-back" href="../../tbee.html#tbee.lattice.lattice.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emulate Matplotlib method plt.show().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

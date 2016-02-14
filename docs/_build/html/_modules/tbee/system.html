@@ -1,0 +1,845 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tbee.system &mdash; tbee 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tbee 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index_tbee.html" class="icon icon-home"> tbee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tbee.html">tbee package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index_tbee.html">tbee</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index_tbee.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tbee.system</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tbee.system</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sparse</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="kn">as</span> <span class="nn">LA</span>
+<span class="kn">import</span> <span class="nn">numpy.random</span> <span class="kn">as</span> <span class="nn">rand</span>
+<span class="kn">import</span> <span class="nn">numpy.core.defchararray</span> <span class="kn">as</span> <span class="nn">npc</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span>
+<span class="kn">import</span> <span class="nn">tbee.error_handling</span> <span class="kn">as</span> <span class="nn">error_handling</span>
+
+
+<span class="n">PI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="n">ATOL</span> <span class="o">=</span> <span class="mf">1e-3</span>
+
+
+<div class="viewcode-block" id="system"><a class="viewcode-back" href="../../tbee.html#tbee.system.system">[docs]</a><span class="k">class</span> <span class="nc">system</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Solve the Tight-Binding eigenvalue problem of a lattice defined </span>
+<span class="sd">    by the class **lattice**.</span>
+
+<span class="sd">    :param lat: **lattice** class instance.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat</span><span class="p">):</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lat</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span>  <span class="c"># used to check if sites changes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[</span> <span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S1&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;dis&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span>  <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">)])</span> <span class="c"># Hopping distances and angles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># Different hopping distances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c">#  Store the relevant hoppings (dynamic programming)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> 
+                                                       <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)])</span> <span class="c">#  Hoppings to build-up the Hamiltonian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c">#  Onsite energies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(([],</span> <span class="p">([],</span> <span class="p">[])),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>  <span class="c"># Hamiltonian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c"># Eigenenergies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c"># Right eigenvectors: H |rn&gt; = en |rn&gt;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ln</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>  <span class="c"># Left eigenvectors:  &lt;ln| H = en &lt;ln|</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># Intensities (|rn|**2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pola</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># sublattices polarisation (|rn^{(S)}|**2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">petermann</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="s">&#39;f8&#39;</span><span class="p">)</span>  <span class="c"># Inverse Participation Ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># number of different hoppings</span>
+
+<div class="viewcode-block" id="system.clear_hopping"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.clear_hopping">[docs]</a>    <span class="k">def</span> <span class="nf">clear_hopping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Clear structured array *hop*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> 
+                                                       <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="system.get_distances"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_distances">[docs]</a>    <span class="k">def</span> <span class="nf">get_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Get distances and angles of the edges.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">sites</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">dif_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dif_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dif_x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">dif_y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ang</span> <span class="o">=</span> <span class="p">(</span><span class="mi">180</span> <span class="o">/</span> <span class="n">PI</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">dif_y</span><span class="p">,</span> <span class="n">dif_x</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;dis&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span>  <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;dis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;dis&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="system.print_distances"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.print_distances">[docs]</a>    <span class="k">def</span> <span class="nf">print_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print distances and positive angles (in degrees) :math:`\phi_+\in[0, 180)` </span>
+<span class="sd">        of the nth shortest edges. Negative angles are given by: </span>
+<span class="sd">        :math:`\phi_-= \phi_+-180` and :math:`\phi_+\in[-180, 0)`.</span>
+
+<span class="sd">        :param n: Positive integer. Number of shortest edges.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">sites</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_distances</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_int_lim</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">{} different distances between sites:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nmax</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Distances between sites:&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">hop_name</span> <span class="o">=</span> <span class="s">&#39;st&#39;</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">hop_name</span> <span class="o">=</span> <span class="s">&#39;nd&#39;</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">hop_name</span> <span class="o">=</span> <span class="s">&#39;rd&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hop_name</span> <span class="o">=</span> <span class="s">&#39;th&#39;</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;{}{} hopping, length: {:.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">hop_name</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">with positive angles:&#39;</span><span class="p">)</span>
+            <span class="n">positive_ang</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;dis&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                                   <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.</span><span class="p">)</span> <span class="o">&amp;</span>
+                                                                   <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">180.</span><span class="p">)]</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">positive_ang</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="system.set_onsite"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_onsite">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_onsite</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set onsite energies.</span>
+
+<span class="sd">        :param on:  Array. Sublattice onsite energies.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            # Line-Centered Square lattice</span>
+<span class="sd">            sys.set_onsite({b&#39;a&#39;: -1j, {b&#39;b&#39;:, -2j}})    </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">sites</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_onsite</span><span class="p">(</span><span class="n">dict_onsite</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">dict_onsite</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">on</span></div>
+
+<div class="viewcode-block" id="system.fill_store_hop"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.fill_store_hop">[docs]</a>    <span class="k">def</span> <span class="nf">fill_store_hop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+
+<span class="sd">        Store in *store_hop* indices (with :math:`i &lt; j`), positive angles, tags (up and low)</span>
+<span class="sd">        of a given type of hopping.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;dis&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">))</span>
+        <span class="n">ind_up</span> <span class="o">=</span> <span class="n">ind</span><span class="p">[</span><span class="n">ind</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">ind</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind_up</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> 
+                                                                 <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">)])</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">][</span><span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">npc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]],</span> 
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">ind_up</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">hop</span></div>
+
+<div class="viewcode-block" id="system.set_hopping"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_hopping">[docs]</a>    <span class="k">def</span> <span class="nf">set_hopping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_hop</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set lattice hoppings.</span>
+
+<span class="sd">        :param list_hop: List of Dictionaries.</span>
+<span class="sd">            Dictionary with keys (&#39;n&#39;, &#39;ang&#39;, &#39;tag&#39;, &#39;t&#39;) where:</span>
+<span class="sd">                * &#39;n&#39; Positive integer, type of hoppings:</span>
+
+<span class="sd">                    * &#39;n&#39;: 1 for nearest neighbours.</span>
+<span class="sd">                    * &#39;n&#39;: 2 for next-nearest neighbours.  </span>
+<span class="sd">                    * &#39;n&#39;: 3 for next-next-nearest neighbours.  </span>
+<span class="sd">                    * etc...</span>
+
+<span class="sd">                * &#39;ang&#39; value, float, angle, in deg, of the hoppings. (optional).</span>
+
+<span class="sd">                    Hopping angles are given by the method *print_distances*.</span>
+
+<span class="sd">                        * If :math:`ang \in[0, 180)`, fill the Hamiltonian diagonal up.</span>
+<span class="sd">                        * If :math:`ang \in[-180, 0)`, fill the Hamiltonian diagonal low.</span>
+
+<span class="sd">                * &#39;tag&#39; binary string of length 2  (optional).</span>
+
+<span class="sd">                    Hopping tags.</span>
+
+<span class="sd">                * &#39;t&#39; Complex number.</span>
+
+<span class="sd">                    Hopping value.</span>
+
+<span class="sd">        :param low: Boolean. Default value False. </span>
+<span class="sd">            </span>
+<span class="sd">            * True get hoppings with (:math:`i&lt;j`) *i.e.* fill the Hamiltonian lower part.</span>
+<span class="sd">            * False get hoppings with (:math:`i&gt;j`) *i.e.* fill the Hamiltonian upper part.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            # fill upper part:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, t: 1.}])</span>
+<span class="sd">            # fill lower part:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, t: 1.}], low=True)</span>
+<span class="sd">            # fill upper part: specifying the angles:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., t: 1.}, {&#39;n&#39;: 1, &#39;ang&#39;: 90,  t: 2.}])</span>
+<span class="sd">            # fill lower part:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: -180., t: 1.}, {&#39;n&#39;: 1, &#39;ang&#39;: -90,  t: 2.}], low=True)</span>
+<span class="sd">            # fill upper part: specifying the tags:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, {&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ba&#39;,  t: 2.}])</span>
+<span class="sd">            # fill lower part:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, {&#39;n&#39;: 1, &#39;tag&#39;: b&#39;ba&#39;,  t: 2.}], low=True)</span>
+<span class="sd">            # fill upper part: specifying the angles and tags:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, </span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ba&#39;,  t: 2.},</span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ab&#39;, t: 3.}, </span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ba&#39;,  t: 4.}])</span>
+<span class="sd">            # fill lower part:</span>
+<span class="sd">            sys.set_hopping([{&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ab&#39;, t: 1.}, </span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 0., &#39;tag&#39;: b&#39;ba&#39;,  t: 2.},</span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ab&#39;, t: 3.}, </span>
+<span class="sd">                                        {&#39;n&#39;: 1, &#39;ang&#39;: 90., &#39;tag&#39;: b&#39;ba&#39;,  t: 4.}]), low=True)</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            A Hermitian hopping matrix can be build-up only using </span>
+<span class="sd">            its upper part OR only using its lower part. The full matrix is then</span>
+<span class="sd">            automatic built by Hermitian conjugaison. </span>
+<span class="sd">            </span>
+<span class="sd">            If both upper AND lower parts are used to build up the hopping matrix.</span>
+<span class="sd">            non Hermitian conjugaison is not performed *i.e.* non-Hermitian hopping matrix</span>
+<span class="sd">            can be built.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">sites</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="s">&#39;low&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_distances</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_uni</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_hopping</span><span class="p">(</span><span class="n">list_hop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span><span class="p">)</span>
+        <span class="n">list_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="n">list_hop</span><span class="p">])</span>
+        <span class="c"># fill, if needed self.store_hop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_sites</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">list_n</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fill_store_hop</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="c"># fill self.hop</span>
+        <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="n">list_hop</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">)]</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+                <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_given_hopping</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="s">&#39;ang&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">]),</span> <span class="n">low</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ang_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ang_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">180.</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ang_store</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">))</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">)]</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ang_store</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">)</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+                <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_given_hopping</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="s">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+                    <span class="n">tag_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tag_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag_store</span><span class="p">)</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">)]</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag_store</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+                <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_given_hopping</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">]),</span> <span class="n">low</span><span class="p">)</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;tag&#39;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ang_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ang_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">180.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+                    <span class="n">tag_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tag_store</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag_store</span><span class="p">)</span> <span class="o">&amp;</span> 
+                                       <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ang_store</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">)))</span>
+                <span class="n">bool1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])</span>
+                <span class="n">bool2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="n">ATOL</span><span class="p">)</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">bool1</span> <span class="o">&amp;</span> <span class="n">bool2</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">)]</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag_store</span><span class="p">)</span> <span class="o">&amp;</span> 
+                          <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">ang_store</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]][</span><span class="s">&#39;ang&#39;</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+                <span class="n">error_handling</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+                <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_given_hopping</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">],</span> <span class="n">size</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">,</span> <span class="n">hop</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="system.check_sites"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.check_sites">[docs]</a>    <span class="k">def</span> <span class="nf">check_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Check if the number of sites was changed after calling the </span>
+<span class="sd">        method system.set_hopping().</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">:</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span> <span class="o">=</span> <span class="p">{}</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span></div>
+
+<div class="viewcode-block" id="system.set_given_hopping"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_given_hopping">[docs]</a>    <span class="k">def</span> <span class="nf">set_given_hopping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">low</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Fill self.hop. </span>
+
+<span class="sd">        :param n: Integer. Hopping type.</span>
+<span class="sd">        :param size: Integer. Number of hoppings.</span>
+<span class="sd">        :param doc: Dictionary. Hopping dictionary.</span>
+<span class="sd">        :param mask: np.ndarray. Mask.</span>
+<span class="sd">        :param low: Boolean. If True, self.hop[&#39;i&#39;] &gt; self.hop[&#39;j&#39;].</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> 
+                                                      <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)])</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;i&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;j&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;ang&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;j&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;i&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_hop</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s">&#39;ang&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">180</span>
+            <span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">npc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]],</span> 
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">hop</span></div>
+
+<div class="viewcode-block" id="system.set_hopping_manual"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_hopping_manual">[docs]</a>    <span class="k">def</span> <span class="nf">set_hopping_manual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dict_hop</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set hoppings manually.</span>
+
+<span class="sd">        :param dict_hop: Dictionary of hoppings.</span>
+<span class="sd">            key: hopping indices, val: hopping values. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dict_hop</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;u4&#39;</span><span class="p">),</span> 
+                                                                    <span class="p">(</span><span class="s">&#39;ang&#39;</span><span class="p">,</span> <span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;c16&#39;</span><span class="p">)])</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">dict_hop</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">dict_hop</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">dict_hop</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">],</span>  <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span> 
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">npc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> 
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">ang</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">PI</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">low</span><span class="p">:</span>
+            <span class="n">ang</span><span class="p">[</span><span class="n">ang</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">180</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ang</span><span class="p">[</span><span class="n">ang</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">180</span>
+        <span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">,</span> <span class="n">hop</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="system.set_hopping_dis"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_hopping_dis">[docs]</a>    <span class="k">def</span>  <span class="nf">set_hopping_dis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set uniform hopping disorder. </span>
+
+<span class="sd">        :param alpha: Complex or Real number. Disorder stength.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            sys.set_hopping_dis(alpha=0.1)</span>
+<span class="sd">            </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="s">&#39;alpha&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">rand</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="system.set_onsite_dis"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_onsite_dis">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_dis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set uniform onsite disorder. </span>
+
+<span class="sd">        :param alpha: Complex or Real number. Disorder stength.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">        sys.set_onsite_dis(alpha=0.1)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_onsite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">number</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="s">&#39;alpha&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span> <span class="o">+=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">rand</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="system.set_onsite_def"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_onsite_def">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onsite_def</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set specific onsite energies.</span>
+
+<span class="sd">        :param onsite_def:  Dictionary. </span>
+<span class="sd">            key: site indices, val: onsite values.</span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            set_onsite_def(0: 1., 1: -1j)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_onsite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_onsite_def</span><span class="p">(</span><span class="n">onsite_def</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">onsite_def</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span></div>
+
+<div class="viewcode-block" id="system.set_hopping_def"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_hopping_def">[docs]</a>    <span class="k">def</span> <span class="nf">set_hopping_def</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hopping_def</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set specific hoppings. </span>
+
+<span class="sd">        :param hopping_def:  Dictionary of hoppings. </span>
+<span class="sd">            key: hopping indices, val: hopping values. </span>
+
+<span class="sd">        Example usage::</span>
+
+<span class="sd">            sys.set_hopping_def({(0, 1): 1., (1, 2): -1j})</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_hopping_def</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">,</span> <span class="n">hopping_def</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">hopping_def</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">cond</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vec_hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">npc</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="system.set_new_hopping"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.set_new_hopping">[docs]</a>    <span class="k">def</span> <span class="nf">set_new_hopping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_hop</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Set new hoppings.</span>
+
+<span class="sd">        :param list_hop: List of Dictionary (see set_hopping definition).</span>
+<span class="sd">        :param ind: List. List of indices.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">dic</span> <span class="ow">in</span> <span class="n">list_hop</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="s">&#39;ang&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">ind</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="s">&#39;tag&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">ind</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">][</span><span class="n">ind</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">])</span>
+                                        <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="system.find_square"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.find_square">[docs]</a>    <span class="k">def</span> <span class="nf">find_square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlims</span><span class="p">,</span> <span class="n">ylims</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Find hoppings within the square.</span>
+
+<span class="sd">        :param xlims: List or Tuple. :math:`x` interval.</span>
+<span class="sd">        :param ylims: List or Tuple. :math:`y` interval.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lims</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lims</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+        <span class="n">in1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">in2</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">in1</span> <span class="o">*</span> <span class="n">in2</span></div>
+
+<div class="viewcode-block" id="system.find_ellipse"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.find_ellipse">[docs]</a>    <span class="k">def</span> <span class="nf">find_ellipse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Private method.</span>
+<span class="sd">        Find hoppings within the ellipse.</span>
+
+<span class="sd">        :param rx: Positive Float. Radius along :math:`x`. </span>
+<span class="sd">        :param ry: Positive Float. Radius along :math:`y`.</span>
+<span class="sd">        :param x0: Float. Defalut value 0. :math:`x` center. </span>
+<span class="sd">        :param y0: Float. Defalut value 0. :math:`x` center.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">in1</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">rx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">ry</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="mf">1.</span>
+        <span class="n">in2</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">rx</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> \
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">ry</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="mf">1.</span>
+        <span class="k">return</span> <span class="n">in1</span> <span class="o">*</span> <span class="n">in2</span></div>
+
+<div class="viewcode-block" id="system.change_hopping_square"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.change_hopping_square">[docs]</a>    <span class="k">def</span> <span class="nf">change_hopping_square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_hop</span><span class="p">,</span> <span class="n">xlims</span><span class="p">,</span> <span class="n">ylims</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Change hopping values.</span>
+
+<span class="sd">        :param list_hop: List of Dictionary (see set_hopping definition).</span>
+<span class="sd">        :param xlims: List or Tuple. :math:`x` interval.</span>
+<span class="sd">        :param ylims: List or Tuple. :math:`y` interval.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_hopping</span><span class="p">(</span><span class="n">list_hop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_square</span><span class="p">(</span><span class="n">xlims</span><span class="p">,</span> <span class="n">ylims</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_new_hopping</span><span class="p">(</span><span class="n">list_hop</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="system.change_hopping_ellipse"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.change_hopping_ellipse">[docs]</a>    <span class="k">def</span> <span class="nf">change_hopping_ellipse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_hop</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">y0</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Change hopping values.</span>
+
+<span class="sd">        :param list_hop: List of Dictionary (see set_hopping definition).</span>
+<span class="sd">        :param rx: Positive Float. Radius along :math:`x`. </span>
+<span class="sd">        :param ry: Positive Float. Radius along :math:`y`.</span>
+<span class="sd">        :param x0: Float. Default value 0. :math:`x` center. </span>
+<span class="sd">        :param y0: Float. Default value 0. :math:`y` center.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">set_hopping</span><span class="p">(</span><span class="n">list_hop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nmax</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="s">&#39;rx&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">positive_real</span><span class="p">(</span><span class="n">ry</span><span class="p">,</span> <span class="s">&#39;rx&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="s">&#39;x0&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">real_number</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="s">&#39;y0&#39;</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_ellipse</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_new_hopping</span><span class="p">(</span><span class="n">list_hop</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="system.get_coor_hop"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_coor_hop">[docs]</a>    <span class="k">def</span> <span class="nf">get_coor_hop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the site coordinates in hopping space</span>
+<span class="sd">        only considering the nearest neighbours hoppings.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="s">&#39;u2&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;x&#39;</span><span class="p">,</span><span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span><span class="s">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="s">&#39;S1&#39;</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">hop_down</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">hop_down</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span>
+        <span class="n">hop_down</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hop</span><span class="p">[</span> <span class="s">&#39;i&#39;</span><span class="p">]</span>
+        <span class="n">hop_down</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">180</span> <span class="o">+</span> <span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">hop</span><span class="p">,</span> <span class="n">hop_down</span><span class="p">])</span>
+        <span class="n">i_visit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">])</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">hs</span> <span class="o">=</span> <span class="n">hop</span><span class="p">[</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i_visit</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">visited</span><span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="n">h</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][</span><span class="n">i_visit</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">h</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">PI</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="n">h</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coor_hop</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][</span><span class="n">i_visit</span><span class="p">]</span> <span class="o">+</span> \
+                    <span class="n">h</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">real</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">PI</span> <span class="o">/</span> <span class="mi">180</span> <span class="o">*</span> <span class="n">h</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">])</span>
+                <span class="n">visited</span><span class="p">[</span><span class="n">h</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">visited</span><span class="p">[</span><span class="n">i_visit</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">explored</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">visited</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">explored</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">break</span>
+            <span class="n">i_visit</span> <span class="o">=</span> <span class="n">explored</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="system.get_ham"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_ham">[docs]</a>    <span class="k">def</span> <span class="nf">get_ham</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the Tight-Binding Hamiltonian using sys.hop.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_hop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">hop_sites</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;ang&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])),</span> 
+                                                            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span> \
+                           <span class="o">+</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">(),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">])),</span> 
+                                                            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;t&#39;</span><span class="p">],</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">hop</span><span class="p">[</span><span class="s">&#39;j&#39;</span><span class="p">])),</span> 
+                                                            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ham</span> <span class="o">+=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">diags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onsite</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="system.get_eig"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_eig">[docs]</a>    <span class="k">def</span> <span class="nf">get_eig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eigenvec</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the eigenergies, eigenvectors and polarisation.</span>
+
+<span class="sd">        :param eigenvec: Boolean. Default value False. </span>
+<span class="sd">            If True, get the eigenvectors.</span>
+<span class="sd">        :param left: Boolean. Default value False. </span>
+<span class="sd">            If True, get the left eigenvectors too. </span>
+<span class="sd">            Relevant for non-Hermitian matrices.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ham</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">eigenvec</span><span class="p">,</span> <span class="s">&#39;eigenvec&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="s">&#39;left&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eigenvec</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">H</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">left</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rn</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">(),</span> <span class="n">left</span><span class="o">=</span><span class="n">left</span><span class="p">)</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ln</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rn</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pola</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">coor</span><span class="p">[</span><span class="s">&#39;tag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tag</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">H</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+                <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="system.get_ipr"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_ipr">[docs]</a>    <span class="k">def</span> <span class="nf">get_ipr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&#39;&#39;&#39;</span>
+<span class="sd">        Get the Inverse Participation Ratio: </span>
+
+<span class="sd">        .. math:: </span>
+
+<span class="sd">            IPR_n = |\sum_i\psi_i^{n}|^4\, .</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s">&#39;sys.get_eig(eigenvec=True)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ipr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="system.get_petermann"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_petermann">[docs]</a>    <span class="k">def</span> <span class="nf">get_petermann</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">r&#39;&#39;&#39;</span>
+<span class="sd">        Get the Petermann factor: </span>
+<span class="sd">        </span>
+<span class="sd">        .. math::</span>
+
+<span class="sd">            K_n = \frac{\langle\psi_L^{n}|\psi_L^{n}\rangle\langle\psi_R^{n}|\psi_R^{n}\rangle}{\langle\psi_L^{n}|\psi_R^{n}\rangle}\, .</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            LA.eig fixes the norm such that :math:`\langle\psi_L^{n}|\psi_L^{n}\rangle = 1` and :math:`\langle\psi_R^{n}|\psi_R^{n}\rangle = 1`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="o">.</span><span class="n">H</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ham</span><span class="p">)</span><span class="o">.</span><span class="n">nnz</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">petermann</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">sites</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ln</span><span class="p">,</span> <span class="s">&#39;sys.get_eig(eigenvec=True, left=True)&#39;</span><span class="p">)</span>
+        <span class="n">left_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ln</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">petermann</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">left_right</span> <span class="o">**</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="system.get_intensity_pola_max"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_intensity_pola_max">[docs]</a>    <span class="k">def</span> <span class="nf">get_intensity_pola_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_pola</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the state with largest polarization on one sublattice.</span>
+
+<span class="sd">        :param tag_pola: Binary char. Sublattice tag.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **intensity** -- Intensity of max polarized state on *tag*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s">&#39;sys.get_eig(eigenvec=True)&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">tag_pola</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+        <span class="n">i_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span> <span class="o">==</span> <span class="n">tag_pola</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[:,</span> <span class="n">i_tag</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;State with polarization: {:.5f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="n">i_tag</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="system.get_intensity_pola_min"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_intensity_pola_min">[docs]</a>    <span class="k">def</span> <span class="nf">get_intensity_pola_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_pola</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the state with smallest polarization on one sublattice.</span>
+
+<span class="sd">        :param tag_pola: Binary char. Sublattice tag.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **intensity** -- Intensity of max polarized state on *tag*.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s">&#39;sys.get_eig(eigenvec=True)&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">tag</span><span class="p">(</span><span class="n">tag_pola</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+        <span class="n">i_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">tags</span> <span class="o">==</span> <span class="n">tag_pola</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[:,</span> <span class="n">i_tag</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;State with polarization: {:.5f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pola</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="n">i_tag</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="system.get_intensity_en"><a class="viewcode-back" href="../../tbee.html#tbee.system.system.get_intensity_en">[docs]</a>    <span class="k">def</span> <span class="nf">get_intensity_en</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lims</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get, if any, the intensity of the sum of the states </span>
+<span class="sd">        between *lims[0]* and *lims[1]*.</span>
+
+<span class="sd">        :param lims: List. lims[0] energy min, lims[1] energy max.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            * **intensity** -- Sum of the intensities between (lims[0], lims[1]).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">empty_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rn</span><span class="p">,</span> <span class="s">&#39;sys.get_eig(eigenvec=True)&#39;</span><span class="p">)</span>
+        <span class="n">error_handling</span><span class="o">.</span><span class="n">lims</span><span class="p">(</span><span class="n">lims</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">&gt;</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">&lt;</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;{} states between {} and {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">),</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Charles Poli.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
