@@ -12,13 +12,14 @@ ATOL = 1e-3
 
 
 class system():
-    def __init__(self, lat):
-        '''
-        Solve the Tight-Binding eigenvalue problem of a lattice defined 
-        by the class **lattice**.
+    '''
+    Solve the Tight-Binding eigenvalue problem of a lattice defined 
+    by the class **lattice**.
 
-        :param lat: **lattice** class instance.
-        '''
+    :param lat: **lattice** class instance.
+    '''
+
+    def __init__(self, lat):
         error_handling.lat(lat)
         self.lat = lat
         self.sites = self.lat.sites  # used to check if sites changes
@@ -62,12 +63,11 @@ class system():
 
     def print_distances(self, n=1):
         '''
-        Print distances and angles of all the edges.
+        Print distances and positive angles (in degrees) :math:`\phi_+\in[0, 180)` 
+        of the nth shortest edges. Negative angles are given by: 
+        :math:`\phi_-= \phi_+-180` and :math:`\phi_+\in[-180, 0)`.
 
-        :param n: Positive integer. Print the first nth
-          distances and associated positive angles :math:`\varphi_+\in[0, 180)`.
-          Negative angles are given by: :math:`\varphi_-= varphi_+-180` 
-          and :math:`\varphi_+\in[-180, 0)`.
+        :param n: Positive integer. Number of shortest edges.
         '''
         error_handling.sites(self.lat.sites)
         self.get_distances()
@@ -110,10 +110,10 @@ class system():
 
     def fill_store_hop(self, n):
         '''
-        Primate method.
+        Private method.
 
-        Store in store_hop indices (with i < j), angles, tags (up and low)
-           of a given type of hopping.
+        Store in *store_hop* indices (with :math:`i < j`), positive angles, and tags
+        of a given type of hopping.
         '''
         ind = np.argwhere(np.isclose(self.dist_uni[n], self.vec_hop['dis'], atol=ATOL))
         ind_up = ind[ind[:, 1] > ind[:, 0]]
@@ -126,41 +126,53 @@ class system():
                                          self.lat.coor['tag'][ind_up[:, 1]])
         self.store_hop[n] = hop
 
-    def set_hopping(self, list_hop, low=False):
+    def set_hopping(self, list_hop, upper_part=True):
         '''
         Set lattice hoppings.
 
         :param list_hop: List of Dictionaries.
             Dictionary with keys ('n', 'ang', 'tag', 't') where:
-            * 'n' value, integer, type of hoppings:
-                * 'n': 1 for nearest neighbours.
-                * 'n': 2 for next-nearest neighbours.  
-                * 'n': 3 for next-next-nearest neighbours.  
-                * etc...
-            * 'ang' value, float, angle, in deg, of the hoppings. (optional)
-                Hopping angles are given by the method *print_distances*.
-                If ang:math`in[0, 180)`, fill the Hamiltonian diagonal up.
-                If ang:math`in[-180, 0)`, fill the Hamiltonian diagonal low.
-            * 'tag' value, binary string of length 2, hopping tags. (optional)
-            * 't' value, complex number, hopping value.
-        :param low: Boolean. Default value False. 
-            If True get hoppings of the Hamiltonian lower part.
-            If False get hoppings of the Hamiltonian upper part.
+                * 'n' Positive integer, type of hoppings:
+
+                    * 'n': 1 for nearest neighbours.
+                    * 'n': 2 for next-nearest neighbours.  
+                    * 'n': 3 for next-next-nearest neighbours.  
+                    * etc...
+
+                * 'ang' value, float, angle, in deg, of the hoppings. (optional).
+
+                    Hopping angles are given by the method *print_distances*.
+
+                        * If :math:`ang \in[0, 180)`, fill the Hamiltonian upper part.
+                        * If :math:`ang \in[-180, 0)`, fill the Hamiltonian lower part.
+
+                * 'tag' binary string of length 2  (optional).
+
+                    Hopping tags.
+
+                * 't' Complex number.
+
+                    Hopping value.
+
+        :param upper_part: Boolean. Default value True. 
+            
+            * True get hoppings with (:math:`i<j`) *i.e.* fill the Hamiltonian lower part.
+            * False get hoppings with (:math:`i>j`) *i.e.* fill the Hamiltonian upper part.
 
         Example usage::
 
             # fill upper part:
             sys.set_hopping([{'n': 1, t: 1.}])
             # fill lower part:
-            sys.set_hopping([{'n': 1, t: 1.}], low=True)
+            sys.set_hopping([{'n': 1, t: 1.}], upper_part=False)
             # fill upper part: specifying the angles:
             sys.set_hopping([{'n': 1, 'ang': 0., t: 1.}, {'n': 1, 'ang': 90,  t: 2.}])
             # fill lower part:
-            sys.set_hopping([{'n': 1, 'ang': -180., t: 1.}, {'n': 1, 'ang': -90,  t: 2.}], low=True)
+            sys.set_hopping([{'n': 1, 'ang': -180., t: 1.}, {'n': 1, 'ang': -90,  t: 2.}], upper_part=False)
             # fill upper part: specifying the tags:
             sys.set_hopping([{'n': 1, 'tag': b'ab', t: 1.}, {'n': 1, 'tag': b'ba',  t: 2.}])
             # fill lower part:
-            sys.set_hopping([{'n': 1, 'tag': b'ab', t: 1.}, {'n': 1, 'tag': b'ba',  t: 2.}], low=True)
+            sys.set_hopping([{'n': 1, 'tag': b'ab', t: 1.}, {'n': 1, 'tag': b'ba',  t: 2.}], upper_part=False)
             # fill upper part: specifying the angles and tags:
             sys.set_hopping([{'n': 1, 'ang': 0., 'tag': b'ab', t: 1.}, 
                                         {'n': 1, 'ang': 0., 'tag': b'ba',  t: 2.},
@@ -170,17 +182,20 @@ class system():
             sys.set_hopping([{'n': 1, 'ang': 0., 'tag': b'ab', t: 1.}, 
                                         {'n': 1, 'ang': 0., 'tag': b'ba',  t: 2.},
                                         {'n': 1, 'ang': 90., 'tag': b'ab', t: 3.}, 
-                                        {'n': 1, 'ang': 90., 'tag': b'ba',  t: 4.}]), low=True)
+                                        {'n': 1, 'ang': 90., 'tag': b'ba',  t: 4.}]), upper_part=False)
 
         .. note::
 
-            A Hermitian hopping matrix can be build-up using only 
-            the upper part OR diagonal down and complex conjugaison. 
-            Both upper AND lower parts are used to build up
-            non-Hermitian hopping matrix.
+            A Hermitian hopping matrix can be build-up only using 
+            its upper part OR only using its lower part. The full matrix is then
+            automatic built by Hermitian conjugaison. 
+            
+            If both upper AND lower parts are used to build up the hopping matrix.
+            non Hermitian conjugaison is not performed *i.e.* non-Hermitian hopping matrix
+            can be built.
         '''
         error_handling.sites(self.lat.sites)
-        error_handling.boolean(low, 'low')
+        error_handling.boolean(upper_part, 'upper_part')
         self.get_distances()
         self.nmax = len(self.dist_uni) - 1
         error_handling.set_hopping(list_hop, self.nmax)
@@ -194,16 +209,16 @@ class system():
         for dic in list_hop:
             if len(dic) == 2:
                 size = len(self.store_hop[dic['n']])
-                if not low:
+                if upper_part:
                     mask = (self.hop['n'] == dic['n']) & (self.hop['i'] < self.hop['j'])
                 else:
                     mask = (self.hop['n'] == dic['n']) & (self.hop['i'] > self.hop['j'])
                 if np.sum(mask):
                     self.hop = self.hop[np.logical_not(mask)]
                 ind = np.ones(size, bool)
-                hop = self.set_given_hopping(dic['n'], size, dic, ind, low=low)
+                hop = self.set_given_hopping(dic['n'], size, dic, ind, upper_part=upper_part)
             elif len(dic) == 3 and 'ang' in dic:
-                error_handling.angle(dic['ang'], np.unique(self.store_hop[dic['n']]['ang']), low)
+                error_handling.angle(dic['ang'], np.unique(self.store_hop[dic['n']]['ang']), upper_part)
                 if dic['ang'] >= 0:
                     ang_store = dic['ang']
                 else:
@@ -214,15 +229,15 @@ class system():
                     self.hop = self.hop[np.logical_not(mask)]
                 ind = np.isclose(ang_store, self.store_hop[dic['n']]['ang'], atol=ATOL)
                 error_handling.index(ind, dic)
-                hop = self.set_given_hopping(dic['n'], size, dic, ind, low=low)
+                hop = self.set_given_hopping(dic['n'], size, dic, ind, upper_part=upper_part)
             elif len(dic) == 3 and 'tag' in dic:
-                if not low:
+                if upper_part:
                     tag_store = dic['tag']
                 else:
                     tag_store = dic['tag'][::-1]
                 size = np.sum(self.store_hop[dic['n']]['tag'] == tag_store)
                 mask = (self.hop['n'] == dic['n']) & (self.hop['tag'] == dic['tag'])
-                if not low:
+                if upper_part:
                     mask = self.hop['n'] == dic['n'] & (self.hop['tag'] == dic['tag']) & (self.hop['i'] < self.hop['j'])
                 else:
                     mask = self.hop['n'] == dic['n'] & (self.hop['tag'] == dic['tag']) & (self.hop['i'] > self.hop['j'])
@@ -230,15 +245,15 @@ class system():
                     self.hop = self.hop[np.logical_not(mask)]
                 ind = self.store_hop[dic['n']]['tag'] == tag_store
                 error_handling.index(ind, dic)
-                hop = self.set_given_hopping(dic['n'], size, dic, ind, low=low)
+                hop = self.set_given_hopping(dic['n'], size, dic, ind, upper_part=upper_part)
             else:
-                error_handling.angle(dic['ang'], np.unique(self.store_hop[dic['n']]['ang']), low)
+                error_handling.angle(dic['ang'], np.unique(self.store_hop[dic['n']]['ang']), upper_part=upper_part)
                 error_handling.tag(dic['tag'], np.unique(self.store_hop[dic['n']]['tag']))
                 if dic['ang'] >= 0:
                     ang_store = dic['ang']
                 else:
                     ang_store = dic['ang'] + 180.
-                if not low:
+                if upper_part:
                     tag_store = dic['tag']
                 else:
                     tag_store = dic['tag'][::-1]
@@ -252,19 +267,20 @@ class system():
                 ind = ((self.store_hop[dic['n']]['tag'] == tag_store) & 
                           (np.isclose(ang_store, self.store_hop[dic['n']]['ang'], atol=1)))
                 error_handling.index(ind, dic)
-                hop = self.set_given_hopping(dic['n'], size, dic, ind, low=low)
+                hop = self.set_given_hopping(dic['n'], size, dic, ind, upper_part=upper_part)
             self.hop = np.concatenate([self.hop, hop])
 
     def check_sites(self):
         '''
         Private method.
-        Check if the number of sites was changed after calling sys.set_hopping()
+        Check if the number of sites was changed after calling the 
+        method system.set_hopping().
         '''
         if self.sites != self.lat.sites:
              self.store_hop = {}
              self.sites = self.lat.sites
 
-    def set_given_hopping(self, n, size, dic, mask, low):
+    def set_given_hopping(self, n, size, dic, mask, upper_part):
         '''
         Private method.
         Fill self.hop. 
@@ -273,13 +289,13 @@ class system():
         :param size: Integer. Number of hoppings.
         :param doc: Dictionary. Hopping dictionary.
         :param mask: np.ndarray. Mask.
-        :param low: Boolean. If True, self.hop['i'] > self.hop['j'].
+        :param upper_part: Boolean. If True, self.hop['i'] < self.hop['j'].
         '''
         hop = np.empty(size, dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                       ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
         hop['n'] = dic['n']
         hop['t'] = dic['t']
-        if not low:
+        if upper_part:
             hop['i'] = self.store_hop[n]['i'][mask]
             hop['j'] = self.store_hop[n]['j'][mask]
             hop['ang'] = self.store_hop[n]['ang'][mask]
@@ -292,12 +308,17 @@ class system():
                                             self.lat.coor['tag'][hop['j']])
         return hop
 
-    def set_hopping_manual(self, dict_hop, low=False):
+    def set_hopping_manual(self, dict_hop, upper_part=True):
         '''
         Set hoppings manually.
 
         :param dict_hop: Dictionary of hoppings.
-            key: hopping indices, val: hopping values. 
+            key: hopping indices, val: hopping values.
+
+        :parameter upper_part: Boolean. 
+
+            * True, fill the Hamiltonian upper part.
+            * False, fill the Hamiltonian lower part.  
         '''
         hop = np.zeros(len(dict_hop), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
                                                                     ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
@@ -310,7 +331,7 @@ class system():
                                         self.lat.coor['tag'][j])
         ang = 180 / PI * np.arctan2(self.lat.coor['y'][j]-self.lat.coor['y'][i],
                                                     self.lat.coor['x'][j]-self.lat.coor['x'][i])
-        if not low:
+        if upper_part:
             ang[ang < 0] += 180
         else:
             ang[ang >= 0] -= 180
@@ -321,11 +342,12 @@ class system():
         '''
         Set uniform hopping disorder. 
 
-        :param alpha: Complex or Float. Disorder stength.
+        :param alpha: Complex or Real number. Disorder stength.
 
         Example usage::
 
             sys.set_hopping_dis(alpha=0.1)
+
         '''
         error_handling.empty_hop(self.hop)
         error_handling.number(alpha, 'alpha')
@@ -335,11 +357,12 @@ class system():
         '''
         Set uniform onsite disorder. 
 
-        :param alpha: Complex or Float. Disorder stength.
+        :param alpha: Complex or Real number. Disorder stength.
 
         Example usage::
 
-            sys.set_onsite_dis(alpha=0.1)
+        sys.set_onsite_dis(alpha=0.1)
+
         '''
         error_handling.empty_onsite(self.onsite)
         error_handling.number(alpha, 'alpha')
@@ -375,8 +398,6 @@ class system():
         error_handling.empty_hop(self.hop)
         error_handling.set_hopping_def(self.hop, hopping_def, self.lat.sites)
         for key, val in hopping_def.items():
-            print(key[0], key[1], val)
-            print(self.vec_hop['ang'].size)
             cond = (self.hop['i'] == key[0]) & (self.hop['j'] == key[1])
             self.hop['t'][cond] = val
             self.hop['ang'] = self.vec_hop['ang'][key[0], key[1]]
@@ -458,8 +479,8 @@ class system():
         :param list_hop: List of Dictionary (see set_hopping definition).
         :param rx: Positive Float. Radius along :math:`x`. 
         :param ry: Positive Float. Radius along :math:`y`.
-        :param x0: Float. Defalut value 0. :math:`x` center. 
-        :param y0: Float. Defalut value 0. :math:`x` center.
+        :param x0: Float. Default value 0. :math:`x` center. 
+        :param y0: Float. Default value 0. :math:`y` center.
         '''
         error_handling.empty_hop(self.hop)
         error_handling.set_hopping(list_hop, self.nmax)
@@ -558,22 +579,27 @@ class system():
                 self.en = LA.eigvalsh(self.ham.toarray())
 
     def get_ipr(self):
-        '''
-        Get the Inverse Participation Ratio: :math:`IPR_n = |\sum_i\psi_i^{n}|^4`.
+        r'''
+        Get the Inverse Participation Ratio: 
+
+        .. math:: 
+
+            IPR_n = |\sum_i\psi_i^{n}|^4\, .
         '''
         error_handling.empty_ndarray(self.rn, 'sys.get_eig(eigenvec=True)')
         self.ipr = np.sum(self.intensity ** 2, axis=0)
 
     def get_petermann(self):
-        '''
+        r'''
         Get the Petermann factor: 
-          :math:`K_n = \frac{\langle\psi_L^{n}|\psi_L^{n}\rangle\langle\psi_R^{n}|\psi_R^{n}\rangle}{\langle\psi_L^{n}|\psi_R^{n}\rangle}`.
+        
+        .. math::
+
+            K_n = \frac{\langle\psi_L^{n}|\psi_L^{n}\rangle\langle\psi_R^{n}|\psi_R^{n}\rangle}{\langle\psi_L^{n}|\psi_R^{n}\rangle}\, .
 
         .. note::
 
-            LA.eig fixes the norm such that:
-            \langle\psi_L^{n}|\psi_L^{n}\rangle = 1
-            \langle\psi_R^{n}|\psi_R^{n}\rangle = 1
+            LA.eig fixes the norm such that :math:`\langle\psi_L^{n}|\psi_L^{n}\rangle = 1` and :math:`\langle\psi_R^{n}|\psi_R^{n}\rangle = 1`.
         '''
         if not (self.ham.H != self.ham).nnz:
             self.petermann = np.ones(self.lat.sites)
@@ -586,7 +612,7 @@ class system():
         '''
         Get the state with largest polarization on one sublattice.
 
-        :param tag: Binary char. Sublattice tag.
+        :param tag_pola: Binary char. Sublattice tag.
 
         :returns:
             * **intensity** -- Intensity of max polarized state on *tag*.
@@ -602,7 +628,7 @@ class system():
         '''
         Get the state with smallest polarization on one sublattice.
 
-        :param tag: Binary char. Sublattice tag.
+        :param tag_pola: Binary char. Sublattice tag.
 
         :returns:
             * **intensity** -- Intensity of max polarized state on *tag*.
@@ -619,7 +645,7 @@ class system():
         Get, if any, the intensity of the sum of the states 
         between *lims[0]* and *lims[1]*.
 
-        :param lims: List, lims[0] energy min, lims[1] energy max.
+        :param lims: List. lims[0] energy min, lims[1] energy max.
 
         :returns:
             * **intensity** -- Sum of the intensities between (lims[0], lims[1]).
