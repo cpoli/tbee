@@ -18,13 +18,14 @@ import tbee.error_handling as error_handling
 
 
 class propagation():
-    def __init__(self, lat):
-        '''
-        Get lattice time evolution. Time dependent Schrodinger equation solved by
-        Crank-Nicolson method.
+    '''
+    Get lattice time evolution. Time dependent Schrodinger equation solved by
+    Crank-Nicolson method.
 
-        :param lat: **lattice** class instance.
-        '''
+    :param lat: **lattice** class instance.
+    '''
+
+    def __init__(self, lat):
         error_handling.lat(lat)
         self.lat = lat
         self.prop = np.array([], 'c16')

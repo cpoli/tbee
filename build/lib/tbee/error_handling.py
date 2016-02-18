@@ -689,19 +689,21 @@ def tag(tag, tags):
         raise ValueError('\n\nParameter tag is not in tags.\n')
 
 
-def angle(angle, angles, low):
+def angle(angle, angles, upper_part):
     '''
     Check angle.
 
-    :raises TypeError: Parameter *angle* must be a real number if *low* is False
-      and negative if *low* is True.
+    :raises TypeError: Parameter *angle* must be
+
+        * a positive number if *upper_part* is True
+        * a negative real if *upper_part* is False.
     :raises ValueError: Parameter *angle* is not in hop['ang'].
     :raises ValueError: Parameter *angle*must be positive.
     '''
-    if low:
-        negative_real(angle, 'angle, if low=True,')
+    if upper_part:
+        positive_real_zero(angle, 'angle, if upper_part=True,')
     else:
-        positive_real_zero(angle, 'angle, if low=False,')
+        negative_real(angle, 'angle, if upper_part=False,')
     if not np.sum(np.isclose(angle, angles)) and np.sum(np.isclose(angle, 180+angles)):
         raise ValueError('\n\nParameter angle is not in hop["ang"].\n')
     

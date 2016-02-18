@@ -24,7 +24,7 @@ Python Tight-Binding module
     * Complex lattice structures.
     * Complex-valued onsite energies and hoppings.
     * Hermitian and non-Hermitian Tight-Binding Hamiltonians.
-    * Onsite energies defined by tags.
+    * Sublattices.
     * Hoppings defined by their type, tags, and angles.
     * Any type of hoppings:
 

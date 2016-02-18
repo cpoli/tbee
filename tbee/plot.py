@@ -338,7 +338,7 @@ class plot:
 
     def spectrum_complex(self, ms=10., fs=20., lims=None):
         '''
-        Plot complex value eigenenergies,real part (blue circles),
+        Plot complex value eigenenergies, real part (blue circles),
         and imaginary part (red circles).
 
         :param ms: Positive Float. Default value 20. Markersize.
