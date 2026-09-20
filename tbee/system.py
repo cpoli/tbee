@@ -1,17 +1,25 @@
+from __future__ import annotations
+
+from typing import Callable
+
 import numpy as np
+from numpy.typing import NDArray
 import scipy.sparse as sparse
 import scipy.linalg as LA
 import numpy.random as rand
-import numpy.core.defchararray as npc
+import numpy.char as npc
 from math import sin, cos
 import tbee.error_handling as error_handling
+from tbee.lattice import Lattice, COOR_DTYPE
 
 
 PI = np.pi
 ATOL = 1e-3
+HOP_DTYPE = [('n', 'u2'), ('i', 'u4'), ('j', 'u4'),
+                       ('ang', 'f8'), ('tag', 'U2'), ('t', 'c16')]
 
 
-class system():
+class System():
     '''
     Solve the Tight-Binding eigenvalue problem of a lattice defined 
     by the class **lattice**.
@@ -19,16 +27,15 @@ class system():
     :param lat: **lattice** class instance.
     '''
 
-    def __init__(self, lat):
+    def __init__(self, lat: Lattice) -> None:
         error_handling.lat(lat)
         self.lat = lat
         self.sites = self.lat.sites  # used to check if sites changes
-        self.coor_hop = np.array([], dtype=[ ('x', 'f8'), ('y', 'f8'), ('tag', 'S1')])
+        self.coor_hop = np.array([], dtype=COOR_DTYPE)
         self.vec_hop = np.array([], dtype=[('dis', 'f8'),  ('ang', 'f8')]) # Hopping distances and angles
         self.dist_uni = np.array([], 'f8')  # Different hopping distances
         self.store_hop = {}  #  Store the relevant hoppings (dynamic programming)
-        self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                       ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')]) #  Hoppings to build-up the Hamiltonian
+        self.hop = np.array([], dtype=HOP_DTYPE) #  Hoppings to build-up the Hamiltonian
         self.onsite = np.array([], 'c16')  #  Onsite energies
         self.ham = sparse.csr_matrix(([], ([], [])), shape=(self.lat.sites, self.lat.sites))  # Hamiltonian
         self.en = np.array([], 'c16')  # Eigenenergies
@@ -39,14 +46,13 @@ class system():
         self.petermann = np.array([], 'f8')  # Inverse Participation Ratio
         self.nmax = 0  # number of different hoppings
 
-    def clear_hopping(self):
+    def clear_hopping(self) -> None:
         '''
         Clear structured array *hop*.
         '''
-        self.hop = np.array([], dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                       ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
+        self.hop = np.array([], dtype=HOP_DTYPE)
 
-    def get_distances(self):
+    def get_distances(self) -> None:
         '''
         Private method.
         Get distances and angles of the edges.
@@ -61,10 +67,10 @@ class system():
         self.vec_hop['ang'] = ang
         self.dist_uni = np.unique(self.vec_hop['dis'].round(4))
 
-    def print_distances(self, n=1):
-        '''
-        Print distances and positive angles (in degrees) :math:`\phi_+\in[0, 180)` 
-        of the nth shortest edges. Negative angles are given by: 
+    def print_distances(self, n: int = 1) -> None:
+        r'''
+        Print distances and positive angles (in degrees) :math:`\phi_+\in[0, 180)`
+        of the nth shortest edges. Negative angles are given by:
         :math:`\phi_-= \phi_+-180` and :math:`\phi_+\in[-180, 0)`.
 
         :param n: Positive integer. Number of shortest edges.
@@ -91,7 +97,7 @@ class system():
                                                                    (self.vec_hop['ang'] < 180.)]
             print('\t', np.unique(positive_ang.round(4)))
 
-    def set_onsite(self, dict_onsite):
+    def set_onsite(self, dict_onsite: dict[str, complex]) -> None:
         '''
         Set onsite energies.
 
@@ -100,7 +106,7 @@ class system():
         Example usage::
 
             # Line-Centered Square lattice
-            sys.set_onsite({b'a': -1j, {b'b':, -2j}})    
+            sys.set_onsite({'a': -1j, 'b': -2j})
         '''
         error_handling.sites(self.lat.sites)
         error_handling.set_onsite(dict_onsite, self.lat.tags)
@@ -108,7 +114,7 @@ class system():
         for tag, on in dict_onsite.items():
             self.onsite[self.lat.coor['tag'] ==tag] = on
 
-    def fill_store_hop(self, n):
+    def fill_store_hop(self, n: int) -> None:
         '''
         Private method.
 
@@ -117,8 +123,7 @@ class system():
         '''
         ind = np.argwhere(np.isclose(self.dist_uni[n], self.vec_hop['dis'], atol=ATOL))
         ind_up = ind[ind[:, 1] > ind[:, 0]]
-        hop = np.zeros(len(ind_up), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                                 ('ang', 'f8'), ('tag', 'S2')])
+        hop = np.zeros(len(ind_up), dtype=HOP_DTYPE[:-1])
         hop['i'] = ind_up[:, 0]
         hop['j'] = ind_up[:, 1]
         hop['ang'] = self.vec_hop['ang'][ind_up[:, 0], ind_up[:, 1]]
@@ -126,12 +131,13 @@ class system():
                                          self.lat.coor['tag'][ind_up[:, 1]])
         self.store_hop[n] = hop
 
-    def set_hopping(self, list_hop, upper_part=True):
-        '''
+    def set_hopping(self, list_hop: list[dict], upper_part: bool = True) -> None:
+        r'''
         Set lattice hoppings.
 
         :param list_hop: List of Dictionaries.
             Dictionary with keys ('n', 'ang', 'tag', 't') where:
+
                 * 'n' Positive integer, type of hoppings:
 
                     * 'n': 1 for nearest neighbours.
@@ -146,7 +152,7 @@ class system():
                         * If :math:`ang \in[0, 180)`, fill the Hamiltonian upper part.
                         * If :math:`ang \in[-180, 0)`, fill the Hamiltonian lower part.
 
-                * 'tag' binary string of length 2  (optional).
+                * 'tag' string of length 2  (optional).
 
                     Hopping tags.
 
@@ -154,10 +160,10 @@ class system():
 
                     Hopping value.
 
-        :param upper_part: Boolean. Default value True. 
-            
-            * True get hoppings with (:math:`i<j`) *i.e.* fill the Hamiltonian lower part.
-            * False get hoppings with (:math:`i>j`) *i.e.* fill the Hamiltonian upper part.
+        :param upper_part: Boolean. Default value True.
+
+            * True get hoppings with (:math:`i<j`) *i.e.* fill the Hamiltonian upper part.
+            * False get hoppings with (:math:`i>j`) *i.e.* fill the Hamiltonian lower part.
 
         Example usage::
 
@@ -170,19 +176,19 @@ class system():
             # fill lower part:
             sys.set_hopping([{'n': 1, 'ang': -180., t: 1.}, {'n': 1, 'ang': -90,  t: 2.}], upper_part=False)
             # fill upper part: specifying the tags:
-            sys.set_hopping([{'n': 1, 'tag': b'ab', t: 1.}, {'n': 1, 'tag': b'ba',  t: 2.}])
+            sys.set_hopping([{'n': 1, 'tag': 'ab', t: 1.}, {'n': 1, 'tag': 'ba',  t: 2.}])
             # fill lower part:
-            sys.set_hopping([{'n': 1, 'tag': b'ab', t: 1.}, {'n': 1, 'tag': b'ba',  t: 2.}], upper_part=False)
+            sys.set_hopping([{'n': 1, 'tag': 'ab', t: 1.}, {'n': 1, 'tag': 'ba',  t: 2.}], upper_part=False)
             # fill upper part: specifying the angles and tags:
-            sys.set_hopping([{'n': 1, 'ang': 0., 'tag': b'ab', t: 1.}, 
-                                        {'n': 1, 'ang': 0., 'tag': b'ba',  t: 2.},
-                                        {'n': 1, 'ang': 90., 'tag': b'ab', t: 3.}, 
-                                        {'n': 1, 'ang': 90., 'tag': b'ba',  t: 4.}])
+            sys.set_hopping([{'n': 1, 'ang': 0., 'tag': 'ab', t: 1.}, 
+                                        {'n': 1, 'ang': 0., 'tag': 'ba',  t: 2.},
+                                        {'n': 1, 'ang': 90., 'tag': 'ab', t: 3.}, 
+                                        {'n': 1, 'ang': 90., 'tag': 'ba',  t: 4.}])
             # fill lower part:
-            sys.set_hopping([{'n': 1, 'ang': 0., 'tag': b'ab', t: 1.}, 
-                                        {'n': 1, 'ang': 0., 'tag': b'ba',  t: 2.},
-                                        {'n': 1, 'ang': 90., 'tag': b'ab', t: 3.}, 
-                                        {'n': 1, 'ang': 90., 'tag': b'ba',  t: 4.}]), upper_part=False)
+            sys.set_hopping([{'n': 1, 'ang': 0., 'tag': 'ab', t: 1.}, 
+                                        {'n': 1, 'ang': 0., 'tag': 'ba',  t: 2.},
+                                        {'n': 1, 'ang': 90., 'tag': 'ab', t: 3.}, 
+                                        {'n': 1, 'ang': 90., 'tag': 'ba',  t: 4.}]), upper_part=False)
 
         .. note::
 
@@ -270,7 +276,7 @@ class system():
                 hop = self.set_given_hopping(dic['n'], size, dic, ind, upper_part=upper_part)
             self.hop = np.concatenate([self.hop, hop])
 
-    def check_sites(self):
+    def check_sites(self) -> None:
         '''
         Private method.
         Check if the number of sites was changed after calling the 
@@ -280,7 +286,9 @@ class system():
              self.store_hop = {}
              self.sites = self.lat.sites
 
-    def set_given_hopping(self, n, size, dic, mask, upper_part):
+    def set_given_hopping(
+        self, n: int, size: int, dic: dict, mask: NDArray, upper_part: bool,
+    ) -> NDArray:
         '''
         Private method.
         Fill self.hop. 
@@ -291,8 +299,7 @@ class system():
         :param mask: np.ndarray. Mask.
         :param upper_part: Boolean. If True, self.hop['i'] < self.hop['j'].
         '''
-        hop = np.empty(size, dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                      ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
+        hop = np.empty(size, dtype=HOP_DTYPE)
         hop['n'] = dic['n']
         hop['t'] = dic['t']
         if upper_part:
@@ -308,7 +315,7 @@ class system():
                                             self.lat.coor['tag'][hop['j']])
         return hop
 
-    def set_hopping_manual(self, dict_hop, upper_part=True):
+    def set_hopping_manual(self, dict_hop: dict[tuple[int, int], complex], upper_part: bool = True) -> None:
         '''
         Set hoppings manually.
 
@@ -320,8 +327,7 @@ class system():
             * True, fill the Hamiltonian upper part.
             * False, fill the Hamiltonian lower part.  
         '''
-        hop = np.zeros(len(dict_hop), dtype=[('n', 'u2'), ('i', 'u4'), ('j', 'u4'), 
-                                                                    ('ang', 'f8'), ('tag', 'S2'), ('t', 'c16')])
+        hop = np.zeros(len(dict_hop), dtype=HOP_DTYPE)
         i = [h[0] for h in dict_hop.keys()]
         j = [h[1] for h in dict_hop.keys()]
         t = [val for val in dict_hop.values()]
@@ -338,7 +344,7 @@ class system():
         hop['ang'] = ang
         self.hop = np.concatenate([self.hop, hop])
 
-    def  set_hopping_dis(self, alpha):
+    def set_hopping_dis(self, alpha: complex) -> None:
         '''
         Set uniform hopping disorder. 
 
@@ -353,7 +359,79 @@ class system():
         error_handling.number(alpha, 'alpha')
         self.hop['t'] *= 1. + alpha * rand.uniform(-1., 1., len(self.hop))
 
-    def set_onsite_dis(self, alpha):
+    def set_peierls_phase(self, phase: Callable[..., NDArray]) -> None:
+        r'''
+        Apply the Peierls substitution to the existing hoppings, to
+        capture the effect of an orbital magnetic field:
+
+        .. math::
+
+            t_{ij} \to t_{ij}\, e^{i\phi_{ij}}\, ,\quad
+            \phi_{ij} = \frac{2\pi}{\Phi_0}\int_{\mathbf{r}_i}^{\mathbf{r}_j}
+            \mathbf{A}\cdot d\mathbf{l}
+
+        where :math:`\mathbf{A}` is the vector potential, integrated along
+        the straight bond from site :math:`i` to site :math:`j`.
+
+        Must be called after *set_hopping* / *set_hopping_manual* (it
+        rescales the existing hoppings *in place*) and before *get_ham*.
+        For a uniform perpendicular field, use the convenience method
+        *set_magnetic_field* instead.
+
+        :param phase: Callable. ``phase(xi, yi, xj, yj)`` returns
+            :math:`\phi_{ij}`, the (real-valued) Peierls phase for the bond
+            from :math:`(x_i, y_i)` to :math:`(x_j, y_j)`. Called with
+            Numpy arrays (one value per hopping in *sys.hop*).
+
+        .. note::
+
+            *get_ham* automatically assigns the reversed bond its complex
+            conjugate, so the Hamiltonian stays Hermitian as long as
+            *phase* is antisymmetric under swapping :math:`i` and
+            :math:`j` -- true for the line integral of any vector
+            potential, since reversing the integration path negates it.
+
+        Example usage::
+
+            # Peierls phase from a uniform field via the Landau gauge
+            # A = (0, B x): captures the same physics as set_magnetic_field,
+            # just in a different (equally valid) gauge.
+            B = 0.05
+            sys.set_peierls_phase(lambda xi, yi, xj, yj: B * (xj - xi) * (xi + xj) / 2)
+        '''
+        error_handling.empty_hop(self.hop)
+        error_handling.is_callable(phase, 'phase')
+        xi = self.lat.coor['x'][self.hop['i']]
+        yi = self.lat.coor['y'][self.hop['i']]
+        xj = self.lat.coor['x'][self.hop['j']]
+        yj = self.lat.coor['y'][self.hop['j']]
+        self.hop['t'] = self.hop['t'] * np.exp(1j * phase(xi, yi, xj, yj))
+
+    def set_magnetic_field(self, alpha: float) -> None:
+        r'''
+        Set a uniform perpendicular magnetic field via the Peierls
+        substitution (see *set_peierls_phase*), using the symmetric gauge
+        :math:`\mathbf{A} = \frac{B}{2}(-y, x)`:
+
+        .. math::
+
+            \phi_{ij} = \pi\alpha\,(x_iy_j - x_jy_i)
+
+        :param alpha: Real number. Flux density :math:`B/\Phi_0`, in flux
+            quanta per unit area (in the lattice's length units) -- *i.e.*
+            the flux through a region of area :math:`S` is
+            :math:`\alpha S` flux quanta.
+
+        Example usage::
+
+            # one flux quantum per 100 unit cells of a lattice with
+            # lattice constant 1:
+            sys.set_magnetic_field(alpha=0.01)
+        '''
+        error_handling.real_number(alpha, 'alpha')
+        self.set_peierls_phase(lambda xi, yi, xj, yj: PI * alpha * (xi*yj - xj*yi))
+
+    def set_onsite_dis(self, alpha: complex) -> None:
         '''
         Set uniform onsite disorder. 
 
@@ -361,14 +439,14 @@ class system():
 
         Example usage::
 
-        sys.set_onsite_dis(alpha=0.1)
+            sys.set_onsite_dis(alpha=0.1)
 
         '''
         error_handling.empty_onsite(self.onsite)
         error_handling.number(alpha, 'alpha')
         self.onsite += alpha * rand.uniform(-1., 1., self.lat.sites)
 
-    def set_onsite_def(self, onsite_def):
+    def set_onsite_def(self, onsite_def: dict[int, complex]) -> None:
         '''
         Set specific onsite energies.
 
@@ -384,7 +462,7 @@ class system():
         for i, o in onsite_def.items():
             self.onsite[i] = o
 
-    def set_hopping_def(self, hopping_def):
+    def set_hopping_def(self, hopping_def: dict[tuple[int, int], complex]) -> None:
         '''
         Set specific hoppings. 
 
@@ -404,7 +482,7 @@ class system():
             self.hop['tag'] = npc.add(self.lat.coor['tag'][key[0]],
                                                    self.lat.coor['tag'][key[1]])
 
-    def set_new_hopping(self, list_hop, ind):
+    def set_new_hopping(self, list_hop: list[dict], ind: NDArray) -> None:
         '''
         Private method.
         Set new hoppings.
@@ -423,7 +501,7 @@ class system():
                 self.hop['t'][ind & (self.hop['tag'] == dic['tag'])
                                         & (self.hop['ang'] == dic['ang'])] = dic['t']
 
-    def find_square(self, xlims, ylims):
+    def find_square(self, xlims: tuple[float, float], ylims: tuple[float, float]) -> NDArray:
         '''
         Private method.
         Find hoppings within the square.
@@ -443,7 +521,7 @@ class system():
                  (self.lat.coor['y'][self.hop['j']] <= ylims[1])
         return in1 * in2
 
-    def find_ellipse(self, rx, ry, x0, y0):
+    def find_ellipse(self, rx: float, ry: float, x0: float, y0: float) -> NDArray:
         '''
         Private method.
         Find hoppings within the ellipse.
@@ -459,7 +537,9 @@ class system():
                  (self.lat.coor['y'][self.hop['j']] - y0) ** 2 / ry ** 2 <= 1.
         return in1 * in2
 
-    def change_hopping_square(self, list_hop, xlims, ylims=[-1., 1.]):
+    def change_hopping_square(
+        self, list_hop: list[dict], xlims: tuple[float, float], ylims: tuple[float, float] = [-1., 1.],
+    ) -> None:
         '''
         Change hopping values.
 
@@ -472,7 +552,9 @@ class system():
         ind = self.find_square(xlims, ylims)
         self.set_new_hopping(list_hop, ind)
 
-    def change_hopping_ellipse(self, list_hop, rx, ry, x0=0., y0=0.):
+    def change_hopping_ellipse(
+        self, list_hop: list[dict], rx: float, ry: float, x0: float = 0., y0: float = 0.,
+    ) -> None:
         '''
         Change hopping values.
 
@@ -491,14 +573,14 @@ class system():
         ind = self.find_ellipse(rx, ry, x0, y0)
         self.set_new_hopping(list_hop, ind)
 
-    def get_coor_hop(self):
+    def get_coor_hop(self) -> None:
         '''
         Get the site coordinates in hopping space
         only considering the nearest neighbours hoppings.
         '''
         error_handling.empty_hop(self.hop)
         visited = np.zeros(self.lat.sites, 'u2')
-        self.coor_hop = np.zeros(self.lat.sites, dtype=[('x','f8'), ('y','f8'), ('tag', 'S1')])
+        self.coor_hop = np.zeros(self.lat.sites, dtype=COOR_DTYPE)
         self.coor_hop['tag'] = self.lat.coor['tag']
         hop = self.hop[self.hop['n'] == 1]
         hop_down = np.copy(hop)
@@ -521,9 +603,9 @@ class system():
             explored = np.argwhere(visited == 1)
             if not explored.any():
                 break
-            i_visit = explored[0]
+            i_visit = explored[0, 0]
 
-    def get_ham(self):
+    def get_ham(self) -> None:
         '''
         Get the Tight-Binding Hamiltonian using sys.hop.
         '''
@@ -540,7 +622,7 @@ class system():
         if self.onsite.size == self.lat.sites:
             self.ham += sparse.diags(self.onsite, 0)
 
-    def get_eig(self, eigenvec=False, left=False):
+    def get_eig(self, eigenvec: bool = False, left: bool = False) -> None:
         '''
         Get the eigenergies, eigenvectors and polarisation.
 
@@ -554,7 +636,7 @@ class system():
         error_handling.boolean(eigenvec, 'eigenvec')
         error_handling.boolean(left, 'left')
         if eigenvec:
-            if (self.ham.H != self.ham).nnz:
+            if (self.ham.conj().T != self.ham).nnz:
                 if not left:
                     self.en, self.rn = LA.eig(self.ham.toarray())
                 else:
@@ -571,14 +653,14 @@ class system():
             for i, tag in enumerate(self.lat.tags):
                 self.pola[:, i] = np.sum(self.intensity[self.lat.coor['tag'] == tag, :], axis=0)
         else:
-            if (self.ham.H != self.ham).nnz:
+            if (self.ham.conj().T != self.ham).nnz:
                 self.en = LA.eigvals(self.ham.toarray())
                 ind = np.argsort(self.en.real)
                 self.en = self.en[ind]
             else:
                 self.en = LA.eigvalsh(self.ham.toarray())
 
-    def get_ipr(self):
+    def get_ipr(self) -> None:
         r'''
         Get the Inverse Participation Ratio: 
 
@@ -589,7 +671,7 @@ class system():
         error_handling.empty_ndarray(self.rn, 'sys.get_eig(eigenvec=True)')
         self.ipr = np.sum(self.intensity ** 2, axis=0)
 
-    def get_petermann(self):
+    def get_petermann(self) -> None:
         r'''
         Get the Petermann factor: 
         
@@ -601,18 +683,18 @@ class system():
 
             LA.eig fixes the norm such that :math:`\langle\psi_L^{n}|\psi_L^{n}\rangle = 1` and :math:`\langle\psi_R^{n}|\psi_R^{n}\rangle = 1`.
         '''
-        if not (self.ham.H != self.ham).nnz:
+        if not (self.ham.conj().T != self.ham).nnz:
             self.petermann = np.ones(self.lat.sites)
             return
         error_handling.empty_ndarray(self.ln, 'sys.get_eig(eigenvec=True, left=True)')
         left_right = np.sum(self.ln * np.conjugate(self.rn), axis=0).real
         self.petermann = 1. / left_right ** 2
 
-    def get_intensity_pola_max(self, tag_pola):
+    def get_intensity_pola_max(self, tag_pola: str) -> NDArray[np.float64]:
         '''
         Get the state with largest polarization on one sublattice.
 
-        :param tag_pola: Binary char. Sublattice tag.
+        :param tag_pola: One-character string. Sublattice tag.
 
         :returns:
             * **intensity** -- Intensity of max polarized state on *tag*.
@@ -621,14 +703,14 @@ class system():
         error_handling.tag(tag_pola, self.lat.tags)
         i_tag = self.lat.tags == tag_pola
         ind = np.argmax(self.pola[:, i_tag])
-        print('State with polarization: {:.5f}'.format(float(self.pola[ind, i_tag])))
+        print('State with polarization: {:.5f}'.format(self.pola[ind, i_tag].item()))
         return self.intensity[:, ind]
 
-    def get_intensity_pola_min(self, tag_pola):
+    def get_intensity_pola_min(self, tag_pola: str) -> NDArray[np.float64]:
         '''
         Get the state with smallest polarization on one sublattice.
 
-        :param tag_pola: Binary char. Sublattice tag.
+        :param tag_pola: One-character string. Sublattice tag.
 
         :returns:
             * **intensity** -- Intensity of max polarized state on *tag*.
@@ -637,10 +719,10 @@ class system():
         error_handling.tag(tag_pola, self.lat.tags)
         i_tag = self.lat.tags == tag_pola
         ind = np.argmin(self.pola[:, i_tag])
-        print('State with polarization: {:.5f}'.format(float(self.pola[ind, i_tag])))
+        print('State with polarization: {:.5f}'.format(self.pola[ind, i_tag].item()))
         return self.intensity[:, ind]
 
-    def get_intensity_en(self, lims):
+    def get_intensity_en(self, lims: tuple[float, float]) -> NDArray[np.float64]:
         '''
         Get, if any, the intensity of the sum of the states 
         between *lims[0]* and *lims[1]*.
@@ -656,3 +738,7 @@ class system():
         ind = np.ravel(ind)
         print('{} states between {} and {}'.format(len(ind), lims[0], lims[1]))
         return np.sum(self.intensity[:, ind], axis=1)
+
+
+# Backward-compatible lowercase alias (pre-0.2 API).
+system = System

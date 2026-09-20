@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import os
+from matplotlib.figure import Figure
+from matplotlib.animation import FuncAnimation
 import tbee.error_handling as error_handling
 
 
@@ -7,42 +11,37 @@ import tbee.error_handling as error_handling
 #################################
 
 
-class save():
+class Save():
     '''
-    Create folder and save figures / animations obtained via 
-    **plot** or **propagation**. 
-    Plot the results of the classes **lattice** or **system**.
+    Create folder and save figures / animations obtained via
+    **plot** or **propagation**.
 
-    :param dir_main: Name of the directory.
-    :param dir_name: Default value None. Relative path of the main directory.
-      if None, figures stored in ''../TBfig/'dir_name/'
-    :param params: dictionary. file name information
+    :param dir_name: String. Name of the sub-directory the figures are stored in.
+    :param dir_main: String. Default value None. Path of the main directory.
+      If None, figures are stored under ``'figs/'``.
+    :param params: Dictionary. Default value None. Parameters appended to file names.
     :param file_format: Default value 'png'. Figure format.
     '''
-    def __init__(self, dir_name, dir_main=None, params={}, file_format='png'):
+    def __init__(
+        self,
+        dir_name: str,
+        dir_main: str | None = None,
+        params: dict | None = None,
+        file_format: str = 'png',
+    ) -> None:
         error_handling.string(dir_name, 'dir_name')
         error_handling.string(dir_main, 'dir_main')
         error_handling.file_format(file_format)
-        self.params = params
+        self.params = {} if params is None else params
         self.file_format = file_format
         if dir_main is None:
             self.dir_main = 'figs/'
         else:
-            self.dir_main = dir_name
-        self.dir_name = self.dir_name(dir_name)
+            self.dir_main = dir_main
+        self.dir_name = self.dir_main + dir_name
         self.create_dir()
 
-    def dir_name(self, dir_name):
-        '''
-        Set the name of the directory in which the figures are stored.
-
-        :param dir_name: String. Directory name. 
-        '''
-        error_handling.string(dir_name, 'dir_name')
-        dir_name = self.dir_main + dir_name
-        return dir_name
-
-    def create_dir(self):
+    def create_dir(self) -> None:
         '''
         Create the directory to store the figures exists.
         '''
@@ -51,7 +50,7 @@ class save():
         if not os.path.exists(self.dir_name):
             os.makedirs(self.dir_name)
 
-    def file_name(self):
+    def file_name(self) -> str:
         '''
         Create the file name.
 
@@ -63,7 +62,7 @@ class save():
             file_name += '_' + key + str(complex(val+0)).replace('.', ',')
         return file_name
 
-    def fig(self, fig, name):
+    def fig(self, fig: Figure, name: str) -> None:
         '''
         Save the figure in the directory defined by the method *dir_name()*.
 
@@ -75,7 +74,7 @@ class save():
         name_file = self.dir_name + '/' + name + self.file_name() + '.' + self.file_format
         fig.savefig(name_file, format=self.file_format)
 
-    def fig_lat(self, fig, name):
+    def fig_lat(self, fig: Figure, name: str) -> None:
         '''
         Save the figure in the directory defined by the method *dir_name()*.
 
@@ -87,9 +86,13 @@ class save():
         name_file = self.dir_name + '/' + name + '.' + self.file_format
         fig.savefig(name_file, format=self.file_format)
 
-    def ani(self, ani, name, fps=10):
+    def ani(self, ani: FuncAnimation, name: str, fps: int = 10) -> None:
         error_handling.ani(ani)
         error_handling.string(name, 'name')
         error_handling.positive_int(fps, 'fps')
         name_file = self.dir_name + '/' + name + '.mp4'
         ani.save(name_file, fps=fps, extra_args=['-vcodec', 'libx264'])
+
+
+# Backward-compatible lowercase alias (pre-0.2 API).
+save = Save

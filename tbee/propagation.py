@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import numpy as np
+from numpy.typing import NDArray
 import scipy.sparse as sparse
 import scipy.linalg as LA
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-try:
-    from JSAnimation import IPython_display
-except:
-    pass
+from matplotlib.figure import Figure
+from matplotlib.animation import FuncAnimation
 import os
 import tbee.error_handling as error_handling
+from tbee.lattice import Lattice
 
 
 
@@ -17,7 +18,7 @@ import tbee.error_handling as error_handling
 #################################
 
 
-class propagation():
+class Propagation():
     '''
     Get lattice time evolution. Time dependent Schrodinger equation solved by
     Crank-Nicolson method.
@@ -25,12 +26,14 @@ class propagation():
     :param lat: **lattice** class instance.
     '''
 
-    def __init__(self, lat):
+    def __init__(self, lat: Lattice) -> None:
         error_handling.lat(lat)
         self.lat = lat
         self.prop = np.array([], 'c16')
 
-    def get_propagation(self, ham, psi_init, steps, dz, norm=False):
+    def get_propagation(
+        self, ham: sparse.spmatrix, psi_init: NDArray, steps: int, dz: float, norm: bool = False,
+    ) -> None:
         '''
         Get the time evolution.
 
@@ -58,7 +61,9 @@ class propagation():
             if norm:
                 self.prop[:, i] /= np.abs(self.prop[:, i]).sum()
 
-    def get_pumping(self, hams, psi_init, steps, dz, norm=True):
+    def get_pumping(
+        self, hams: list[sparse.spmatrix], psi_init: NDArray, steps: int, dz: float, norm: bool = True,
+    ) -> None:
         '''
         Get the time evolution with adiabatic pumpings.
 
@@ -107,7 +112,9 @@ class propagation():
             if norm:
                 self.prop[:,  no*delta+i] /= np.abs(self.prop[:,  no*delta+i]).sum()
 
-    def plt_propagation_1d(self, prop_type='real', fs=20, figsize=None):
+    def plt_propagation_1d(
+        self, prop_type: str = 'real', fs: float = 20, figsize: tuple[float, float] | None = None,
+    ) -> Figure:
         '''
         Plot time evolution for 1D systems. 
 
@@ -154,7 +161,7 @@ class propagation():
         cbar.ax.tick_params(labelsize=fs)
         return fig
 
-    def prop_smooth_1d(self, prop, a=10, no=40):
+    def prop_smooth_1d(self, prop: NDArray, a: float = 10, no: int = 40) -> NDArray:
         r'''
         Private function. Used in *plt_propagation_1d*.
         Smooth propagation for 1D systems.
@@ -174,7 +181,10 @@ class propagation():
                 smooth[i*no: (i+1)*no, iz] = prop[i, iz] * func
         return smooth
 
-    def get_animation(self, s=300., fs=20., prop_type='real', figsize=None):
+    def get_animation(
+        self, s: float = 300., fs: float = 20., prop_type: str = 'real',
+        figsize: tuple[float, float] | None = None,
+    ) -> FuncAnimation:
         '''
         Get time evolution animation.
 
@@ -230,11 +240,14 @@ class propagation():
             scat.set_array(color[:, i])
             return scat,
 
-        ani = animation.FuncAnimation(fig, update, frames=self.steps,
+        ani = FuncAnimation(fig, update, frames=self.steps,
                                                   fargs=(color, scat), blit=blit, repeat=False)
         return ani
 
-    def get_animation_nb(self, s=300., fs=20., prop_type='real', figsize=None):
+    def get_animation_nb(
+        self, s: float = 300., fs: float = 20., prop_type: str = 'real',
+        figsize: tuple[float, float] | None = None,
+    ) -> FuncAnimation:
         '''
         Get time evolution animation for iPython notebooks.
 
@@ -294,10 +307,10 @@ class propagation():
             scat.set_array(color[:, i])    
             return scat,
 
-        return animation.FuncAnimation(fig, animate, init_func=init,
+        return FuncAnimation(fig, animate, init_func=init,
                                    frames=self.steps, interval=120, blit=True)
 
-    def plt_prop_dimer(self, lw=5, fs=20):
+    def plt_prop_dimer(self, lw: float = 5, fs: float = 20) -> Figure:
         '''
         Plot time evolution for dimers.
         
@@ -316,6 +329,10 @@ class propagation():
             plt.plot(z, np.abs(self.prop[i, :])**2, c, lw=lw)
         plt.title('Intensity', fontsize=fs)
         plt.xlabel('$z$', fontsize=fs)
-        plt.ylabel('$|\psi_j|^2$', fontsize=fs)
+        plt.ylabel(r'$|\psi_j|^2$', fontsize=fs)
         plt.xlim([0, z[-1]])
         return fig
+
+
+# Backward-compatible lowercase alias (pre-0.2 API).
+propagation = Propagation

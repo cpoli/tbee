@@ -2,6 +2,9 @@ import numpy as np
 import inspect
 
 
+ATOL = 1e-3  # matches the distance/angle tolerance used throughout tbee.system
+
+
 ###############################
 # GENERIC EXCEPTION HANDLING
 ###############################
@@ -106,6 +109,16 @@ def number(var, var_name):
     '''         
     if not isinstance(var, (int, float, complex)):
         raise TypeError('\n\nParameter {} must be a real number.\n'.format(var_name))
+
+
+def is_callable(var, var_name):
+    '''
+    Check if parameter *var* is callable.
+
+    :raises TypeError: Parameter *var* must be callable.
+    '''
+    if not callable(var):
+        raise TypeError('\n\nParameter {} must be callable.\n'.format(var_name))
 
 
 def larger(var1, var_name1, var2, var_name2):
@@ -229,8 +242,8 @@ def unit_cell(unit_cell):
     :raises TypeError: Parameter unit_cell must be a list.
     :raises KeyError: Dictionaries must contain the key "tag".
     :raises KeyError: Dictionaries must contain the key "r0".
-    :raises TypeError: Key "tags" must contain a binary char.
-    :raises ValueError: Key "tags" must contain a binary char.
+    :raises TypeError: Key "tags" must contain a one-character string.
+    :raises ValueError: Key "tags" must contain a one-character string.
     :raises ValueError: Key "r0" must contain be a list.
     :raises TypeError: Key "r0" must contain be a tuple.
     :raises ValueError: Key "r0" must contain a tuple of length two.
@@ -243,16 +256,16 @@ def unit_cell(unit_cell):
             raise KeyError('\n\nDictionaries must contain the key "tag".\n')
         if 'r0' not in dic:
             raise KeyError('\n\nDictionaries must contain the key "r0".\n')
-        if not isinstance(dic['tag'], bytes):
-            raise TypeError('\n\Key "tags" must contain a binary char.\n')    
+        if not isinstance(dic['tag'], str):
+            raise TypeError('\n\nKey "tag" must contain a one-character string.\n')
         if not len(dic['tag']) == 1:
-            raise ValueError('\n\Key "tags" must be a binary char.\n')    
+            raise ValueError('\n\nKey "tag" must be a one-character string.\n')
         if not isinstance(dic['r0'], tuple):
-            raise TypeError('\n\Key "r0" must be a tuple.\n')
+            raise TypeError('\n\nKey "r0" must be a tuple.\n')
         if not len(dic['r0']) == 2:
-            raise ValueError('\n\Key "r0" must contain a tuple of length two.\n')    
+            raise ValueError('\n\nKey "r0" must contain a tuple of length two.\n')
         if not isinstance(dic['r0'][0], (int, float)) or not isinstance(dic['r0'][1], (int, float)):
-            raise ValueError('\n\Key "r0" must contain a tuple of two real numbers.\n')
+            raise ValueError('\n\nKey "r0" must contain a tuple of two real numbers.\n')
 
     
 def prim_vec(prim_vec):
@@ -273,8 +286,6 @@ def prim_vec(prim_vec):
     if not len(prim_vec) == 1 and not len(prim_vec) == 2:
         raise ValueError('\n\nParameter prim_vec must be a list.\n'
                                   'of length 1 for 1D lattices or length 2 fro 2D lattices.\n')
-    if 1 > len(prim_vec) > 2:
-        raise ValueError('\n\nParameter prim_vec value must be a list of length 1 or 2.\n')
     for coor in prim_vec:
         if not isinstance(coor, tuple):
             raise TypeError('\n\nParameter prim_vec contain tuples\n')
@@ -305,30 +316,12 @@ def get_lattice(prim_vec, n1, n2):
 
 def coor(coor):
     '''
-    Check if *coor* is a structured array with 
-    dtype=[('x', '<f8'), ('y', '<f8'), ('tag', 'S1')].
+    Check if *coor* is a structured array with
+    dtype=[('x', 'f8'), ('y', 'f8'), ('tag', 'U1')].
     '''
-    if coor.dtype != [('x', '<f8'), ('y', '<f8'), ('tag', 'S1')]:
-        raise TypeError('\n\nParameter coor dtype must be\n\
-                                  dtype=[("x", "f8"), ("y", "f8"), ("tag", "S1")].\n')
-
-
-def empty_coor(coor):
-    '''
-    Check if *get_lattice* has been called (*coor* not empty).
-    :raises RuntimeError: Run method get_lattice first.
-    '''
-    if coor.size == 0:
-        raise RuntimeError('\n\nRun method get_lattice first.\n')
-
-
-def empty_coor_hop(coor):
-    '''
-    Check if *get_lattice_hop* has been called (*coor_hop* not empty).
-    :raises RuntimeError: Run method sys.get_coor_hop first.
-    '''
-    if coor.size == 0:
-        raise RuntimeError('\n\nRun method sys.get_coor_hop first.\n')
+    if coor.dtype != np.dtype([('x', 'f8'), ('y', 'f8'), ('tag', 'U1')]):
+        raise TypeError('\n\nParameter coor dtype must be\n'
+                                  'dtype=[("x", "f8"), ("y", "f8"), ("tag", "U1")].\n')
 
 
 def coor_1d(coor):
@@ -439,6 +432,7 @@ def print_hopping(n, nmax):
 def set_onsite(onsite, tags):
     '''
     Check method *set_onsite*.
+
     :raises TypeError: Parameter onsite must be a dictionary.
     :raises ValueError: Parameter onsite keys must be a tag.
     :raises ValueError: Parameter onsite values must be
@@ -481,7 +475,7 @@ def set_hopping(list_hop, n_max):
         if not isinstance(dic['t'], (int, float, complex)):
             raise TypeError('\n\n"t" value must be a real or complex number.\n')
         if len(dic) == 3:
-            if not ('tag' not in dic or 'ang' not in dic):
+            if 'tag' not in dic and 'ang' not in dic:
                 raise KeyError('\n\n"tag" or "ang" must be a key.\n')
         elif len(dic) == 4:
             if 'tag' not in dic and 'ang' not in dic:
@@ -489,10 +483,10 @@ def set_hopping(list_hop, n_max):
         elif len(dic) > 4:
             raise ValueError('\n\nDictionaries must be of length 2, 3, or 4.\n')
         if 'tag' in dic:
-            if not isinstance(dic['tag'], bytes):
-                raise TypeError('\n\n"tag" value must be a binary string.\n')
+            if not isinstance(dic['tag'], str):
+                raise TypeError('\n\n"tag" value must be a string.\n')
             if len(dic['tag']) != 2:
-                raise ValueError('\n\n"tag" value must be a binary string of length 2.\n')
+                raise ValueError('\n\n"tag" value must be a string of length 2.\n')
         if 'ang' in dic:
             if not isinstance(dic['ang'], (int, float)):
                 raise TypeError('\n\n"ang" value must be a real number.\n')
@@ -560,7 +554,7 @@ def hop_n1(hop):
     '''
     Check method if self.hop contains nearest neighbours hoppings.
 
-    :raises RunTimeError: self.hop must contain nearest neighbours hoppings.
+    :raises ValueError: self.hop must contain nearest neighbours hoppings.
     '''
     if len(hop['n'] == 1) == 0:
         raise ValueError('\n\nParameter hop must contain nearest neighbours hoppings.\n')
@@ -680,11 +674,11 @@ def tag(tag, tags):
     '''
     Check tag.
 
-    :raises TypeError: Parameter *tag* must be a binary string.
+    :raises TypeError: Parameter *tag* must be a string.
     :raises ValueError: Parameter *tag* is not in tags.
     '''
-    if not isinstance(tag, bytes):
-        raise TypeError('\n\nParameter tag must be a binary char.\n')
+    if not isinstance(tag, str):
+        raise TypeError('\n\nParameter tag must be a one-character string.\n')
     if tag not in tags:
         raise ValueError('\n\nParameter tag is not in tags.\n')
 
@@ -698,13 +692,13 @@ def angle(angle, angles, upper_part):
         * a positive number if *upper_part* is True
         * a negative real if *upper_part* is False.
     :raises ValueError: Parameter *angle* is not in hop['ang'].
-    :raises ValueError: Parameter *angle*must be positive.
     '''
     if upper_part:
         positive_real_zero(angle, 'angle, if upper_part=True,')
     else:
         negative_real(angle, 'angle, if upper_part=False,')
-    if not np.sum(np.isclose(angle, angles)) and np.sum(np.isclose(angle, 180+angles)):
+    if not np.sum(np.isclose(angle, angles, atol=ATOL)) and \
+            not np.sum(np.isclose(angle, angles - 180, atol=ATOL)):
         raise ValueError('\n\nParameter angle is not in hop["ang"].\n')
     
 
@@ -763,7 +757,7 @@ def ani(ani):
 
     :raises TypeError: ani must be an instance of *FuncAnimation*.
     '''
-    if not fig.__class__.__name__ == 'FuncAnimation':
+    if not ani.__class__.__name__ == 'FuncAnimation':
         raise TypeError('\n\nani must be an instance of *FuncAnimation*.\n')
 
 
@@ -782,14 +776,6 @@ def file_format(file_format):
                                    ' "png", "pdf", "ps", "eps", or "svg".\n')
 
 
-def fig_size(sigsize):
-    if figsize is None:
-        figsize = (5, 4)
-    error_handling.list_tuple_2elem(figsize, 'figsize')
-    error_handling.positive_real(figsize[0], 'figsize[0]')
-    error_handling.positive_real(figsize[1], 'figsize[1]')
-
-
 ####################################
 # PROPAGATION
 ####################################
@@ -806,3 +792,197 @@ def prop_type(prop_type):
     if prop_type not in ['real', 'imag', 'norm']:
         raise ValueError('\n\nParameter prop_type must be a string:\n'
                                    '"real", "imag", "norm".\n')
+
+
+####################################
+# CLASS KSPACE EXCEPTION HANDLING
+####################################
+
+
+def k_vector(vec, var_name, ndim):
+    '''
+    Check that *vec* is a tuple/list of *ndim* real numbers.
+
+    :raises TypeError: Parameter *var_name* must be a tuple/list.
+    :raises ValueError: Parameter *var_name* must be of length *ndim*.
+    :raises TypeError: Parameter *var_name* must contain real numbers.
+    '''
+    if not isinstance(vec, (tuple, list, np.ndarray)):
+        raise TypeError('\n\nParameter {} must be a tuple, list, or ndarray.\n'.format(var_name))
+    if len(vec) != ndim:
+        raise ValueError('\n\nParameter {} must be of length {}.\n'.format(var_name, ndim))
+    for val in vec:
+        if not isinstance(val, (int, float, np.integer, np.floating)):
+            raise TypeError('\n\nParameter {} must contain real numbers.\n'.format(var_name))
+
+
+def spin_matrix(t, var_name):
+    '''
+    Check a spinful "t" or onsite value: either a plain number, or a 2x2
+    complex matrix.
+
+    :raises TypeError: Parameter *var_name* must be a number or a 2x2 matrix.
+    '''
+    if isinstance(t, (int, float, complex)):
+        return
+    t = np.asarray(t)
+    if t.shape != (2, 2):
+        raise TypeError('\n\nParameter {} must be a number or a 2x2 matrix.\n'.format(var_name))
+
+
+def set_hopping_kspace(list_hop, n_sites, ndim, spin=False):
+    '''
+    Check method *kspace.set_hopping*.
+
+    :raises TypeError: Parameter *list_hop* must be a list of dictionaries.
+    :raises KeyError: "i", "j", "R", and "t" must be dictionary keys.
+    :raises ValueError: "i" and "j" must be site indices between 0 and n_sites-1.
+    :raises ValueError: "R" must be a tuple of *ndim* integers.
+    :raises TypeError: "t" must be a real or complex number (or, if *spin*,
+      a 2x2 matrix).
+    '''
+    if not isinstance(list_hop, list):
+        raise TypeError('\n\nParameter list_hop must be a list.\n')
+    for dic in list_hop:
+        if not isinstance(dic, dict):
+            raise TypeError('\n\nParameter list_hop must be a list of dictionaries.\n')
+        if not {'i', 'j', 'R', 't'} <= set(dic):
+            raise KeyError('\n\n"i", "j", "R", and "t" must be dictionary keys.\n')
+        if not isinstance(dic['i'], int) or not isinstance(dic['j'], int):
+            raise TypeError('\n\n"i" and "j" must be integers.\n')
+        if not (0 <= dic['i'] < n_sites) or not (0 <= dic['j'] < n_sites):
+            raise ValueError('\n\n"i" and "j" must be site indices between 0 and {}.\n'.format(n_sites-1))
+        if not isinstance(dic['R'], tuple) or len(dic['R']) != ndim:
+            raise ValueError('\n\n"R" must be a tuple of {} integers.\n'.format(ndim))
+        if not all(isinstance(n, int) for n in dic['R']):
+            raise TypeError('\n\n"R" must be a tuple of integers.\n')
+        if dic['i'] == dic['j'] and dic['R'] == (0,) * ndim:
+            raise ValueError('\n\nUse kspace.set_onsite for i == j and R == 0.\n')
+        if spin:
+            spin_matrix(dic['t'], '"t"')
+        elif not isinstance(dic['t'], (int, float, complex)):
+            raise TypeError('\n\n"t" value must be a real or complex number.\n')
+
+
+def set_onsite_kspace(dict_onsite, tags, spin=False):
+    '''
+    Check method *kspace.set_onsite*.
+
+    :raises TypeError: Parameter *dict_onsite* must be a dictionary.
+    :raises ValueError: keys must be tags.
+    :raises TypeError: values must be real or complex numbers (or, if
+      *spin*, a pair of real/complex numbers).
+    '''
+    if not isinstance(dict_onsite, dict):
+        raise TypeError('\n\nParameter dict_onsite must be a dictionary.\n')
+    for tag, val in dict_onsite.items():
+        if tag not in tags:
+            raise ValueError('\n\nParameter dict_onsite keys must be a tag.\n')
+        if spin and not isinstance(val, (int, float, complex)):
+            if not (isinstance(val, (tuple, list)) and len(val) == 2
+                          and all(isinstance(v, (int, float, complex)) for v in val)):
+                raise TypeError('\n\nParameter dict_onsite values must be a number, or, '
+                                           'if spin, a pair of numbers (E_up, E_down).\n')
+        elif not spin and not isinstance(val, (int, float, complex)):
+            raise TypeError('\n\nParameter dict_onsite values must be real and/or complex numbers.\n')
+
+
+def k_path_points(points, ndim):
+    '''
+    Check parameter *points* used by *kspace.k_path*.
+
+    :raises TypeError: Parameter points must be a list.
+    :raises ValueError: Parameter points must contain at least two k-points.
+    '''
+    if not isinstance(points, list):
+        raise TypeError('\n\nParameter points must be a list of k-points.\n')
+    if len(points) < 2:
+        raise ValueError('\n\nParameter points must contain at least two k-points.\n')
+    for i, pt in enumerate(points):
+        k_vector(pt, 'points[{}]'.format(i), ndim)
+
+
+####################################
+# DENSITY OF STATES
+####################################
+
+
+def dos_kernel(kernel):
+    '''
+    Check parameter *kernel* used by *dos.density_of_states*.
+
+    :raises TypeError: Parameter kernel must be a string.
+    :raises ValueError: Parameter kernel must be "gaussian" or "lorentzian".
+    '''
+    string(kernel, 'kernel')
+    if kernel not in ['gaussian', 'lorentzian']:
+        raise ValueError('\n\nParameter kernel must be a string:\n'
+                                   '"gaussian", "lorentzian".\n')
+
+
+def nk(nk, ndim):
+    '''
+    Check parameter *nk* used by *kspace.mesh_bands* / *kspace.berry_curvature*.
+
+    :raises TypeError: Parameter nk must be an integer or a tuple of integers.
+    :raises ValueError: Parameter nk (or each of its elements) must be a
+        positive integer.
+    :raises ValueError: Parameter nk must be a tuple of length *ndim*.
+    '''
+    if isinstance(nk, int):
+        positive_int(nk, 'nk')
+        return
+    if not isinstance(nk, tuple):
+        raise TypeError('\n\nParameter nk must be an integer or a tuple of integers.\n')
+    if len(nk) != ndim:
+        raise ValueError('\n\nParameter nk must be of length {}.\n'.format(ndim))
+    for n in nk:
+        positive_int(n, 'nk')
+
+
+####################################
+# TOPOLOGY
+####################################
+
+
+def dim_2(dim):
+    '''
+    Check that the model is 2D. Berry curvature / Chern number are only
+    defined for a 2D Brillouin zone.
+
+    :raises ValueError: This calculation requires a 2D lattice.
+    '''
+    if dim != 2:
+        raise ValueError('\n\nThis calculation requires a 2D lattice '
+                                    '(two primitive vectors).\n')
+
+
+def direction(direction):
+    '''
+    Check parameter *direction* used by *kspace.ribbon*.
+
+    :raises TypeError: Parameter direction must be an integer.
+    :raises ValueError: Parameter direction must be 0 or 1.
+    '''
+    if not isinstance(direction, int):
+        raise TypeError('\n\nParameter direction must be an integer.\n')
+    if direction not in (0, 1):
+        raise ValueError('\n\nParameter direction must be 0 or 1.\n')
+
+
+def band_indices(bands, norb):
+    '''
+    Check parameter *bands* used by *kspace.berry_curvature*.
+
+    :raises TypeError: Parameter bands must be a non-empty list of integers.
+    :raises ValueError: Parameter bands must be a list of distinct band
+        indices between 0 and norb-1.
+    '''
+    if not isinstance(bands, list) or not bands:
+        raise TypeError('\n\nParameter bands must be a non-empty list of integers.\n')
+    if not all(isinstance(b, int) for b in bands):
+        raise TypeError('\n\nParameter bands must be a non-empty list of integers.\n')
+    if len(set(bands)) != len(bands):
+        raise ValueError('\n\nParameter bands must be a list of distinct band indices.\n')
+    if not all(0 <= b < norb for b in bands):
+        raise ValueError('\n\nParameter bands must be integers between 0 and {}.\n'.format(norb-1))

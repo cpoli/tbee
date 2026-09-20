@@ -1,20 +1,27 @@
 # Copyright 2014 Charles Poli.
 #
-# This file is part of tbee.  It is subject to the license terms in the
+# This file is part of TBEE.  It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
-# https://github.com/cpoli/tbee.  
-'''
-import numpy as np
-import numpy.core.defchararray as npc
-import scipy.sparse as sparse
-import scipy.linalg as LA
-import numpy.random as rand
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.legend_handler import HandlerLine2D
-from math import sqrt, pi, sin, cos
-PI = pi
-'''
+# https://github.com/cpoli/tbee.
 
-__all__ = ['lattice', 'system', 'plot', 'save', 'propagation', 'error_handling']
+"""tbee: build and solve Tight-Binding models."""
 
+__version__ = "0.2.0"
+
+__all__ = [
+    "Lattice", "System", "Plot", "Propagation", "Save", "KSpace",
+    "reciprocal_vectors", "error_handling",
+]
+
+# NOTE: these are explicit imports, not `from tbee.<module> import *`.
+# A wildcard import here would rebind the `tbee.<module>` submodule
+# attributes to the classes they define (since e.g. tbee/lattice.py both
+# *is* the submodule `tbee.lattice` and defines a `lattice` alias of the
+# same name), breaking `import tbee.lattice as lattice`-style imports.
+from tbee.lattice import Lattice
+from tbee.system import System
+from tbee.plot import Plot
+from tbee.propagation import Propagation
+from tbee.save import Save
+from tbee.kspace import KSpace, reciprocal_vectors
+import tbee.error_handling

@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import numpy as np
+from numpy.typing import NDArray
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import tbee.error_handling as error_handling
 
 
 PI = np.pi
+COOR_DTYPE = [('x', 'f8'), ('y', 'f8'), ('tag', 'U1')]
 
 
 #################################
@@ -11,7 +16,7 @@ PI = np.pi
 #################################
 
 
-class lattice():
+class Lattice():
     r'''
     Build up 1D or 2D lattice.
     Lattice is defined by the discrete operation:
@@ -21,40 +26,40 @@ class lattice():
         \mathbf{R} = n_1\mathbf{a}_1 + n_2\mathbf{a}_2
 
     where :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2` are the two primitive
-    vectors and :math:`n_1` and :math:`n_2` are the number of unit cells along 
+    vectors and :math:`n_1` and :math:`n_2` are the number of unit cells along
     :math:`\mathbf{a}_1` and :math:`\mathbf{a}_2`.
 
-    :param unit_cell: List of dictionaries. 
+    :param unit_cell: List of dictionaries.
      One dictionary per site within the unit cell. Each dictionary has two keys:
 
-        * 'tag', Binary Char. label of the associated sublattice.
+        * 'tag', one-character string. Label of the associated sublattice.
         * 'r0', Tuple. Position.
-    :param prim_vec: List of tuples. 
+    :param prim_vec: List of tuples.
      Define the primitive vectors. List of one/two tuples for 1D/2D respectively:
-     
+
         * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_1`.
         * Tuple, cartesian coordinate of the primitive vector :math:`\mathbf{a}_2`.
 
     Example usage::
 
         # Line-Centered Square lattice
-        unit_cell = [{'tag': b'a', r0=(0., 0.)}, {'tag': b'a', r0=(0., 1.)}]
+        unit_cell = [{'tag': 'a', 'r0': (0., 0.)}, {'tag': 'a', 'r0': (0., 1.)}]
         prim_vec = [(0, 2), (2, 0)]
         lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
     '''
 
-    def __init__(self, unit_cell, prim_vec):
+    def __init__(self, unit_cell: list[dict], prim_vec: list[tuple[float, float]]) -> None:
         error_handling.unit_cell(unit_cell)
         error_handling.prim_vec(prim_vec)
         self.unit_cell = unit_cell
         self.prim_vec = prim_vec
         self.tags = np.unique(np.array([dic['tag'] for dic in self.unit_cell]))
         self.n1, self.n2 = 0, 0
-        self.coor = np.array([], dtype=[('x', 'f8'), ('y', 'f8'), ('tag', 'S1')])
+        self.coor = np.array([], dtype=COOR_DTYPE)
         self.sites = 0
 
-    def get_lattice(self, n1, n2=1):
-        '''
+    def get_lattice(self, n1: int, n2: int = 1) -> None:
+        r'''
         Get the lattice positions.
 
         :param n1: Positive Integer.
@@ -65,7 +70,7 @@ class lattice():
         Example usage::
 
             # Line-Centered Square lattice
-            unit_cell = [{'tag': b'a', r0=(0., 0.)}, {'tag': b'a', r0=(0., 1.)}]
+            unit_cell = [{'tag': 'a', 'r0': (0., 0.)}, {'tag': 'a', 'r0': (0., 1.)}]
             prim_vec = [(0, 2), (2, 0)]
             lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
             lat.get_lattice(n1=4, n2=5)
@@ -74,7 +79,7 @@ class lattice():
         sites_uc = len(self.unit_cell)
         sites_tag = n1*n2
         self.sites = sites_uc * sites_tag
-        self.coor = np.empty(self.sites, dtype=[('x', 'f8'), ('y', 'f8'), ('tag', 'S1')])
+        self.coor = np.empty(self.sites, dtype=COOR_DTYPE)
         self.n1, self.n2 = n1, n2
         x = self.prim_vec[0][0] * np.arange(n1, dtype='f8')
         y = self.prim_vec[0][1] * np.arange(n1, dtype='f8')
@@ -91,7 +96,7 @@ class lattice():
             self.coor['tag'][i*sites_tag: (i+1)*sites_tag] = dic['tag']
         self.coor = np.sort(self.coor, order=('y', 'x'))
 
-    def add_sites(self, coor):
+    def add_sites(self, coor: NDArray) -> None:
         '''
         Add sites.
 
@@ -100,12 +105,12 @@ class lattice():
         Example usage::
 
             # Square lattice
-            unit_cell = [{'tag': b'a', r0=(0., 0.)}]
+            unit_cell = [{'tag': 'a', 'r0': (0., 0.)}]
             prim_vec = [(0, 1), (1, 0)]
             lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
             lat.get_lattice(n1=2, n2=2)
-            coor = np.array([(-1., -1, b'b'), (-2., -2, b'c')], 
-                                      dtype=[('x', 'f8'), ('y', 'f8'), ('tag', 'S1')])
+            coor = np.array([(-1., -1, 'b'), (-2., -2, 'c')],
+                                      dtype=[('x', 'f8'), ('y', 'f8'), ('tag', 'U1')])
             lat.add_sites(coor)
         '''
         error_handling.coor(coor)
@@ -114,7 +119,7 @@ class lattice():
         self.tags = np.unique(np.concatenate([self.tags, coor['tag']]))
         self.coor = np.sort(self.coor, order=('y', 'x'))
 
-    def remove_sites(self, index):
+    def remove_sites(self, index: list[int]) -> None:
         '''
         Remove sites defined by their indices
         (use method lattice.plot(plt_index=True)
@@ -125,7 +130,7 @@ class lattice():
         Example usage::
 
             # Square lattice
-            unit_cell = [{'tag': b'a', r0=(0., 0.)}]
+            unit_cell = [{'tag': 'a', 'r0': (0., 0.)}]
             prim_vec = [(0, 1), (1, 0)]
             lat = lattice(unit_cell=unit_cell, prim_vec=prim_vec)
             lat.get_lattice(n1=2, n2=2)
@@ -138,7 +143,7 @@ class lattice():
         self.coor = self.coor[mask]
         self.sites = self.coor.size
 
-    def remove_dangling(self):
+    def remove_dangling(self) -> None:
         '''
         Remove dangling sites
         (sites connected with just another site).
@@ -160,7 +165,7 @@ class lattice():
             if dang == []:
                 break
 
-    def shift_x(self, shift):
+    def shift_x(self, shift: float) -> None:
         '''
         Shift the x coordinates.
 
@@ -170,7 +175,7 @@ class lattice():
         error_handling.real_number(shift, 'shift')
         self.coor['x'] += shift
 
-    def shift_y(self, shift):
+    def shift_y(self, shift: float) -> None:
         '''
         Shift by *delta_x* the x coordinates.
 
@@ -180,22 +185,22 @@ class lattice():
         error_handling.real_number(shift, 'shift')
         self.coor['y'] += shift
 
-    def change_sign_x(self):
+    def change_sign_x(self) -> None:
         '''
         Change x coordinates sign.
         '''
         error_handling.empty_coor(self.coor)
         self.coor['x'] *= -1
 
-    def change_sign_y(self):
+    def change_sign_y(self) -> None:
         '''
         Change y coordinates sign.
         '''
         error_handling.empty_coor(self.coor)
         self.coor['y'] *= -1
 
-    def boundary_line(self, cx, cy, co):
-        '''
+    def boundary_line(self, cx: float, cy: float, co: float) -> None:
+        r'''
         Select sites according to :math:`c_yy+c_xx > c_0`.
 
         :param cx: Real number. cx value.
@@ -209,18 +214,18 @@ class lattice():
         self.coor = self.coor[cy * self.coor['y'] + cx * self.coor['x'] > co]
         self.sites = len(self.coor)
 
-    def ellipse_in(self, rx, ry, x0, y0):
-        '''
-        Select sites according to 
+    def ellipse_in(self, rx: float, ry: float, x0: float, y0: float) -> None:
+        r'''
+        Select sites according to
 
-        .. math:: 
+        .. math::
 
             (x-x_0)^2/a^2+(y-y_0)^2/b^2 < 1\,  .
 
         :param list_hop: List of Dictionary (see set_hopping definition).
-        :param rx: Positive Real number. Radius along :math:`x`. 
+        :param rx: Positive Real number. Radius along :math:`x`.
         :param ry: Positive Real number. Radius along :math:`y`.
-        :param x0: Real number. :math:`x` center. 
+        :param x0: Real number. :math:`x` center.
         :param y0: Real number. :math:`y` center.
         '''
         error_handling.empty_coor(self.coor)
@@ -232,19 +237,19 @@ class lattice():
                                         (self.coor['y'] -y0) ** 2 / ry ** 2 < 1.]
         self.sites = len(self.coor)
 
-    def ellipse_out(self, rx, ry, x0, y0):
-        '''
+    def ellipse_out(self, rx: float, ry: float, x0: float, y0: float) -> None:
+        r'''
         Select sites according to
 
-        .. math:: 
+        .. math::
 
             (x-x_0)^2/a^2+(y-y_0)^2/b^2 > 1\,  .
 
 
         :param list_hop: List of Dictionary (see set_hopping definition).
-        :param rx: Positive Real number. Radius along :math:`x`. 
+        :param rx: Positive Real number. Radius along :math:`x`.
         :param ry: Positive Real number. Radius along :math:`y`.
-        :param x0: Real number. :math:`x` center. 
+        :param x0: Real number. :math:`x` center.
         :param y0: Real number. :math:`y` center.
         '''
         error_handling.empty_coor(self.coor)
@@ -256,7 +261,7 @@ class lattice():
                                         (self.coor['y'] -y0) ** 2 / ry ** 2 > 1.]
         self.sites = len(self.coor)
 
-    def center(self):
+    def center(self) -> None:
         '''
         Fix the center of mass of the lattice at (0, 0).
         '''
@@ -264,7 +269,7 @@ class lattice():
         self.coor['x'] -= np.mean(self.coor['x'])
         self.coor['y'] -= np.mean(self.coor['y'])
 
-    def rotation(self, theta):
+    def rotation(self, theta: float) -> None:
         r'''
         Rotate the lattice structure by the angle :math:`\theta`.
 
@@ -279,7 +284,7 @@ class lattice():
             self.coor['x'] = x * np.cos(theta) - y * np.sin(theta) + dic['r0'][0]
             self.coor['y'] = y * np.cos(theta) + x* np.sin(theta) + dic['r0'][1]
 
-    def clean_coor(self):
+    def clean_coor(self) -> None:
         '''
         Keep only the sites with different coordinates.
         '''
@@ -290,7 +295,7 @@ class lattice():
         self.coor = self.coor[idx]
         self.sites = len(self.coor)
 
-    def __add__(self, other):
+    def __add__(self, other: 'Lattice') -> 'Lattice':
         '''
         Overloading operator +.
         '''
@@ -305,7 +310,7 @@ class lattice():
         lat.tags = np.unique(tags)
         return lat
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: 'Lattice') -> 'Lattice':
         '''
         Overloading operator +=.
         '''
@@ -314,10 +319,10 @@ class lattice():
         error_handling.empty_coor(other.coor)
         self.coor = np.concatenate([self.coor, other.coor])
         self.sites += other.sites
-        self.tags = np.unique([self.tags, other.tags])
+        self.tags = np.unique(np.concatenate([self.tags, other.tags]))
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other: 'Lattice') -> 'Lattice':
         '''
         Overloading operator -.
 
@@ -328,9 +333,8 @@ class lattice():
         error_handling.lat(other)
         error_handling.empty_coor(self.coor)
         error_handling.empty_coor(other.coor)
-        tags = np.unique([self.tags, other.tags])
         boo = np.zeros(self.sites, bool)
-        for i, c in enumerate(other.coor):
+        for c in other.coor:
             boo += np.isclose(c['x'], self.coor['x']) & np.isclose(c['y'], self.coor['y'])
         coor = self.coor[np.logical_not(boo)]
         lat = lattice(unit_cell=self.unit_cell, prim_vec=self.prim_vec)
@@ -339,7 +343,7 @@ class lattice():
         lat.tags = self.tags
         return lat
 
-    def __isub__(self, other):
+    def __isub__(self, other: 'Lattice') -> 'Lattice':
         '''
         Overloading operator -=.
 
@@ -350,15 +354,21 @@ class lattice():
         error_handling.lat(other)
         error_handling.empty_coor(self.coor)
         error_handling.empty_coor(other.coor)
-        ind_remove = []
         boo = np.zeros(self.sites, bool)
-        for i, c in enumerate(other.coor):
+        for c in other.coor:
             boo += np.isclose(c['x'], self.coor['x']) & np.isclose(c['y'], self.coor['y'])
         self.coor = self.coor[np.logical_not(boo)]
-        self.sites = sum(np.logical_not(boo))
+        self.sites = int(np.sum(np.logical_not(boo)))
         return self
 
-    def plot(self, ms=20, fs=20, plt_index=False, axis=False, figsize=None):
+    def plot(
+        self,
+        ms: float = 20,
+        fs: float = 20,
+        plt_index: bool = False,
+        axis: bool = False,
+        figsize: tuple[float, float] | None = None,
+    ) -> Figure:
         '''
         Plot lattice in hopping space.
 
@@ -403,8 +413,12 @@ class lattice():
         plt.draw()
         return fig
 
-    def show(self):
+    def show(self) -> None:
         """
         Emulate Matplotlib method plt.show().
         """
         plt.show()
+
+
+# Backward-compatible lowercase alias (pre-0.2 API).
+lattice = Lattice
