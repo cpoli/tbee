@@ -1,5 +1,9 @@
 # tbee — a Tight-Binding package for research and education
 
+[![tests](https://github.com/cpoli/tbee/actions/workflows/tests.yml/badge.svg)](https://github.com/cpoli/tbee/actions/workflows/tests.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+[![License: BSD 3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
+
 ![tbee logo](docs/source/_static/image/tbee_logo.png)
 
 **tbee** is a Python package to build and solve Tight-Binding models, written
