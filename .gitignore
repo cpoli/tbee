@@ -16,6 +16,7 @@ dist/
 # Docs build output
 docs/build/
 docs/source/api/gallery/
+docs/source/gen_modules/
 docs/source/sg_execution_times.rst
 
 # Testing / coverage

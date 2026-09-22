@@ -1,6 +1,6 @@
 # tbee — a Tight-Binding package for research and education
 
-![tbee logo](logoTBee.png)
+![tbee logo](docs/source/_static/image/tbee_logo.png)
 
 **tbee** is a Python package to build and solve Tight-Binding models, written
 in vectorized NumPy/SciPy. It aims to make the mechanics of Tight-Binding
